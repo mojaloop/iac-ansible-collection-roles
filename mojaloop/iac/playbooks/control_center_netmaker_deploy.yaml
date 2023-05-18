@@ -1,0 +1,10 @@
+- hosts: netmaker
+  become: true
+  roles:
+    - mojaloop.iac.docker
+    - mojaloop.iac.netmaker
+
+- hosts: bastion
+  become: true
+  roles:
+    - mojaloop.iac.netclient

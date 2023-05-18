@@ -1,0 +1,59 @@
+- name: Update apt cache
+  shell: apt update
+
+- name: Install dependencies
+  package:
+    name:
+      - wireguard
+
+- name: "create directory for project"
+  file:
+    path: "{{ netmaker_root_dir }}"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/netmaker.service.j2"
+    dest: "/etc/systemd/system/netmaker.service"
+  notify: Restart Netmaker
+
+- name: "deploy netmaker compose file"
+  template:
+    src: "../templates/netmaker.docker-compose.yml.j2"
+    dest: "{{ netmaker_root_dir}}/netmaker-docker-compose.yml"
+  notify: Restart Netmaker
+
+- name: "deploy docker mosquito file"
+  template:
+    src: "../templates/mosquitto.conf.j2"
+    dest: "{{ netmaker_root_dir}}/mosquitto.conf"
+  notify: Restart Netmaker
+
+- name: "deploy caddy file"
+  template:
+    src: "../templates/Caddyfile.j2"
+    dest: "{{ netmaker_root_dir}}/Caddyfile"
+  notify: Restart Netmaker
+
+- name: Add wait file
+  copy:
+    dest: "{{ netmaker_root_dir}}/wait.sh"
+    src: wait.sh
+    group: root
+    mode: u=rwx
+    owner: root
+
+- name: "set netmaker to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "netmaker"
+    state: started
+
+- name: Install nmctl
+  get_url:
+    url: https://github.com/gravitl/netmaker/releases/download/v{{ netmaker_image_version }}/nmctl-linux-amd64
+    dest: /usr/local/bin/nmctl
+    mode: 0700
+  

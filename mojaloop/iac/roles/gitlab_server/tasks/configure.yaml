@@ -1,0 +1,64 @@
+- name: Configure GitLab
+  template:
+    src: gitlab.rb.j2
+    dest: /etc/gitlab/gitlab.rb
+    owner: root
+    group: root
+    mode: 'u=rw,g=r,o=r'
+    backup: yes
+
+- name: Start GitLab
+  command: gitlab-ctl reconfigure
+
+- name: Disable Gitlab Auto Signup 
+  command: 'gitlab-rails runner -e production "ApplicationSetting.last.update(signup_enabled: false)"'
+
+# name: Generate API Token
+# command: 'gitlab-rails runner -e production "{{ generate_api_token_command }}"'
+#  vars:
+#    generate_api_token_command: "puts User.find(1).personal_access_tokens.create(name: 'register_runners', impersonation: false, scopes: [:api], expires_at: Time.now + 1.day).token"
+#  register: api_token
+#
+#- name: Save API Token
+#  copy: 
+#    content: "{{ api_token.stdout }}" 
+#    dest: /tmp/gitlab_token
+#  delegate_to: localhost
+#  set_fact:
+#    server_api_token: "{{ api_token.stdout }}"
+
+- name: Register Gitlab Runner Shared Token 
+  command: 'gitlab-rails runner -e production "puts Gitlab::CurrentSettings.current_application_settings.runners_registration_token"'
+  register: shared_runner_token
+
+- name: Save Gilab Shared Runner Token
+  set_fact:
+    gitlab_shared_runner_token: "{{ shared_runner_token.stdout }}"
+
+- name: "create root password and token ruby file"
+  template:
+    src: setrootpassword.rb.j2
+    dest: /etc/gitlab/setrootpassword.rb
+    owner: git
+    group: git
+    mode: 0640
+  notify: Set root password
+
+- name: "Setup Backups"
+  template:
+    src: backups.j2
+    dest: /etc/cron.daily/backups
+    owner: root
+    group: root
+    mode: 'u=rw,g=r,o=r'
+    backup: yes
+
+- name: Create empty buckets
+  amazon.aws.s3_bucket:
+    name: "{{ item }}"
+    state: present
+    endpoint_url: "{{ s3_server_url }}"
+    secret_key: "{{ s3_password }}"
+    region: "us-east-1"
+    access_key: "{{ s3_username }}"
+  with_items: "{{ s3_create_bucket_list }}"

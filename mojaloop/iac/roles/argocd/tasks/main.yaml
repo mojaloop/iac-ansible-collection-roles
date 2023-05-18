@@ -1,0 +1,54 @@
+#Create a temporary directory for storing values files or other config
+- name: Create temporary directory for argo boot
+  tempfile:
+    state: directory
+    suffix: values
+  register: argotmpvalues
+
+- name: Create temporary directory for external secrets
+  tempfile:
+    state: directory
+    suffix: values
+  register: extsectmpvalues
+
+- name: Upload ext secrets bootstrap files
+  template: 
+    src: "templates/{{ item }}.yaml.j2"
+    dest: "{{ extsectmpvalues.path }}/{{ item }}.yaml"
+  with_items:
+    - external-secretstore-gitlab
+
+- name: Upload argo bootstrap files
+  template: 
+    src: "templates/{{ item }}.yaml.j2"
+    dest: "{{ argotmpvalues.path }}/{{ item }}.yaml"
+  with_items:
+    - argo-cm
+    - argo-gitlab
+    - argo-root-app
+    - argo-service-acct-patch
+    - argocd-lovely-plugin
+    - argocd-vault-replacer
+    - kustomization
+    - namespace
+    - vault-service-account-etc
+    #- netclient
+
+- name: Install external-secrets
+  shell: |
+    helm repo add external-secrets https://charts.external-secrets.io
+    helm --kubeconfig {{ kubeconfig_location }} upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
+
+- name: Try clustersecretstore create until successful
+  shell: kubectl --kubeconfig {{ kubeconfig_location }} apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore-gitlab.yaml
+  register: clustersecretstore
+  until: clustersecretstore is not failed
+  retries: 12
+  delay: 5
+
+
+- name: Install ArgoCD
+  shell: |
+    kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }} apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }} apply -f {{ argotmpvalues.path }}/argo-root-app.yaml

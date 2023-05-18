@@ -1,0 +1,44 @@
+- name: Install netclient gpgkey
+  get_url:
+    url: https://apt.netmaker.org/gpg.key
+    dest: /etc/apt/trusted.gpg.d/netclient.asc
+    mode: 0777
+
+- name: Install netclient package repo
+  get_url:
+    url: https://apt.netmaker.org/debian.deb.txt
+    dest: /etc/apt/sources.list.d/netclient.list
+    mode: 0777
+
+- name: Update apt cache
+  shell: apt update
+
+- name: Install dependencies
+  package:
+    name:
+      - wireguard
+      - netclient={{ netmaker_image_version }}-0
+    state: present
+
+- name: set token from local file
+  vars:
+    query: "[?tags[0]=='{{ netclient_enrollment_key }}'].token"
+  set_fact:
+    netmaker_join_token: "{{ lookup('file', enrollment_key_list_file_location) | from_json | json_query(query) | first }}"
+  when: "netmaker_join_token is none"
+
+- name: join netmaker network
+  command: "netclient join -t {{ netmaker_join_token }}"
+
+- name: iptable accept on forward
+  iptables:
+    chain: FORWARD
+    policy: ACCEPT
+
+- name: "set netclient to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "netclient"
+    state: started
+    force: true

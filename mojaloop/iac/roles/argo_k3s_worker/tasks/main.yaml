@@ -1,0 +1,8 @@
+- name: Install k3s on agent
+  vandot.k3sup.k3sup:
+    action: agent
+    ssh_key: "/root/.ssh/{{ base_domain }}.key"
+    user: "{{ ansible_ssh_user }}"
+    ip: "{{ ansible_default_ipv4.address }}"
+    server_ip: "{{ master_ip }}"
+    k3s_extra_args: "'--resolv-conf /run/systemd/resolve/resolv.conf'"

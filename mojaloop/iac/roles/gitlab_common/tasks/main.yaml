@@ -1,0 +1,9 @@
+- name: Set Server hostname
+  hostname:
+    name: "{{ ansible_hostname }}"
+    use: systemd
+
+- name: Install Pip3
+  apt:
+    name: python3-pip
+    update_cache: yes

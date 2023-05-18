@@ -1,0 +1,24 @@
+- hosts: bastion
+  become: true
+  roles:
+    - mojaloop.iac.bastion_common
+
+
+- hosts: docker
+  become: true
+  roles:
+    - mojaloop.iac.gitlab_common
+    - mojaloop.iac.docker
+    - mojaloop.iac.nexus_server
+    - mojaloop.iac.seaweedfs_server
+
+- hosts: gitlab
+  become: true
+  roles:
+    - mojaloop.iac.gitlab_common
+    - mojaloop.iac.gitlab_server
+
+- hosts: docker
+  become: true
+  roles:
+    - mojaloop.iac.gitlab_ci

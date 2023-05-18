@@ -1,0 +1,31 @@
+- name: Install k3s on master
+  vandot.k3sup.k3sup:
+    action: server
+    ssh_key: "/root/.ssh/{{ base_domain }}.key"
+    user: "{{ ansible_ssh_user }}"
+    ip: "{{ ansible_default_ipv4.address }}"
+    k3s_extra_args: "'--resolv-conf /run/systemd/resolve/resolv.conf --disable traefik --disable servicelb'"
+    
+- name: Fetch kubeconfig
+  fetch:
+    src: "/home/{{ ansible_ssh_user }}/kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/kubeconfig"
+    flat: yes
+
+- name: Check for master API availability
+  uri:
+    url: "https://localhost:6443"
+    method: GET
+    validate_certs: False
+    status_code: 401
+    body_format: json
+  register: http_api_result
+  retries: 6
+  delay: 15
+  until: http_api_result is not failed
+
+- name: install kustomize
+  get_url:
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
+    dest: /usr/local/bin/kustomize
+    mode: 0700

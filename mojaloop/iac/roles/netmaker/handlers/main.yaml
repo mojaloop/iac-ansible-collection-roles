@@ -1,0 +1,5 @@
+- name: Restart Netmaker
+  systemd:
+    name: "netmaker"
+    state: restarted
+    daemon_reload: true

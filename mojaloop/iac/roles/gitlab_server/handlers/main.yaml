@@ -1,0 +1,7 @@
+- name: Reconfigure GitLab
+  command: gitlab-ctl reconfigure
+#  when: gitlab_external_url is not none and gitlab_external_url != ''
+
+
+- name: Set root password
+  shell: gitlab-rails runner /etc/gitlab/setrootpassword.rb

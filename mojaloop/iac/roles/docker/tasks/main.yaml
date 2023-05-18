@@ -1,0 +1,54 @@
+- name: Update apt cache
+  shell: apt update
+
+- name: Install dependencies
+  package:
+    name:
+      - docker.io
+      - docker-compose 
+
+- name: enable service docker and ensure it is started
+  service:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: start and enable containerd daemon
+  service:
+    name: containerd
+    state: started
+    enabled: yes
+
+- name: Add cron job to keep the server clean
+  copy:
+    dest: /etc/cron.weekly/docker-system-prune
+    src: docker-system-prune
+    group: root
+    mode: u=rwx,go=rx
+    owner: root
+
+- name: List Linux block devices
+  ansible.builtin.shell:
+    cmd: "lsblk -o PATH,SERIAL | grep {{ docker_extra_ebs_volume_id | replace('-', '') }} | cut -d' ' -f1"
+  register: lsblk
+  when: docker_extra_vol_mount
+
+- name: Store EBS volume device name
+  ansible.builtin.set_fact:
+    ebs_volume_device_name: "{{ lsblk.stdout }}"
+  when: docker_extra_vol_mount
+
+- name: Create a ext4 filesystem for extra vol
+  filesystem:
+    fstype: ext4
+    dev: "{{ ebs_volume_device_name }}"
+  when: docker_extra_vol_mount
+  
+- name: Create a volume
+  community.docker.docker_volume:
+    name: "{{ docker_extra_volume_name }}"
+    state: present
+    driver_options:
+      type: ext4
+      device: "{{ ebs_volume_device_name }}"
+  when: docker_extra_vol_mount

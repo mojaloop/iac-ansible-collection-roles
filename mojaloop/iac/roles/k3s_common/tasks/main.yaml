@@ -1,0 +1,19 @@
+- name: Upload ssh key
+  copy:
+    src: "{{ ansible_ssh_private_key_file }}"
+    dest: "/root/.ssh/{{ base_domain }}.key"
+    mode: '0600'
+
+- name: Install k3sup script
+  get_url:
+    url: https://github.com/alexellis/k3sup/releases/download/{{ k3sup_version }}/k3sup
+    dest: /usr/local/bin
+    mode: 0700
+
+- name: Update apt cache
+  shell: apt update
+  
+- name: Install dependencies for netclient kernel mode
+  package:
+    name:
+      - wireguard

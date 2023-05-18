@@ -1,0 +1,13 @@
+seaweed_image_version: 3.43
+seaweedfs_s3_admin_user: admin
+seaweedfs_s3_admin_access_key: seaweedfs_s3_admin_access_key
+seaweedfs_s3_admin_secret_key: seaweedfs_s3_admin_secret_key
+seaweedfs_s3_gitlab_user: gitlab
+seaweedfs_s3_gitlab_access_key: seaweedfs_s3_gitlab_access_key
+seaweedfs_s3_gitlab_secret_key: seaweedfs_s3_gitlab_secret_key
+seaweedfs_s3_listening_port: 8333
+seaweedfs_root_dir: /root/seaweedfs-compose
+docker_extra_volume_size_mb: 107374
+docker_extra_volume_name: docker-extra
+docker_extra_vol_mount: false
+seaweedfs_num_volumes: 100

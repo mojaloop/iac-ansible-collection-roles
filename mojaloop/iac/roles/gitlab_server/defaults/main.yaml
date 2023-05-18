@@ -1,0 +1,25 @@
+server_hostname: gitlab
+server_password: changeme
+server_token: changeme
+gitlab_external_url: <changeme>
+email_display_name: GitLab
+enable_pages: true
+pages_subdomain: pages
+letsencrypt_endpoint: https://acme-v02.api.letsencrypt.org/directory
+letsencrypt_email: cicd.automation@modusbox.com
+enable_github_oauth: false
+github_oauth_id: null
+github_oauth_secret: null
+smtp_server_enable: false
+smtp_server_address: null
+smtp_server_port: 587
+smtp_server_user: user
+smtp_server_pw: testpw
+smtp_server_mail_domain: domain
+s3_username: minioadmin
+s3_password: minioadmin
+s3_server_url: http://servername:9000
+backup_dev_name: /dev/xvdb
+gitlab_version: 15.11.0
+s3_create_bucket_list: ["gitlab-registry", "gitlab-artifacts", "gitlab-external-diffs", "gitlab-lfs-objects", "gitlab-uploads", "gitlab-packages", "gitlab-dependency-proxy", "gitlab-terraform-state", "gitlab-registry", "gitlab-pages"]
+backup_ebs_volume_id: default-id

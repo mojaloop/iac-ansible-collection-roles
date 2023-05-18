@@ -1,0 +1,65 @@
+- name: Set Postfix option hostname
+  debconf: 
+    name: postifx 
+    question: "postfix/mailname" 
+    value: "{{ server_hostname }}"
+    vtype: string
+
+- name: Set Postfix option type as internet site
+  debconf: 
+    name: postfix 
+    question: "postfix/main_mailer_type" 
+    value: 'Internet Site'
+    vtype: string
+
+- name: install dependencies
+  package:
+    name:
+      - curl
+      - openssh-server
+      - ca-certificates
+      - postfix
+
+- name: Install boto3/botocore
+  pip:
+    name: 
+      - boto3>=1.18.0
+      - botocore>=1.21.0
+
+- name: List Linux block devices
+  ansible.builtin.shell:
+    cmd: "lsblk -o PATH,SERIAL | grep {{ backup_ebs_volume_id | replace('-', '') }} | cut -d' ' -f1"
+  register: lsblk
+
+- name: Store EBS volume device name
+  ansible.builtin.set_fact:
+    ebs_volume_device_name: "{{ lsblk.stdout }}"
+
+- name: Create a ext4 filesystem for backups
+  filesystem:
+    fstype: ext4
+    dev: "{{ ebs_volume_device_name }}"
+
+- name: Mount backup vol
+  ansible.posix.mount:
+    path: /var/opt/gitlab/backups
+    src: "{{ ebs_volume_device_name }}"
+    fstype: ext4
+    state: mounted
+    opts: defaults
+    passno: "1"
+    dump: "0"
+ 
+- name: Install GitLab repository
+  get_url:
+    url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh
+    dest: /tmp/script.deb.sh
+    mode: 0777
+
+- name: Run GitLab repository script
+  shell: /tmp/script.deb.sh
+
+- name: Install GitLab EE
+  package:
+    name: "gitlab-ee={{ gitlab_version }}-ee.0"
+    state: present

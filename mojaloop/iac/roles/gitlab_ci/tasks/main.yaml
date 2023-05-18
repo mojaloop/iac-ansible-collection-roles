@@ -1,0 +1,90 @@
+- name: Add gitlab-runner user to the docker group
+  user:
+    name: gitlab-runner
+    create_home: yes
+    group: docker
+    shell: /bin/bash
+    state: present
+
+- name: Install GitLab repository
+  get_url:
+    url: https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh
+    dest: /tmp/script.deb.sh
+    mode: 0777
+
+- name: Run GitLab repository script
+  shell: /tmp/script.deb.sh
+
+- name: Install GitLab Runner
+  package:
+    name: "gitlab-runner={{ gitlab_runner_version }}"
+    state: present
+
+- name: "set gitlab-runner to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "gitlab-runner"
+    state: started
+
+- name: Create a gitlab-runner system dir
+  file:
+    path: /etc/systemd/system/gitlab-runner.service.d
+    state: directory
+    mode: '0755'
+
+- name: "deploy gitlab-runner kill conf file"
+  template:
+    src: "../templates/kill.conf.j2"
+    dest: "/etc/systemd/system/gitlab-runner.service.d/kill.conf"
+  notify: Restart gitlab-runner
+
+- name: Wait Gitlab Server to respond
+  uri:
+    url: "{{ gitlab_external_url }}"
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 10 # Every 10 seconds
+
+- name: Download ca from gitlab
+  shell: |
+    openssl s_client -showcerts {{ gitlab_server_hostname }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/{{ gitlab_server_hostname }}.crt
+
+- name: Start Gitlab Runner
+  command: "gitlab-runner start"
+
+- name: Get registered runners
+  shell: "grep 'Runner {{ item }}' /etc/gitlab-runner/config.toml | wc -l" 
+  register: runner_exists
+  loop: "{{ range(0, 3 + 1)|list }}"
+
+- name: Register runners
+  command: "gitlab-runner register \
+    --non-interactive \
+    --tls-ca-file /tmp/{{ gitlab_server_hostname }}.crt
+    --url {{ gitlab_external_url }} \
+    --registration-token {{ hostvars['gitlab_server']['gitlab_shared_runner_token'] }} \ 
+    --executor docker \
+    --docker-privileged=true \
+    --docker-volumes '/certs/client' \
+    --docker-image alpine:latest \
+    --description 'Runner {{ item }}' \
+    --run-untagged=true \
+    --locked=false \
+    --access-level not_protected \
+    --output-limit 409600 \
+    --cache-type s3 \
+    --cache-shared=true \
+    --cache-s3-server-address '{{ seaweedfs_s3_server_host }}:{{ seaweedfs_s3_listening_port }}' \
+    --cache-s3-access-key '{{ seaweedfs_s3_gitlab_access_key }}' \
+    --cache-s3-secret-key '{{ seaweedfs_s3_gitlab_secret_key }}' \
+    --cache-s3-bucket-name 'gitlab-ci' \
+    --cache-s3-insecure=true"
+  when: runner_exists.results[item].stdout == "0"
+  loop: "{{ range(0, 3 + 1)|list }}"
+
+- name: update config.toml
+  shell: |
+    sed -i 's/concurrent = 1/concurrent = 4/g' /etc/gitlab-runner/config.toml

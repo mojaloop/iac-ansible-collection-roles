@@ -1,0 +1,35 @@
+- name: "create directory for project"
+  file:
+    path: "{{ seaweedfs_root_dir }}"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/seaweedfs.service.j2"
+    dest: "/etc/systemd/system/seaweedfs.service"
+  notify: Restart Seaweedfs
+
+- name: "deploy s3 iam file"
+  template:
+    src: "../templates/seaweedfs.s3-iam.json.j2"
+    dest: "{{ seaweedfs_root_dir}}/seaweedfs.s3-iam.json"
+  notify: Restart Seaweedfs
+
+- name: "deploy docker compose file"
+  template:
+    src: "../templates/seaweedfs.docker-compose.yml.j2"
+    dest: "{{ seaweedfs_root_dir}}/docker-compose.yml"
+  notify: Restart Seaweedfs
+
+- name: Add prometheus file
+  copy:
+    dest: "{{ seaweedfs_root_dir}}/prometheus.yaml"
+    src: prometheus.yaml
+
+- name: "set to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "seaweedfs"
+    state: started

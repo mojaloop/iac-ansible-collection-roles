@@ -1,0 +1,6 @@
+#!/bin/bash
+
+gitlab-backup create STRATEGY=copy
+gitlab-ctl backup-etc
+cd /etc/gitlab/config_backup
+cp $(ls -t | head -n1) /var/opt/gitlab/backups

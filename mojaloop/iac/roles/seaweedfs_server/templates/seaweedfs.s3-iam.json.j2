@@ -1,0 +1,36 @@
+{
+  "identities": [
+    {
+      "name": "{{ seaweedfs_s3_admin_user }}",
+      "credentials": [
+        {
+          "accessKey": "{{ seaweedfs_s3_admin_access_key }}",
+          "secretKey": "{{ seaweedfs_s3_admin_secret_key }}"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "List",
+        "Tagging",
+        "Write"
+      ]
+    },
+    {
+      "name": "{{ seaweedfs_s3_gitlab_user }}",
+      "credentials": [
+        {
+          "accessKey": "{{ seaweedfs_s3_gitlab_access_key }}",
+          "secretKey": "{{ seaweedfs_s3_gitlab_secret_key }}"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "List",
+        "Tagging",
+        "Write"
+      ]
+    }
+  ]
+}

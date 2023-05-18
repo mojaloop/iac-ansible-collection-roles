@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: netclient
+  labels:
+    app: netclient
+spec:
+  selector:
+    matchLabels:
+      app: netclient
+  template:
+    metadata:
+      labels:
+        app: netclient
+    spec:
+      hostNetwork: true
+      containers:
+      - name: netclient
+        image: gravitl/netclient:v0.18.7
+        env:
+        - name: NETCLIENT_ROAMING
+          value: "no"
+        - name: NETCLIENT_PORT
+          value: "51821"
+        - name: NETCLIENT_IS_STATIC
+          value: "yes"
+        - name: NETCLIENT_ENDPOINT
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+                name: netclient-token-secret
+                key: TOKEN
+        volumeMounts:
+        - mountPath: /etc/netclient
+          name: etc-netclient
+        - mountPath: /usr/bin/wg
+          name: wg
+        securityContext:
+          privileged: true
+      volumes:
+      - hostPath:
+          path: /etc/netclient
+          type: DirectoryOrCreate
+        name: etc-netclient
+      - hostPath:
+          path: /usr/bin/wg
+          type: File
+        name: wg
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: netclient
+spec:
+  refreshInterval: 1h
+
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: gitlab-secret-store
+
+  target:
+    name: netclient-token-secret # Name for the secret to be created on the cluster
+    creationPolicy: Owner
+
+  data:
+    - secretKey: TOKEN # Key given to the secret to be created on the cluster
+      remoteRef: 
+        key: NETMAKER_TOKEN
