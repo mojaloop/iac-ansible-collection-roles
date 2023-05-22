@@ -9,6 +9,7 @@ resources:
 - namespace.yaml
 - vault-service-account-etc.yaml
 - argo-gitlab.yaml
+- vault-env.yaml
 #- netclient.yaml
 
 patches:
@@ -17,10 +18,6 @@ patches:
     kind: ConfigMap
     name: argocd-cm
 - path: argocd-lovely-plugin.yaml
-  target:
-    kind: Deployment
-    name: argocd-repo-server
-- path: argocd-vault-replacer.yaml
   target:
     kind: Deployment
     name: argocd-repo-server

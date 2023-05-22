@@ -32,6 +32,7 @@
     - kustomization
     - namespace
     - vault-service-account-etc
+    - vault-env
     #- netclient
 
 - name: Install external-secrets

@@ -1,10 +1,9 @@
-argocd_version: "2.5.9"
-argocd_lovely_plugin_version: "0.13.3"
-argocd_vault_replacer_version: "0.11.6"
+argocd_version: "2.7.1"
+argocd_lovely_plugin_version: "0.18.0"
 repo_url: "https://localhost/repo.git"
 repo_password: mypassword
 repo_username: user
-external_secrets_version: "0.8.1"
+external_secrets_version: "0.8.2"
 external_secrets_namespace: "external-secrets"
 kubeconfig_location: "/etc/rancher/k3s/k3s.yaml"
 root_app_path: "infra/app-yamls"
