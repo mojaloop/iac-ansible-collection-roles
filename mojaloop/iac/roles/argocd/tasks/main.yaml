@@ -28,10 +28,10 @@
     - argo-root-app
     - argo-service-acct-patch
     - argocd-lovely-plugin
-    - argocd-vault-replacer
     - kustomization
     - namespace
     - vault-service-account-etc
+    - vault-env
     #- netclient
 
 - name: Install external-secrets
