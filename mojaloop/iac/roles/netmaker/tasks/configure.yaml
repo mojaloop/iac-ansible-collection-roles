@@ -27,7 +27,7 @@
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
-    body: "{{ lookup('template', 'createnetwork.json.j2', template_vars=dict(ipindex=index))) }}"
+    body: "{{ lookup('template', 'createnetwork.json.j2', template_vars=dict(ipindex=index)) }}"
     body_format: json
     status_code: [200, 400]
     loop: "{{ netmaker_networks }}"
