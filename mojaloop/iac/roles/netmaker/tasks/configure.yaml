@@ -30,6 +30,8 @@
     body: "{{ lookup('template', 'createnetwork.json.j2') }}"
     body_format: json
     status_code: [200, 400]
+    vars:
+      ipindex: index
     loop: "{{ netmaker_networks }}"
     loop_control:
       index_var: index
