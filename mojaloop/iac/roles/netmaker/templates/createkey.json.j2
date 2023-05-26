@@ -1,6 +1,6 @@
 {
-    "tags":["{{ netmaker_control_network_name }}-{{ item }}"],
-    "networks":["{{ netmaker_control_network_name }}"],
+    "tags":["{{ item.0.network_name }}-{{ item.1 }}"],
+    "networks":["{{ item.0.network_name }}"],
     "expiration":0,
     "unlimited":true,
     "uses_remaining":0

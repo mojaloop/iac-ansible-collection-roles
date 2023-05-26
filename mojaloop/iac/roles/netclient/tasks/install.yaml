@@ -22,13 +22,15 @@
 
 - name: set token from local file
   vars:
-    query: "[?tags[0]=='{{ netclient_enrollment_key }}'].token"
+    query: "[?tags[0]=='{{ item }}'].token"
   set_fact:
-    netmaker_join_token: "{{ lookup('file', enrollment_key_list_file_location) | from_json | json_query(query) | first }}"
-  when: "netmaker_join_token is none"
+    netmaker_join_tokens: "{{ lookup('file', netmaker_enrollment_key_list_file_location) | from_json | json_query(query) | first }}"
+  when: "netmaker_join_tokens | length > 0"
+  loop: netclient_enrollment_keys
 
 - name: join netmaker network
-  command: "netclient join -t {{ netmaker_join_token }}"
+  command: "netclient join -t {{ item }}"
+  loop: netmaker_join_tokens
 
 - name: iptable accept on forward
   iptables:

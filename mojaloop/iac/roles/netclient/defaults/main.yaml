@@ -1,5 +1,5 @@
 netmaker_root_dir: /root/netmaker-compose
 netmaker_image_version: 0.18.7
-netclient_enrollment_key: cntrlctr-bastion
-netmaker_join_token: null
-enrollment_key_list_file_location: /tmp/keylist.json
+netclient_enrollment_keys: ["cntrlctr-ops"]
+netmaker_join_tokens: []
+netmaker_enrollment_key_list_file_location: /tmp/keylist.json
