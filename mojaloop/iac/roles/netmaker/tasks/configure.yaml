@@ -74,7 +74,7 @@
 - name: copy keys
   copy: 
     content: "{{ key_response2.content }}"
-    dest: "{{ enrollment_key_list_file_location }}"
+    dest: "{{ netmaker_enrollment_key_list_file_location }}"
   delegate_to: localhost
 
 # - name: Save access token for bastion netclient
