@@ -30,7 +30,7 @@
     body: "{{ lookup('template', 'createnetwork.json.j2') }}"
     body_format: json
     status_code: [200, 400]
-  loop: "{{ netmaker_networks | dict2items }}"
+  loop: "{{ netmaker_networks }}"
   loop_control:
     index_var: ipindex
 
@@ -58,7 +58,7 @@
   vars:
     keytag: "{{ item.0.network_name }}-{{ item.1 }}"
   when: "keytag not in key_response.content"
-  loop: "{{ netmaker_networks | subelements('node_keys')  }}"
+  loop: "{{ netmaker_networks | subelements('node_keys') }}"
 
 - name: Get keys again
   uri:
