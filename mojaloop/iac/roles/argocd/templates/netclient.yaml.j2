@@ -1,33 +1,43 @@
-apiVersion: apps/v1
-kind: DaemonSet
+---
+apiVersion: v1
+kind: Service
 metadata:
-  name: netclient
   labels:
-    app: netclient
+    app: netclient-gateway
+  name: netclient-nodeport
+spec:
+  externalTrafficPolicy: Local
+  type: NodePort
+  ports:
+  - port: {{ wireguard_node_port }}
+    nodePort: {{ wireguard_node_port }}
+    protocol: UDP
+    targetPort: {{ wireguard_node_port }}
+    name: wg-iface-{{ wireguard_node_port }}
+  selector:
+    app: netclient-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netclient-gateway
+  labels:
+    app: netclient-gateway
 spec:
   selector:
     matchLabels:
-      app: netclient
+      app: netclient-gateway
+  replicas: 1
   template:
     metadata:
       labels:
-        app: netclient
+        app: netclient-gateway
     spec:
       hostNetwork: true
       containers:
       - name: netclient
         image: gravitl/netclient:v{{ netmaker_image_version }}
         env:
-        - name: NETCLIENT_ROAMING
-          value: "no"
-        - name: NETCLIENT_PORT
-          value: "51821"
-        - name: NETCLIENT_IS_STATIC
-          value: "yes"
-        - name: NETCLIENT_ENDPOINT
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
         - name: TOKEN
           valueFrom:
             secretKeyRef:
@@ -36,8 +46,6 @@ spec:
         volumeMounts:
         - mountPath: /etc/netclient
           name: etc-netclient
-        - mountPath: /usr/bin/wg
-          name: wg
         securityContext:
           privileged: true
       volumes:
@@ -45,10 +53,6 @@ spec:
           path: /etc/netclient
           type: DirectoryOrCreate
         name: etc-netclient
-      - hostPath:
-          path: /usr/bin/wg
-          type: File
-        name: wg
 ---
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
