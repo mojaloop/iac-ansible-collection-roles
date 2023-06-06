@@ -1,0 +1,37 @@
+- name: Install software-properties-common
+  package:
+    name:
+      - software-properties-common
+    state: present
+
+- name: Update apt cache
+  shell: apt update
+
+- apt_repository:
+    repo: "ppa:vbernat/haproxy-{{ haproxy_version }}"
+    state: present
+
+- name: Update apt cache
+  shell: apt update
+
+- name: Install haproxy
+  package:
+    name:
+      - haproxy
+    state: present
+
+- name: copy haproxy conf
+  template:
+    src: haproxy.conf.j2
+    dest: /etc/haproxy/haproxy.conf
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: "set haproxy to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "haproxy"
+    state: started
+    force: true

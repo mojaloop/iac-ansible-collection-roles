@@ -1,0 +1,13 @@
+frontend seaweed
+  bind :{{ seaweedfs_s3_listening_port }}
+  default_backend seaweed
+
+frontend nexus
+  bind :{{ nexus_docker_repo_listening_port }}
+  default_backend nexus
+
+backend seaweed
+  server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}
+
+backend nexus
+  server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}

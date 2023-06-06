@@ -3,6 +3,7 @@
   roles:
     - mojaloop.iac.bastion_common
     - mojaloop.iac.netclient
+    - mojaloop.iac.haproxy
 
 - hosts: master
   become: true
