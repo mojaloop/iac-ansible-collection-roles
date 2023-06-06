@@ -8,8 +8,3 @@
   become: true
   roles:
     - mojaloop.iac.netclient
-
-- hosts: docker
-  become: true
-  roles:
-    - mojaloop.iac.netclient
