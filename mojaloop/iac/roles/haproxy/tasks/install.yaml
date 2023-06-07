@@ -27,6 +27,7 @@
     owner: root
     group: root
     mode: '0640'
+  notify: restart haproxy
 
 - name: "set haproxy to auto restart"
   systemd:
