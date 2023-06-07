@@ -22,8 +22,8 @@
 
 - name: copy haproxy conf
   template:
-    src: haproxy.conf.j2
-    dest: /etc/haproxy/haproxy.conf
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
     owner: root
     group: root
     mode: '0640'
