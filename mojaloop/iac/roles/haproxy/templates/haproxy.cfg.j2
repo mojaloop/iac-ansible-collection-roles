@@ -10,8 +10,15 @@ frontend nexus
   bind :{{ nexus_docker_repo_listening_port }}
   default_backend nexus
 
+frontend vault
+  bind :{{ vault_listening_port }}
+  default_backend vault
+
 backend seaweed
   server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}
 
 backend nexus
   server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
+
+backend vault
+  server vault {{ vault_fqdn }}:{{ vault_listening_port }}
