@@ -1,0 +1,24 @@
+- name: "create directory for project"
+  file:
+    path: "{{ vault_root_dir }}"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/vault.service.j2"
+    dest: "/etc/systemd/system/vault.service"
+  notify: Restart Vault
+
+- name: "deploy docker compose file"
+  template:
+    src: "../templates/vault.docker-compose.yml.j2"
+    dest: "{{ vault_root_dir}}/docker-compose.yml"
+  notify: Restart Vault
+
+- name: "set to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "vault"
+    state: started

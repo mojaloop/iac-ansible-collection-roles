@@ -21,4 +21,5 @@
 - hosts: docker
   become: true
   roles:
+    - mojaloop.iac.vault
     - mojaloop.iac.gitlab_ci

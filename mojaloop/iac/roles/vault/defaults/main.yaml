@@ -1,0 +1,3 @@
+vault_image_version: 1.13
+vault_root_dir: /root/vault-compose
+vault_root_token: 00000000-0000-0000-0000-000000000000
