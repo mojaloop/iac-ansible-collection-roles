@@ -15,7 +15,7 @@ services:
       retries: 5
     command: server -dev -dev-root-token-id="{{ vault_root_token }}"
   caddy: # The reverse proxy that manages traffic for vault
-    image: caddy:{{ vault_caddy_image_version }}
+    build: ./caddybuild
     container_name: caddy
     restart: unless-stopped
     volumes:

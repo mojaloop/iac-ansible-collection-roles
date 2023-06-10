@@ -1,6 +1,6 @@
 - name: "create directory for project"
   file:
-    path: "{{ vault_root_dir }}"
+    path: "{{ vault_root_dir }}/caddybuild"
     state: directory
     recurse: yes
 
@@ -14,6 +14,12 @@
   template:
     src: "../templates/Caddyfile.j2"
     dest: "{{ vault_root_dir }}/Caddyfile"
+  notify: Restart Vault
+
+- name: "deploy caddy dockerfile"
+  template:
+    src: "../templates/Dockerfile.j2"
+    dest: "{{ vault_root_dir }}/caddybuild/Dockerfile"
   notify: Restart Vault
 
 - name: "deploy docker compose file"

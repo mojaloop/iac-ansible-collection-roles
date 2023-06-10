@@ -1,9 +1,6 @@
 {
   email {{ vault_acme_email }}
-}
-
-tls {
-  dns route53 { 
+  acme_dns route53 { 
     access_key_id "{{ vault_aws_access_key_id }}"
     secret_access_key "{{ vault_aws_secret_access_key }}"
     region "{{ vault_region }}"
