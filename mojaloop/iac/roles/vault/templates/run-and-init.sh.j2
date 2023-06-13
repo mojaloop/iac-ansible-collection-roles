@@ -1,0 +1,39 @@
+#!/bin/bash
+set -e
+vault server -config vault-config.hcl
+
+export VAULT_ADDR=http://127.0.0.1:8200
+export VAULT_SKIP_VERIFY=true
+if [ $(vault status -format=json | jq .initialized) == "false" ]
+then
+    vault operator init -key-shares=1 -key-threshold=1 -format=json > /tmp/output.json
+    vault operator unseal $(cat /tmp/output.json | jq .unseal_keys_b64[0] | tr -d '"')
+    export VAULT_ROOT_TOKEN=$(cat /tmp/output.json | jq .root_token | tr -d '"')
+    if [ $VAULT_ROOT_TOKEN != "" ]
+    then
+        export VAULT_ROOT_TOKEN_FOUND=$(curl -sw '%%{http_code}' --request GET "$${GITLAB_URL}/VAULT_ROOT_TOKEN" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
+        if [ $VAULT_ROOT_TOKEN_FOUND == "404" ]
+        then
+            curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key=VAULT_ROOT_TOKEN" --form "value=$VAULT_ROOT_TOKEN" --form "raw=true" --form "masked=true" -o /dev/null
+        else
+            echo "vault root token already present, updating code"
+            curl -s --request PUT "$${GITLAB_URL}/VAULT_ROOT_TOKEN" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$VAULT_ROOT_TOKEN" -o /dev/null
+        fi
+    else
+        echo "VAULT_ROOT_TOKEN not parsed correctly, exiting"
+        exit 1
+    fi
+    
+    export UNSEAL_KEY=$(cat /tmp/output.json | jq .unseal_keys_b64[0] | tr -d '"')
+    export UNSEAL_KEY_FOUND=$(curl -sw '%%{http_code}' --request GET "$${GITLAB_URL}/UNSEAL_KEY" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
+    if [ $UNSEAL_KEY_FOUND == "404" ]
+    then
+        curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key=UNSEAL_KEY" --form "value=$UNSEAL_KEY" --form "raw=true" --form "masked=true" -o /dev/null
+    else
+        echo "unseal key already present, updating code"
+        curl -s --request PUT "$${GITLAB_URL}/UNSEAL_KEY" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$UNSEAL_KEY" -o /dev/null
+    fi
+
+else
+    echo "vault already initialized"
+fi

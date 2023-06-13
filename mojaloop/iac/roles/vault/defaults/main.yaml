@@ -1,11 +1,8 @@
 vault_image_version: 1.13
 vault_root_dir: /root/vault-compose
-vault_root_token: 00000000-0000-0000-0000-000000000000
 vault_listening_port: 8200
 vault_fqdn: vault.domain.null
 vault_region: eu-west-1
-vault_aws_secret_access_key: secret-access-eky
-vault_aws_access_key_id: access-key-id
 vault_acme_email: null@null.com
-vault_caddy_image_version: 2.6.2
-vault_r53_image_version: 1.3.3
+vault_gitlab_url: http://gitlab.url
+vault_gitlab_token: "#crazytoken$"

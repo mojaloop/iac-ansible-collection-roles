@@ -1,6 +1,6 @@
 - name: "create directory for project"
   file:
-    path: "{{ vault_root_dir }}/caddybuild"
+    path: "{{ vault_root_dir }}"
     state: directory
     recurse: yes
 
@@ -10,16 +10,17 @@
     dest: "/etc/systemd/system/vault.service"
   notify: Restart Vault
 
-- name: "deploy caddy file"
+- name: "deploy init script"
   template:
-    src: "../templates/Caddyfile.j2"
-    dest: "{{ vault_root_dir }}/Caddyfile"
+    src: "../templates/run-and-init.sh.j2"
+    dest: "{{ vault_root_dir }}/run-and-init.sh"
+    mode: 0755
   notify: Restart Vault
 
-- name: "deploy caddy dockerfile"
+- name: "deploy vault-config.hcl"
   template:
-    src: "../templates/Dockerfile.j2"
-    dest: "{{ vault_root_dir }}/caddybuild/Dockerfile"
+    src: "../templates/vault-config.hcl.j2"
+    dest: "{{ vault_root_dir }}/vault-config.hcl"
   notify: Restart Vault
 
 - name: "deploy docker compose file"
