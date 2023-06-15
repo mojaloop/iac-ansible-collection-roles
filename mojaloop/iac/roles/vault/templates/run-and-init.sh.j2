@@ -11,13 +11,13 @@ then
     export VAULT_ROOT_TOKEN=$(cat /tmp/output.json | jq .root_token | tr -d '"')
     if [ $VAULT_ROOT_TOKEN != "" ]
     then
-        export VAULT_ROOT_TOKEN_FOUND=$(curl -sw '%%{http_code}' --request GET "$${GITLAB_URL}/VAULT_ROOT_TOKEN" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
+        export VAULT_ROOT_TOKEN_FOUND=$(curl -sw '%%{http_code}' --request GET "$${GITLAB_URL}/{{ vault_root_token_key }}" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
         if [ $VAULT_ROOT_TOKEN_FOUND == "404" ]
         then
-            curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key=VAULT_ROOT_TOKEN" --form "value=$VAULT_ROOT_TOKEN" --form "raw=true" --form "masked=true" -o /dev/null
+            curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key={{ vault_root_token_key }}" --form "value=$VAULT_ROOT_TOKEN" --form "raw=true" --form "masked=true" -o /dev/null
         else
             echo "vault root token already present, updating code"
-            curl -s --request PUT "$${GITLAB_URL}/VAULT_ROOT_TOKEN" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$VAULT_ROOT_TOKEN" -o /dev/null
+            curl -s --request PUT "$${GITLAB_URL}/{{ vault_root_token_key }}" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$VAULT_ROOT_TOKEN" -o /dev/null
         fi
     else
         echo "VAULT_ROOT_TOKEN not parsed correctly, exiting"
