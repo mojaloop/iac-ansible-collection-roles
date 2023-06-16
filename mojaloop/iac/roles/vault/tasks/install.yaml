@@ -18,8 +18,8 @@
 
 - name: "deploy init script"
   template:
-    src: "../templates/run-and-init.sh.j2"
-    dest: "{{ vault_root_dir }}/run-and-init.sh"
+    src: "../templates/init.sh.j2"
+    dest: "{{ vault_root_dir }}/vaultbuild/init.sh"
     mode: 0755
   notify: Restart Vault
 
