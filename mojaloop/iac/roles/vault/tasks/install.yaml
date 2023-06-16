@@ -1,8 +1,14 @@
 - name: "create directory for project"
   file:
-    path: "{{ vault_root_dir }}"
+    path: "{{ vault_root_dir }}/vaultbuild"
     state: directory
     recurse: yes
+
+- name: "deploy vault Dockerfile"
+  template:
+    src: "../templates/Dockerfile.j2"
+    dest: "{{ vault_root_dir }}/vaultbuild/Dockerfile"
+  notify: Restart Vault
 
 - name: "deploy systemd service"
   template:

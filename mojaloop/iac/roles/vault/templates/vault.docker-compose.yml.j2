@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   vault:
-    image: hashicorp/vault:{{ vault_image_version }}
+    build: ./vaultbuild
     container_name: vault
     restart: on-failure:10
     ports:
@@ -13,9 +13,10 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-      - vault-volume:/data
+      - vault-volume:/vault/file
+      - {{ vault_root_dir}}/vault-config.hcl:/vault/config/vault-config.hcl
     healthcheck:
       retries: 5
-    command: ./run-and-init.sh
+    command: /usr/local/bin/run-and-init.sh
 volumes:
   vault-volume: {} # runtime data for vault

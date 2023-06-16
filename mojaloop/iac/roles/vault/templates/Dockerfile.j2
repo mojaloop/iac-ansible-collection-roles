@@ -1,0 +1,4 @@
+FROM hashicorp/vault:{{ vault_image_version }}
+
+ADD {{ vault_root_dir }}/docker/run-and-init.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/run-and-init.sh
