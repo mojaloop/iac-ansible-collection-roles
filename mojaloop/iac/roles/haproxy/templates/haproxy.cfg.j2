@@ -11,6 +11,7 @@ frontend nexus
   default_backend nexus
 
 frontend vault
+  mode: tcp
   bind :{{ vault_listening_port }}
   default_backend vault
 
@@ -21,4 +22,5 @@ backend nexus
   server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
 
 backend vault
+  mode: tcp
   server vault {{ vault_fqdn }}:{{ vault_listening_port }}

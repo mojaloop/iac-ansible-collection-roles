@@ -16,7 +16,7 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ extsectmpvalues.path }}/{{ item }}.yaml"
   with_items:
-    - external-secretstore-gitlab
+    - external-secretstore
 
 - name: Upload argo bootstrap files
   template: 
@@ -40,7 +40,7 @@
     helm --kubeconfig {{ kubeconfig_location }} upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
 
 - name: Try clustersecretstore create until successful
-  shell: kubectl --kubeconfig {{ kubeconfig_location }} apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore-gitlab.yaml
+  shell: kubectl --kubeconfig {{ kubeconfig_location }} apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
   register: clustersecretstore
   until: clustersecretstore is not failed
   retries: 12
