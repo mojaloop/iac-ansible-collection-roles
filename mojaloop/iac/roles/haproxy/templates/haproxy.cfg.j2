@@ -23,4 +23,4 @@ backend nexus
 
 backend vault
   mode tcp
-  server vault {{ vault_fqdn }}:{{ vault_listening_port }}
+  server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
