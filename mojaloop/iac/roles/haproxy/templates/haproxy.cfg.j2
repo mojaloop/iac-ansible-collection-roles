@@ -12,7 +12,7 @@ frontend nexus
 
 frontend vault
   mode tcp
-  bind :{{ vault_listening_port }}
+  bind :{{ local_vault_listening_port }}
   default_backend vault
 
 backend seaweed
