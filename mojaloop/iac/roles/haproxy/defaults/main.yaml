@@ -1,6 +1,7 @@
 haproxy_version: 2.8
 seaweedfs_s3_listening_port: 8333
 nexus_docker_repo_listening_port: 8082
+local_vault_listening_port: 8200
 vault_listening_port: 443
 nexus_fqdn: private_ip
 seaweedfs_fqdn: private_ip
