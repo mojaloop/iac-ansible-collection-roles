@@ -1,0 +1,7 @@
+vault_image_version: 1.13
+vault_root_dir: /root/vault-compose
+vault_listening_port: 8200
+vault_fqdn: vault.domain.null
+vault_gitlab_url: http://gitlab.url
+vault_gitlab_token: "#crazytoken$"
+vault_root_token_key: VAULT_ROOT_TOKEN

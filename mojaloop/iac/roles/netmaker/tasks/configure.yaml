@@ -9,17 +9,6 @@
   retries: 30
   delay: 10 # Every 10 seconds
 
-- name: Add local control network if not exists
-  uri:
-    url: https://api.{{ netmaker_base_domain }}/api/networks
-    method: POST
-    headers:
-      Content-Type: application/json
-      Authorization: Bearer {{ netmaker_master_key }}
-    body: "{{ lookup('template', 'createnetwork.json.j2') }}"
-    body_format: json
-    status_code: [200, 400]
-
 - name: Add admin user
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/users/{{ netmaker_admin_username }}
@@ -30,6 +19,20 @@
     body: "{{ lookup('template', 'createadminuser.json.j2') }}"
     body_format: json
     status_code: [200, 400]
+
+- name: Add networks if don't exist
+  uri:
+    url: https://api.{{ netmaker_base_domain }}/api/networks
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    body: "{{ lookup('template', 'createnetwork.json.j2') }}"
+    body_format: json
+    status_code: [200, 400]
+  loop: "{{ netmaker_networks }}"
+  loop_control:
+    index_var: ipindex
 
 - name: Get keys
   uri:
@@ -53,9 +56,9 @@
     body_format: json
     status_code: [200, 400]
   vars:
-    keytag: "{{ netmaker_control_network_name }}-{{ item }}"
+    keytag: "{{ item.0.network_name }}-{{ item.1 }}"
   when: "keytag not in key_response.content"
-  with_items: "{{ enrollment_key_list }}"
+  loop: "{{ netmaker_networks | subelements('node_keys') }}"
 
 - name: Get keys again
   uri:
@@ -71,7 +74,7 @@
 - name: copy keys
   copy: 
     content: "{{ key_response2.content }}"
-    dest: "{{ enrollment_key_list_file_location }}"
+    dest: "{{ netmaker_enrollment_key_list_file_location }}"
   delegate_to: localhost
 
 # - name: Save access token for bastion netclient

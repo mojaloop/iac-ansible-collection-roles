@@ -1,0 +1,42 @@
+version: '3.6'
+
+services:
+  vault:
+    image: hashicorp/vault:{{ vault_image_version }}
+    container_name: vault
+    restart: on-failure:10
+    ports:
+      - "{{ vault_listening_port }}:{{ vault_listening_port }}"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:{{ vault_listening_port }}"
+    volumes:
+      - vault-volume:/vault/file
+      - {{ vault_root_dir}}/vault-config.hcl:/vault/config/vault-config.hcl
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.10
+        aliases:
+          - vault-server
+    command: server
+  vault-client:
+    build: ./vaultbuild
+    depends_on:
+      - vault
+    environment:
+      VAULT_ADDR: "http://vault-server:{{ vault_listening_port }}"
+      GITLAB_URL: "{{ vault_gitlab_url }}"
+      GITLAB_TOKEN: "{{ vault_gitlab_token }}"
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.20
+        aliases:
+          - vault-client      
+networks:
+  vault-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+volumes:
+  vault-volume: {} # runtime data for vault

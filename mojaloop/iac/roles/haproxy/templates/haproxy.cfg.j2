@@ -1,0 +1,26 @@
+defaults
+  timeout connect 5000
+  timeout client 50000
+  timeout server 50000
+frontend seaweed
+  bind :{{ seaweedfs_s3_listening_port }}
+  default_backend seaweed
+
+frontend nexus
+  bind :{{ nexus_docker_repo_listening_port }}
+  default_backend nexus
+
+frontend vault
+  mode tcp
+  bind :{{ local_vault_listening_port }}
+  default_backend vault
+
+backend seaweed
+  server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}
+
+backend nexus
+  server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
+
+backend vault
+  mode tcp
+  server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none

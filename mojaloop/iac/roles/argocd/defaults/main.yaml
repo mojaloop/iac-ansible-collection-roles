@@ -3,7 +3,11 @@ argocd_lovely_plugin_version: "0.18.0"
 repo_url: "https://localhost/repo.git"
 repo_password: mypassword
 repo_username: user
-external_secrets_version: "0.8.2"
+external_secrets_version: "0.9.0"
 external_secrets_namespace: "external-secrets"
+tenant_vault_token: token
+tenant_vault_server_url: "https://tenantvault"
 kubeconfig_location: "/etc/rancher/k3s/k3s.yaml"
 root_app_path: "infra/app-yamls"
+netmaker_image_version: "0.18.7"
+wireguard_node_port: "31821"
