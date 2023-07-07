@@ -9,6 +9,7 @@
     url: https://github.com/alexellis/k3sup/releases/download/{{ k3sup_version }}/k3sup
     dest: /usr/local/bin
     mode: 0700
+    timeout: 120
 
 - name: Update apt cache
   shell: apt update
