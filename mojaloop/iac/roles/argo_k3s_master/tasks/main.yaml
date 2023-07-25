@@ -4,7 +4,7 @@
     ssh_key: "/root/.ssh/{{ base_domain }}.key"
     user: "{{ ansible_ssh_user }}"
     ip: "{{ ansible_default_ipv4.address }}"
-    k3s_extra_args: "'--resolv-conf /run/systemd/resolve/resolv.conf --disable traefik --disable servicelb'"
+    k3s_extra_args: "'--resolv-conf /run/systemd/resolve/resolv.conf --disable traefik --disable servicelb --node-taint CriticalAddonsOnly=true:NoExecute'"
     
 - name: Fetch kubeconfig
   fetch:
