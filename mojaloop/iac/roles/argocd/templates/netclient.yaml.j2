@@ -1,24 +1,52 @@
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: netclient
+  name: netclient-nodeport
+spec:
+  externalTrafficPolicy: Local
+  type: NodePort
+  ports:
+  - port: 31821
+    nodePort: 31821
+    protocol: UDP
+    targetPort: 31821
+    name: wg-iface-31821
+  selector:
+    app: netclient
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: netclient-gateway
+  name: netclient
   labels:
-    app: netclient-gateway
+    app: netclient
 spec:
   selector:
     matchLabels:
-      app: netclient-gateway
+      app: netclient
   template:
     metadata:
       labels:
-        app: netclient-gateway
+        app: netclient
     spec:
       hostNetwork: true
       containers:
       - name: netclient
         image: gravitl/netclient:v{{ netmaker_image_version }}
         env:
+        - name: NETCLIENT_ROAMING
+          value: "no"
+        - name: NETCLIENT_PORT
+          value: "31821"
+        - name: NETCLIENT_IS_STATIC
+          value: "yes"
+        - name: NETCLIENT_ENDPOINT
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
         - name: TOKEN
           valueFrom:
             secretKeyRef:
