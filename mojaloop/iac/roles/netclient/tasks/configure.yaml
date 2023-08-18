@@ -1,17 +1,10 @@
-- name: Wait netmaker api server to respond
-  uri:
-    url: https://{{ netmaker_api_host }}/api/networks
-    method: GET
-    headers:
-      Authorization: Bearer {{ netmaker_master_key }}
+- name: Get netclient list output
+  shell: "netclient list"
   register: _result
-  until: _result.status == 200
-  retries: 30
-  delay: 10 # Every 10 seconds
 ##get networks from netclient command line netclient list, loop over networks with nodeid
 - name: Add egress gw
   uri:
-    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.0 }}/{{ item.1 }}/creategateway
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}/creategateway
     method: POST
     headers:
       Content-Type: application/json
@@ -19,6 +12,4 @@
     body: "{{ lookup('template', 'creategw.json.j2') }}"
     body_format: json
     status_code: [200, 400]
-  loop: "{{ netmaker_networks }}"
-  loop_control:
-    index_var: ipindex
+  loop: "{{ _result.stdout }}"
