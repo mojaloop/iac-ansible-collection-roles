@@ -44,7 +44,7 @@ spec:
 
   secretStoreRef:
     kind: ClusterSecretStore
-    name: gitlab-secret-store
+    name: tenant-vault-secret-store
 
   target:
     name: netclient-token-secret # Name for the secret to be created on the cluster
@@ -53,4 +53,5 @@ spec:
   data:
     - secretKey: TOKEN # Key given to the secret to be created on the cluster
       remoteRef: 
-        key: NETMAKER_OPS_TOKEN
+        key: {{ cluster_name }}/netmaker_env_token
+        property: value
