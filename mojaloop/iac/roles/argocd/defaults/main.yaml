@@ -11,3 +11,4 @@ kubeconfig_location: "/etc/rancher/k3s/k3s.yaml"
 root_app_path: "infra/app-yamls"
 netmaker_image_version: "0.18.7"
 wireguard_node_port: "31821"
+cluster_name: envname
