@@ -1,0 +1,15 @@
+- name: Get netclient list output
+  shell: "netclient list"
+  register: _result
+##get networks from netclient command line netclient list, loop over networks with nodeid
+- name: Add egress gw
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}/creategateway
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    body: "{{ lookup('template', 'creategw.json.j2') }}"
+    body_format: json
+    status_code: [200, 400]
+  loop: "{{ _result.stdout }}"
