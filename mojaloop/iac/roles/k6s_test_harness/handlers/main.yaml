@@ -1,0 +1,4 @@
+- name: Restart k6s
+  systemd:
+    name: "k6s"
+    state: restarted

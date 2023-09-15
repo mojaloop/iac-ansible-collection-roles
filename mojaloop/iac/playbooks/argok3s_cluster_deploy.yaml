@@ -22,3 +22,6 @@
   roles:
     - geerlingguy.k8s.helm
     - mojaloop.iac.argocd
+
+- name: Create Test Harness
+  import_playbook: test_harness_deploy.yaml

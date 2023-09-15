@@ -1,0 +1,5 @@
+- hosts: testharness
+  become: true
+  roles:
+    - mojaloop.iac.docker
+    - mojaloop.iac.k3s_test_harness
