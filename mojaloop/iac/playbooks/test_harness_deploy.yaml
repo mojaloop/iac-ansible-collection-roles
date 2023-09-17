@@ -2,4 +2,4 @@
   become: true
   roles:
     - mojaloop.iac.docker
-    - mojaloop.iac.k3s_test_harness
+    - mojaloop.iac.k6s_test_harness
