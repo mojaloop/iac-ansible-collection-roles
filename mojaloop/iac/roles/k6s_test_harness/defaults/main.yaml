@@ -5,3 +5,4 @@ k6s_repo_version: main
 k6s_repo_url: https://github.com/mojaloop/ml-core-test-harness.git
 k6s_repo_name: ml-core-test-harness
 internal_interop_switch_fqdn: https://int.switch.com
+k6s_callback_fqdn: test-harness.switch.com
