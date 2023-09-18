@@ -13,14 +13,14 @@
 - name: "clone k6s repo"
   ansible.builtin.git:
     repo: "{{ k6s_repo_url }}"
-    dest: "{{ k6s_root_dir}}"
+    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}"
     version: "{{ k6s_repo_version }}"
   notify: Restart k6s
 
 - name: "deploy env file"
   template:
     src: "../templates/.env.j2"
-    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}/.env"
+    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}/.iac_env"
   notify: Restart k6s
 
 - name: "set to auto restart"
