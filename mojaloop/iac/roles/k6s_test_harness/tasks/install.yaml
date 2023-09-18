@@ -17,10 +17,10 @@
     version: "{{ k6s_repo_version }}"
   notify: Restart k6s
 
-- name: "deploy systemd service"
+- name: "deploy env file"
   template:
-    src: "../templates/env.j2"
-    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}"
+    src: "../templates/.env.j2"
+    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}/.env"
   notify: Restart k6s
 
 - name: "set to auto restart"
