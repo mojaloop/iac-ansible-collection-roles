@@ -9,13 +9,13 @@
   become: true
   roles:
     - mojaloop.iac.k3s_common
-    - mojaloop.iac.argo_k3s_master
+    - mojaloop.iac.k3s_master
 
 - hosts: agent
   become: true
   roles:
     - mojaloop.iac.k3s_common
-    - mojaloop.iac.argo_k3s_worker
+    - mojaloop.iac.k3s_worker
 
 - hosts: master
   become: true
