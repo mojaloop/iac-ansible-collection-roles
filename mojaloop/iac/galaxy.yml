@@ -45,7 +45,6 @@ dependencies:
   "community.kubernetes": "=0.9.0"
   "geerlingguy.k8s": "=0.10.0"
   "amazon.aws": "=5.2.0"
-  "istvano.microk8s": "=1.27.1"
 
 # The URL of the originating SCM repository
 repository: http://example.com/repository
