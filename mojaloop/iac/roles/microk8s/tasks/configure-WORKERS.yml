@@ -1,0 +1,47 @@
+---
+
+- name: Find the designated host
+  set_fact:
+    designated_host: '{{ (groups[microk8s_group_HA]|sort)[0] }}'
+
+- block:
+  - name: Waiting for microk8s to be ready on microk8s host master
+    command: "microk8s status --wait-ready"
+    delegate_to: "{{ designated_host }}"
+    delegate_facts: true
+    changed_when: false
+
+  - name: Get the microk8s join command from the microk8s master
+    shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex_HA }}'"
+    delegate_to: "{{ designated_host }}"
+    delegate_facts: true
+    changed_when: false
+    register: microk8s_join_command
+
+  - name: Get microk8s cluster nodes
+    command: "microk8s kubectl get node"
+    delegate_to: "{{ designated_host }}"
+    delegate_facts: true
+    changed_when: false
+    register: microk8s_cluster_node
+
+  - name: Waiting for microk8s to be ready on microk8s worker node
+    command: "microk8s status --wait-ready"
+    changed_when: false
+    register: status_command_output
+    failed_when:
+      - "'This MicroK8s deployment is acting as a node in a cluster.' not in status_command_output.stdout_lines"
+      - status_command_output.rc > 0
+
+  - name: Set the microk8s join command on the microk8s node
+    command: "{{ microk8s_join_command.stdout }} --worker"
+    when: microk8s_cluster_node.stdout.find(inventory_hostname) == -1
+    register: join_command_output
+    failed_when:
+      - "'already known to dqlite' not in join_command_output.stdout"
+      - join_command_output.rc > 0
+
+  become: yes
+  when:
+    - inventory_hostname != designated_host
+    - inventory_hostname in groups[microk8s_group_WORKERS]
