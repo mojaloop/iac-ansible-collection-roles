@@ -3,8 +3,9 @@ Description=k6s-monitoring docker-compose unit
 After=docker.service
 
 [Service]
-ExecStart=/usr/bin/docker-compose -f {{ k6s_root_dir }}/{{ k6s_repo_name }}/docker-compose-monitoring.yml up
-ExecStop=/usr/bin/docker-compose -f {{ k6s_root_dir }}/{{ k6s_repo_name }}/docker-compose-monitoring.yml down
+WorkingDirectory={{ k6s_root_dir }}/{{ k6s_repo_name }}
+ExecStart=/usr/bin/docker-compose -f docker-compose-monitoring.yml up
+ExecStop=/usr/bin/docker-compose -f docker-compose-monitoring.yml down
 
 [Install]
 WantedBy=docker.service
