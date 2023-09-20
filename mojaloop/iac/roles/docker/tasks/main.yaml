@@ -5,7 +5,7 @@
   package:
     name:
       - docker.io
-      - docker-compose
+      - docker-compose={{ docker_compose_version }}
 
 - name: enable service docker and ensure it is started
   service:
