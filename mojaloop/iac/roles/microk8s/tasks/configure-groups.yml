@@ -26,7 +26,7 @@
 - name: create kubectl config
   become: yes
   changed_when: true
-  shell: microk8s config > eval echo "~${{ user }}/.kube/config"
+  shell: microk8s config > eval echo "~{{ user }}/.kube/config"
   args:
     executable: /bin/bash
   with_items: "{{ users }}"
