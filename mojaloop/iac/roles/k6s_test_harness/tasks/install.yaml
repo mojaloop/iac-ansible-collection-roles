@@ -1,0 +1,31 @@
+- name: "create directory for project"
+  file:
+    path: "{{ k6s_root_dir }}"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/k6s.service.j2"
+    dest: "/etc/systemd/system/k6s.service"
+  notify: Restart k6s
+
+- name: "clone k6s repo"
+  ansible.builtin.git:
+    repo: "{{ k6s_repo_url }}"
+    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}"
+    version: "{{ k6s_repo_version }}"
+  notify: Restart k6s
+
+- name: "deploy env file"
+  template:
+    src: "../templates/.env.j2"
+    dest: "{{ k6s_root_dir}}/{{ k6s_repo_name }}/.iac_env"
+  notify: Restart k6s
+
+- name: "set to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "k6s"
+    state: started

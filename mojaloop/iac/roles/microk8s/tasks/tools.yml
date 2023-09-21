@@ -1,0 +1,11 @@
+- name: install kustomize
+  get_url:
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
+    dest: /usr/local/bin/kustomize
+    mode: 0700
+
+- name: Fetch kubeconfig
+  fetch:
+    src: "/root/.kube/config"
+    dest: "{{ kubeconfig_local_location }}/kubeconfig"
+    flat: yes

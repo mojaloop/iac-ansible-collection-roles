@@ -5,4 +5,4 @@ set -e
 [ -x /usr/bin/docker ] || exit 0
 
 # Clear the cache of Docker images and volumes
-/usr/bin/docker system prune -af
+/usr/bin/docker system prune -af --volumes

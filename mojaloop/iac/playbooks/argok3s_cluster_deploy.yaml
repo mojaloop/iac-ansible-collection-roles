@@ -9,16 +9,19 @@
   become: true
   roles:
     - mojaloop.iac.k3s_common
-    - mojaloop.iac.argo_k3s_master
+    - mojaloop.iac.k3s_master
 
 - hosts: agent
   become: true
   roles:
     - mojaloop.iac.k3s_common
-    - mojaloop.iac.argo_k3s_worker
+    - mojaloop.iac.k3s_worker
 
 - hosts: master
   become: true
   roles:
     - geerlingguy.k8s.helm
     - mojaloop.iac.argocd
+
+- name: Create Test Harness
+  import_playbook: test_harness_deploy.yaml

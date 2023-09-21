@@ -5,7 +5,7 @@
   package:
     name:
       - docker.io
-      - docker-compose 
+      - docker-compose
 
 - name: enable service docker and ensure it is started
   service:
@@ -20,12 +20,11 @@
     enabled: yes
 
 - name: Add cron job to keep the server clean
-  copy:
-    dest: /etc/cron.weekly/docker-system-prune
-    src: docker-system-prune
-    group: root
-    mode: u=rwx,go=rx
-    owner: root
+  ansible.builtin.cron:
+    name: "docker-clean"
+    state: present
+    special_time: "weekly"
+    job: "/usr/bin/docker system prune -af --volumes"
 
 - name: List Linux block devices
   ansible.builtin.shell:
@@ -43,7 +42,7 @@
     fstype: ext4
     dev: "{{ ebs_volume_device_name }}"
   when: docker_extra_vol_mount
-  
+
 - name: Create a volume
   community.docker.docker_volume:
     name: "{{ docker_extra_volume_name }}"

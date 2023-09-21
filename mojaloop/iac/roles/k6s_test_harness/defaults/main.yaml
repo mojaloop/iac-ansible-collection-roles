@@ -1,0 +1,8 @@
+k6s_root_dir: /root/k6s
+docker_extra_volume_name: docker-extra
+docker_extra_vol_mount: false
+k6s_repo_version: main
+k6s_repo_url: https://github.com/mojaloop/ml-core-test-harness.git
+k6s_repo_name: ml-core-test-harness
+internal_interop_switch_fqdn: https://int.switch.com
+k6s_callback_fqdn: test-harness.switch.com
