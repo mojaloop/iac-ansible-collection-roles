@@ -62,6 +62,7 @@ microk8s_group_WORKERS: "microk8s_WORKERS"
 # option to add workers hostgroup memembers to hostfile
 add_workers_to_hostfile: false
 # for setting up custom certificate request.  Set to template name to enable
-#microk8s_csr_template: null
+microk8s_csr_template: csr.conf.template.j2
 kustomize_version: "3.2.3"
 kubeconfig_local_location: "/tmp"
+kubeapi_loadbalancer_fqdn: nlb.lb.com
