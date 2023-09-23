@@ -17,10 +17,16 @@
     suffix: values
   register: extsectmpvalues
 
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }"
+    state: directory
+    recurse: yes
+
 - name: copy kubeconfig
   copy:
     src: "{{ kubeconfig_local_location }}/kubeconfig"
-    dest: "{{ kubeconfig_location }}"
+    dest: "{{ kubeconfig_location }}/kubeconfig"
 
 - name: Upload ext secrets bootstrap files
   template:
@@ -48,10 +54,10 @@
 - name: Install external-secrets
   shell: |
     helm repo add external-secrets https://charts.external-secrets.io
-    helm --kubeconfig {{ kubeconfig_location }} upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
 
 - name: Try clustersecretstore create until successful
-  shell: kubectl --kubeconfig {{ kubeconfig_location }} apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
   register: clustersecretstore
   until: clustersecretstore is not failed
   retries: 12
@@ -60,5 +66,5 @@
 - name: Install ArgoCD
   shell: |
     kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }} apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }} apply -f {{ argotmpvalues.path }}/argo-root-app.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argo-root-app.yaml

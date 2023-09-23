@@ -7,7 +7,7 @@ external_secrets_version: "0.9.0"
 external_secrets_namespace: "external-secrets"
 tenant_vault_token: token
 tenant_vault_server_url: "https://tenantvault"
-kubeconfig_location: "/root/.kube/config"
+kubeconfig_location: "/root/.kube"
 root_app_path: "infra/app-yamls"
 netmaker_image_version: "0.18.7"
 wireguard_node_port: "31821"
