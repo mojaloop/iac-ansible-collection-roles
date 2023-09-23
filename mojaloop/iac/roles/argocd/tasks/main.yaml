@@ -1,4 +1,10 @@
 #Create a temporary directory for storing values files or other config
+- name: install kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/${kubectl_version}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0700
+
 - name: install kustomize
   get_url:
     url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
