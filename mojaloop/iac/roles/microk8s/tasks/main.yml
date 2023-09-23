@@ -16,6 +16,3 @@
 - name: configure workers
   include_tasks: configure-WORKERS.yml
   when: "groups[microk8s_group_WORKERS] is defined and groups[microk8s_group_WORKERS]|length>0"
-
-- name: install tools
-  include_tasks: tools.yml
