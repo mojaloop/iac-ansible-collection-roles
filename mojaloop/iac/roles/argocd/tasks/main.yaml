@@ -19,7 +19,7 @@
 
 - name: "create directory for kubeconfig"
   file:
-    path: "{{ kubeconfig_location }"
+    path: "{{ kubeconfig_location }}"
     state: directory
     recurse: yes
 
