@@ -5,7 +5,7 @@
     user: "{{ ansible_ssh_user }}"
     ip: "{{ ansible_default_ipv4.address }}"
     k3s_extra_args: "'--resolv-conf /run/systemd/resolve/resolv.conf --disable traefik --disable servicelb --node-taint CriticalAddonsOnly=true:NoExecute'"
-    
+
 - name: Fetch kubeconfig
   fetch:
     src: "/home/{{ ansible_ssh_user }}/kubeconfig"
@@ -23,9 +23,3 @@
   retries: 6
   delay: 15
   until: http_api_result is not failed
-
-- name: install kustomize
-  get_url:
-    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
-    dest: /usr/local/bin/kustomize
-    mode: 0700

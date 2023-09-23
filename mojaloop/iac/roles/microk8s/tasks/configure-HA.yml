@@ -1,5 +1,4 @@
 ---
-
 - name: Enumerate all cluster HA hosts within the hosts file
   become: yes
   blockinfile:
@@ -23,40 +22,48 @@
 
 - name: Find the designated host
   set_fact:
-    designated_host: '{{ (groups[microk8s_group_HA]|sort)[0] }}'
+    designated_host: "{{ (groups[microk8s_group_HA]|sort)[0] }}"
 
 - block:
-  - name: Waiting for microk8s to be ready on microk8s host master
-    command: "microk8s status --wait-ready"
-    delegate_to: "{{ designated_host }}"
-    delegate_facts: true
-    changed_when: false
+    - name: Waiting for microk8s to be ready on microk8s host master
+      command: "microk8s status --wait-ready"
+      delegate_to: "{{ designated_host }}"
+      delegate_facts: true
+      changed_when: false
 
-  - name: Get the microk8s join command from the microk8s master
-    shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex_HA }}'"
-    delegate_to: "{{ designated_host }}"
-    delegate_facts: true
-    changed_when: false
-    register: microk8s_join_command
+    - name: Get the microk8s join command from the microk8s master
+      shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex_HA }}'"
+      delegate_to: "{{ designated_host }}"
+      delegate_facts: true
+      changed_when: false
+      register: microk8s_join_command
 
-  - name: Get microk8s cluster nodes
-    command: "microk8s kubectl get node"
-    delegate_to: "{{ designated_host }}"
-    delegate_facts: true
-    changed_when: false
-    register: microk8s_cluster_node
+    - name: Get microk8s cluster nodes
+      command: "microk8s kubectl get node"
+      delegate_to: "{{ designated_host }}"
+      delegate_facts: true
+      changed_when: false
+      register: microk8s_cluster_node
 
-  - name: Waiting for microk8s to be ready on microk8s host node
-    command: "microk8s status --wait-ready"
-    changed_when: false
+    - name: Waiting for microk8s to be ready on microk8s host node
+      command: "microk8s status --wait-ready"
+      changed_when: false
 
-  - name: Set the microk8s join command on the microk8s node
-    command: "{{ microk8s_join_command.stdout }}"
-    when: microk8s_cluster_node.stdout.find(inventory_hostname) == -1
-    register: join_command_output
-    failed_when:
-      - "'already known to dqlite' not in join_command_output.stdout"
-      - join_command_output.rc > 0
+    - name: Fetch kubeconfig
+      fetch:
+        src: "/root/.kube/config"
+        dest: "{{ kubeconfig_local_location }}/kubeconfig"
+        flat: yes
+      delegate_to: "{{ designated_host }}"
+      delegate_facts: true
+
+    - name: Set the microk8s join command on the microk8s node
+      command: "{{ microk8s_join_command.stdout }}"
+      when: microk8s_cluster_node.stdout.find(inventory_hostname) == -1
+      register: join_command_output
+      failed_when:
+        - "'already known to dqlite' not in join_command_output.stdout"
+        - join_command_output.rc > 0
 
   become: yes
   when:

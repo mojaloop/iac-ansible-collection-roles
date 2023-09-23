@@ -1,4 +1,10 @@
 #Create a temporary directory for storing values files or other config
+- name: install kustomize
+  get_url:
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
+    dest: /usr/local/bin/kustomize
+    mode: 0700
+
 - name: Create temporary directory for argo boot
   tempfile:
     state: directory
@@ -10,6 +16,11 @@
     state: directory
     suffix: values
   register: extsectmpvalues
+
+- name: copy kubeconfig
+  copy:
+    src: "{{ kubeconfig_local_location }}/kubeconfig"
+    dest: "{{ kubeconfig_location }}"
 
 - name: Upload ext secrets bootstrap files
   template:

@@ -17,7 +17,7 @@
     - mojaloop.iac.k3s_common
     - mojaloop.iac.k3s_worker
 
-- hosts: master
+- hosts: bastion
   become: true
   roles:
     - geerlingguy.k8s.helm

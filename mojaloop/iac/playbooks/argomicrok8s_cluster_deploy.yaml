@@ -51,13 +51,11 @@
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
 
-- hosts: master
+- hosts: bastion
   become: true
   roles:
     - geerlingguy.k8s.helm
-    - role: mojaloop.iac.argocd
-      vars:
-        kubeconfig_location: "/root/.kube/config"
+    - mojaloop.iac.argocd
 
 - name: Create Test Harness
   import_playbook: test_harness_deploy.yaml

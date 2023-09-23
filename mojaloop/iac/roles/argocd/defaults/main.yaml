@@ -7,8 +7,10 @@ external_secrets_version: "0.9.0"
 external_secrets_namespace: "external-secrets"
 tenant_vault_token: token
 tenant_vault_server_url: "https://tenantvault"
-kubeconfig_location: "/etc/rancher/k3s/k3s.yaml"
+kubeconfig_location: "/root/.kube/config"
 root_app_path: "infra/app-yamls"
 netmaker_image_version: "0.18.7"
 wireguard_node_port: "31821"
 cluster_name: envname
+kubeconfig_local_location: "/tmp"
+kustomize_version: "3.2.3"
