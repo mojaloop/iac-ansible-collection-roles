@@ -3,4 +3,4 @@
 
 - name: Refresh certs
   become: yes
-  command: microk8s refresh-certs server.crt
+  command: microk8s refresh-certs --cert server.crt
