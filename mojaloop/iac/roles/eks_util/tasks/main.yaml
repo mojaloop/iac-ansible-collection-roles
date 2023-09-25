@@ -1,0 +1,5 @@
+- name: copy kubeconfig
+  copy:
+    content: "{{ kubeconfig_content }}"
+    dest: "{{ kubeconfig_local_location }}/kubeconfig"
+  when: kubeconfig_content is not None

@@ -1,0 +1,12 @@
+- hosts: bastion
+  become: true
+  roles:
+    - mojaloop.iac.bastion_common
+    - mojaloop.iac.netclient
+    - mojaloop.iac.haproxy
+    - mojaloop.iac.eks_util
+    - geerlingguy.k8s.helm
+    - mojaloop.iac.argocd
+
+- name: Create Test Harness
+  import_playbook: test_harness_deploy.yaml
