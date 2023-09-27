@@ -1,5 +1,14 @@
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_local_location }}"
+    state: directory
+    recurse: yes
+  when: kubeconfig_content is defined
+  delegate_to: localhost
+
 - name: copy kubeconfig
   copy:
     content: "{{ kubeconfig_content }}"
     dest: "{{ kubeconfig_local_location }}/kubeconfig"
   when: kubeconfig_content is defined
+  delegate_to: localhost
