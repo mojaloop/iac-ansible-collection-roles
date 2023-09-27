@@ -63,6 +63,7 @@
     dest: /var/snap/microk8s/current/certs/csr.conf.template
     mode: 0644
   notify:
+    - Wait for microk8s to be ready before handler
     - Refresh certs
 
 - name: Create folder for microk8s certificates
