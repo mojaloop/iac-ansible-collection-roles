@@ -1,0 +1,17 @@
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_local_location }}"
+    state: directory
+    recurse: yes
+  when: kubeconfig_content is defined
+  delegate_to: localhost
+
+- name: "rm kubefig for aws profile"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: absent
+
+- name: "rm directory for aws profile"
+  file:
+    path: "/root/.aws"
+    state: absent

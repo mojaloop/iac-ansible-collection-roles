@@ -12,3 +12,19 @@
     dest: "{{ kubeconfig_local_location }}/kubeconfig"
   when: kubeconfig_content is defined
   delegate_to: localhost
+
+- name: Install dependencies
+  package:
+    name:
+      - awscli
+
+- name: "create directory for aws profile"
+  file:
+    path: "/root/.aws"
+    state: directory
+    recurse: yes
+
+- name: "copy credentials file"
+  template:
+    src: "../templates/credentials.j2"
+    dest: "/root/.aws/credentials"
