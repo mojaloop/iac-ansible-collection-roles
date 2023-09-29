@@ -1,7 +1,12 @@
-- name: Install dependencies
-  package:
-    name:
-      - awscli
+- name: download awscli
+  ansible.builtin.unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ awscli_version }}.zip
+    dest: /tmp/aws
+    remote_src: yes
+
+- name: install aws
+  shell: |
+    /tmp/aws/aws/install
 
 - name: "create directory for aws profile"
   file:
