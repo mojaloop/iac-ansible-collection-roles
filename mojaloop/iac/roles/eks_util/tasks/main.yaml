@@ -1,11 +1,3 @@
-- name: "create directory for kubeconfig"
-  file:
-    path: "{{ kubeconfig_local_location }}"
-    state: directory
-    recurse: yes
-  when: kubeconfig_content is defined
-  delegate_to: localhost
-
 - name: Install dependencies
   package:
     name:
@@ -22,12 +14,18 @@
     src: "../templates/credentials.j2"
     dest: "/root/.aws/credentials"
 
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: directory
+    recurse: yes
+
 - name: create kubeconfig
   shell: |
-    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
 - name: Fetch kubeconfig
   fetch:
-    src: "{{ kubeconfig_location }}"
+    src: "{{ kubeconfig_location }}/kubeconfig"
     dest: "{{ kubeconfig_local_location }}/kubeconfig"
     flat: yes
