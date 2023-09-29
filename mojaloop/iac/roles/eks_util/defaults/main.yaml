@@ -1,1 +1,2 @@
 kubeconfig_local_location: "/tmp"
+kubeconfig_location: "/root/.kube"
