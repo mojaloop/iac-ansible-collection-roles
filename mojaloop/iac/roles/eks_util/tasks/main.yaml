@@ -1,3 +1,8 @@
+- name: install dependencies
+  package:
+    name:
+      - unzip
+
 - name: download awscli
   ansible.builtin.unarchive:
     src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ awscli_version }}.zip
