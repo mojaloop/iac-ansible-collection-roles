@@ -11,7 +11,7 @@
 
 - name: install aws
   shell: |
-    /tmp/aws/install
+    /tmp/aws/install --update
 
 - name: "create directory for aws profile"
   file:
