@@ -36,7 +36,7 @@
 
 - name: Save configmap
   copy:
-    content: "{{ eks_post_install_config_map }}"
+    content: "{% raw %}{{ eks_post_install_config_map }}{% endraw %}"
     dest: /tmp/configmap.yaml
 
 - name: install kubectl
