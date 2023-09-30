@@ -34,11 +34,6 @@
   shell: |
     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
-- name: Save configmap
-  copy:
-    content: "{% raw %}{{ eks_post_install_config_map }}{% endraw %}"
-    dest: /tmp/configmap.yaml
-
 - name: install kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
@@ -47,7 +42,9 @@
 
 - name: install nodegroup configmap
   shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f - <<EOF
+    {{ eks_post_install_config_map }}
+    EOF
 
 - name: Fetch kubeconfig
   fetch:
