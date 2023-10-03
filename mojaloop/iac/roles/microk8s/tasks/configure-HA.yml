@@ -1,6 +1,6 @@
 ---
 - name: Enumerate all cluster HA hosts within the hosts file
-  become: yes
+  become: true
   blockinfile:
     dest: /etc/hosts
     marker: "# {mark} ANSIBLE MANAGED: microk8s HA Cluster Hosts"
@@ -10,7 +10,7 @@
       {% endfor %}
 
 - name: Enumerate all cluster worker hosts within the hosts file
-  become: yes
+  become: true
   blockinfile:
     dest: /etc/hosts
     marker: "# {mark} ANSIBLE MANAGED: microk8s WORKER Cluster Hosts"
@@ -65,7 +65,7 @@
         - "'already known to dqlite' not in join_command_output.stdout"
         - join_command_output.rc > 0
 
-  become: yes
+  become: true
   when:
     - inventory_hostname != designated_host
     - inventory_hostname in groups[microk8s_group_HA]

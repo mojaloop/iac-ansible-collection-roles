@@ -1,0 +1,56 @@
+- name: install dependencies
+  package:
+    name:
+      - unzip
+
+- name: download awscli
+  ansible.builtin.unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ awscli_version }}.zip
+    dest: /tmp
+    remote_src: yes
+
+- name: install aws
+  shell: |
+    /tmp/aws/install --update
+
+- name: "create directory for aws profile"
+  file:
+    path: "/root/.aws"
+    state: directory
+    recurse: yes
+
+- name: "copy credentials file"
+  template:
+    src: "../templates/credentials.j2"
+    dest: "/root/.aws/credentials"
+
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: directory
+    recurse: yes
+
+- name: create kubeconfig
+  shell: |
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+
+- name: install kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0700
+
+- name: Save configmap
+  copy:
+    content: "{{ eks_post_install_config_map }}"
+    dest: /tmp/configmap.yaml
+
+- name: install nodegroup configmap
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+
+- name: Fetch kubeconfig
+  fetch:
+    src: "{{ kubeconfig_location }}/kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/kubeconfig"
+    flat: yes
