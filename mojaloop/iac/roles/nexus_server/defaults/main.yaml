@@ -1,16 +1,12 @@
 container_name: nexus
-container_image: sonatype/nexus3
+container_image: sonatype/nexus3:3.56.0
 volume_name: nexus-data
 new_admin_pw: crazypassw0rd2
 proxy_repo_name: base-docker
 group_repo_name: docker-group
 nexus_docker_repo_listening_port: 8083
-docker_group_member_list: [
-  "base-docker",
-  "ghcr.io-proxy",
-  "quay.io-proxy",
-  "k8s.gcr.io"
-]
+docker_group_member_list:
+  ["base-docker", "ghcr.io-proxy", "quay.io-proxy", "k8s.gcr.io"]
 docker_proxy_repos:
   - name: "base-docker"
     url: "https://registry-1.docker.io"
