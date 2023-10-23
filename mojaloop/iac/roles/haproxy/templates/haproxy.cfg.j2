@@ -2,18 +2,86 @@ defaults
   timeout connect 5000
   timeout client 50000
   timeout server 50000
+
+{% if enable_ingress_k8s_lb %}
+frontend internal-k8s-tls
+  mode tcp
+  bind {{ haproxy_internal_ip }}:443
+  default_backend internal-k8s-tls
+
+frontend external-k8s-tls
+  mode tcp
+  bind {{ haproxy_external_ip }}:443
+  default_backend external-k8s-tls
+
+frontend internal-k8s
+  mode tcp
+  bind {{ haproxy_internal_ip }}:80
+  default_backend internal-k8s
+
+frontend external-k8s
+  mode tcp
+  bind {{ haproxy_external_ip }}:80
+  default_backend external-k8s
+
+frontend internal-kubeapi
+  mode tcp
+  bind {{ haproxy_internal_ip }}:6443
+  default_backend internal-kubeapi
+
+{% endif %}
+
 frontend seaweed
-  bind :{{ seaweedfs_s3_listening_port }}
+  bind {{ haproxy_internal_ip }}:{{ seaweedfs_s3_listening_port }}
   default_backend seaweed
 
 frontend nexus
-  bind :{{ nexus_docker_repo_listening_port }}
+  bind {{ haproxy_internal_ip }}:{{ nexus_docker_repo_listening_port }}
   default_backend nexus
 
 frontend vault
   mode tcp
-  bind :{{ local_vault_listening_port }}
+  bind {{ haproxy_internal_ip }}:{{ local_vault_listening_port }}
   default_backend vault
+
+% if enable_ingress_k8s_lb %}
+backend internal-k8s-tls
+  mode tcp
+  balance roundrobin
+  option ssl-hello-chk
+  {% for host in groups[haproxy_traffic_nodes] %}
+  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_internal_https_port }} check port {{ target_group_internal_health_port }}
+  {% endfor %}
+backend external-k8s-tls
+  mode tcp
+  balance roundrobin
+  option ssl-hello-chk
+  {% for host in groups[haproxy_traffic_nodes] %}
+  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_external_https_port }} check port {{ target_group_external_health_port }}
+  {% endfor %}
+
+backend internal-k8s
+  mode tcp
+  balance roundrobin
+  {% for host in groups[haproxy_traffic_nodes] %}
+  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_internal_http_port }} check port {{ target_group_internal_health_port }}
+  {% endfor %}
+backend external-k8s
+  mode tcp
+  balance roundrobin
+  {% for host in groups[haproxy_traffic_nodes] %}
+  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_external_http_port }} check port {{ target_group_external_health_port }}
+  {% endfor %}
+
+backend internal-kubeapi
+  mode tcp
+  balance roundrobin
+  {% for host in groups[haproxy_master_nodes] %}
+  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_kubeapi_port }} check port {{ target_group_kubeapi_port }}
+  {% endfor %}
+
+{% endif %}
+
 
 backend seaweed
   server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}
