@@ -50,34 +50,34 @@ backend internal-k8s-tls
   balance roundrobin
   option ssl-hello-chk
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_internal_https_port }} check port {{ target_group_internal_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_https_port }} check port {{ target_group_internal_health_port }}
   {% endfor %}
 backend external-k8s-tls
   mode tcp
   balance roundrobin
   option ssl-hello-chk
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_external_https_port }} check port {{ target_group_external_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_https_port }} check port {{ target_group_external_health_port }}
   {% endfor %}
 
 backend internal-k8s
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_internal_http_port }} check port {{ target_group_internal_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_http_port }} check port {{ target_group_internal_health_port }}
   {% endfor %}
 backend external-k8s
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_external_http_port }} check port {{ target_group_external_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_http_port }} check port {{ target_group_external_health_port }}
   {% endfor %}
 
 backend internal-kubeapi
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_master_nodes"] %}
-  server {{ hostvars[host].ansible_hostname }} {{ hostvars[host].ansible_default_ipv4.address }}:{{ target_group_kubeapi_port }} check port {{ target_group_kubeapi_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_kubeapi_port }} check port {{ target_group_kubeapi_port }}
   {% endfor %}
 
 {% endif %}
