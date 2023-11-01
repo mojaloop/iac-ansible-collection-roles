@@ -18,3 +18,4 @@ target_group_external_http_port: 32080
 target_group_kubeapi_port: 6443
 haproxy_external_ip: 0.0.0.0
 haproxy_internal_ip: 0.0.0.0
+kubeapi_port: 6443

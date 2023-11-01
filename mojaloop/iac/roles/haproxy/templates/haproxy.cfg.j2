@@ -18,7 +18,7 @@ frontend internal-k8s
 
 frontend internal-kubeapi
   mode tcp
-  bind {{ haproxy_internal_ip }}:6443
+  bind {{ haproxy_internal_ip }}:{{ kubeapi_port }}
   default_backend internal-kubeapi
 
 {% endif %}
