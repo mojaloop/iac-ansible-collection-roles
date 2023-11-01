@@ -44,7 +44,7 @@ frontend vault
   bind {{ haproxy_internal_ip }}:{{ local_vault_listening_port }}
   default_backend vault
 
-% if enable_ingress_k8s_lb %}
+{% if enable_ingress_k8s_lb %}
 backend internal-k8s-tls
   mode tcp
   balance roundrobin
