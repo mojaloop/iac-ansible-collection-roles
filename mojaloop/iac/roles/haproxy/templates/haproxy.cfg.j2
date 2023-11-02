@@ -2,7 +2,6 @@ defaults
   timeout connect 5000
   timeout client 50000
   timeout server 50000
-  default-server init-addr none
 
 {% if enable_internal_ingress_k8s_lb %}
 frontend internal-k8s-tls
@@ -61,21 +60,21 @@ backend internal-k8s-tls
   balance roundrobin
   option ssl-hello-chk
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_https_port }} check port {{ target_group_internal_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_https_port }} check port {{ target_group_internal_health_port }} init-addr none
   {% endfor %}
 
 backend internal-k8s
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_http_port }} check port {{ target_group_internal_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_internal_http_port }} check port {{ target_group_internal_health_port }} init-addr none
   {% endfor %}
 
 backend internal-kubeapi
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_master_nodes"] %}
-  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_kubeapi_port }} check port {{ target_group_kubeapi_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_kubeapi_port }} check port {{ target_group_kubeapi_port }} init-addr none
   {% endfor %}
 
 {% endif %}
@@ -86,14 +85,14 @@ backend external-k8s-tls
   balance roundrobin
   option ssl-hello-chk
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_https_port }} check port {{ target_group_external_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_https_port }} check port {{ target_group_external_health_port }} init-addr none
   {% endfor %}
 
 backend external-k8s
   mode tcp
   balance roundrobin
   {% for host in groups["haproxy_traffic_nodes"] %}
-  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_http_port }} check port {{ target_group_external_health_port }}
+  server {{ host }} {{ hostvars[host].ansible_host }}:{{ target_group_external_http_port }} check port {{ target_group_external_health_port }} init-addr none
   {% endfor %}
 
 {% endif %}
