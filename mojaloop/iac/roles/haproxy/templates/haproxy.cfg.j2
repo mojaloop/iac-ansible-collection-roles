@@ -40,16 +40,16 @@ frontend external-k8s
 {% if enable_internal_egress_lb %}
 
 frontend seaweed
-  bind {{ haproxy_internal_ip }}:{{ seaweedfs_s3_listening_port }}
+  bind :{{ seaweedfs_s3_listening_port }}
   default_backend seaweed
 
 frontend nexus
-  bind {{ haproxy_internal_ip }}:{{ nexus_docker_repo_listening_port }}
+  bind :{{ nexus_docker_repo_listening_port }}
   default_backend nexus
 
 frontend vault
   mode tcp
-  bind {{ haproxy_internal_ip }}:{{ local_vault_listening_port }}
+  bind :{{ local_vault_listening_port }}
   default_backend vault
 
 {% endif %}
