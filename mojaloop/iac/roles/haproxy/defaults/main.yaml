@@ -6,16 +6,4 @@ vault_listening_port: 443
 nexus_fqdn: private_ip
 seaweedfs_fqdn: private_ip
 vault_fqdn: private_ip
-enable_internal_ingress_k8s_lb: false
-enable_external_ingress_k8s_lb: false
 enable_internal_egress_lb: true
-target_group_internal_https_port: 31443
-target_group_internal_http_port: 31080
-target_group_internal_health_port: 31081
-target_group_external_health_port: 32081
-target_group_external_https_port: 32443
-target_group_external_http_port: 32080
-target_group_kubeapi_port: 6443
-haproxy_external_ip: 0.0.0.0
-haproxy_internal_ip: 0.0.0.0
-kubeapi_port: 6443
