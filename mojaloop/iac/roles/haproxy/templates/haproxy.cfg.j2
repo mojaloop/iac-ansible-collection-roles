@@ -2,6 +2,7 @@ defaults
   timeout connect 5000
   timeout client 50000
   timeout server 50000
+
 frontend seaweed
   bind :{{ seaweedfs_s3_listening_port }}
   default_backend seaweed
@@ -14,6 +15,7 @@ frontend vault
   mode tcp
   bind :{{ local_vault_listening_port }}
   default_backend vault
+
 
 backend seaweed
   server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}

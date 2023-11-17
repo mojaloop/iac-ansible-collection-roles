@@ -6,3 +6,4 @@ vault_listening_port: 443
 nexus_fqdn: private_ip
 seaweedfs_fqdn: private_ip
 vault_fqdn: private_ip
+enable_internal_egress_lb: true
