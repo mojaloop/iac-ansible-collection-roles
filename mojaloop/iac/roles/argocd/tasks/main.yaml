@@ -34,6 +34,12 @@
     src: "{{ kubeconfig_local_location }}/kubeconfig"
     dest: "{{ kubeconfig_location }}/kubeconfig"
 
+- name: apply node labels
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels) %} {{ labels.key }}={{ labels.value }}{% endfor %}
+  loop: "{{ node_pool_labels }}"
+  when: node_pool_labels is defined
+
 - name: Upload ext secrets bootstrap files
   template:
     src: "templates/{{ item }}.yaml.j2"
