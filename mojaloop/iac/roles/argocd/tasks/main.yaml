@@ -36,7 +36,7 @@
 
 - name: apply node labels
   shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels) %} {{ labels.key }}={{ labels.value }}{% endfor %}
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels, wantlist=True) %} {{ labels.key }}={{ labels.value }}{% endfor %}
   loop: "{{ node_pool_labels }}"
   when: node_pool_labels is defined
 
