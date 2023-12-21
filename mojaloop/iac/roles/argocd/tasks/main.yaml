@@ -62,6 +62,12 @@
     - vault-service-account-etc
     - vault-env
     - netclient
+    - coredns-values
+
+- name: Install coredns
+  shell: |
+    helm repo add coredns https://coredns.github.io/helm
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install coredns coredns/coredns --version {{ coredns_version }} -n kube-system --create-namespace -f {{ argotmpvalues.path }}/coredns-values.yaml
 
 - name: Install external-secrets
   shell: |
