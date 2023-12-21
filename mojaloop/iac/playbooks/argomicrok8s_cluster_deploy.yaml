@@ -14,7 +14,7 @@
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
         microk8s_plugins:
-          dns: false
+          dns: "1.1.1.1"
           ingress: false # Ingress controller for external access
           metrics-server: true # K8s Metrics Server for API access to service metrics
           rbac: true # Role-Based Access Control for authorisation
