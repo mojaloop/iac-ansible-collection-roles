@@ -72,10 +72,10 @@
 - name: Install nodelocal dns cache
   shell: |
     curl -sL https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml \
-    sed -e 's/__PILLAR__DNS__DOMAIN__/cluster.local/g' \
-    sed -e "s/__PILLAR__DNS__SERVER__/$(kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get service --namespace kube-system kube-dns -o jsonpath='{.spec.clusterIP}')/g" \
-    sed -e 's/__PILLAR__LOCAL__DNS__/169.254.20.10/g' \
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f -
+    | sed -e 's/__PILLAR__DNS__DOMAIN__/cluster.local/g' \
+    | sed -e "s/__PILLAR__DNS__SERVER__/$(kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get service --namespace kube-system kube-dns -o jsonpath='{.spec.clusterIP}')/g" \
+    | sed -e 's/__PILLAR__LOCAL__DNS__/169.254.20.10/g' \
+    | kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f -
 
 - name: Install external-secrets
   shell: |
