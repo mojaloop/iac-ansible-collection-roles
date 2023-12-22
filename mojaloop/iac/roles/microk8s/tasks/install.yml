@@ -56,6 +56,14 @@
     - "'helm3' in microk8s_plugins"
     - microk8s_plugins.helm3
 
+- name: Create mirror registry config
+  become: true
+  ansible.builtin.template:
+    src: hosts.toml.j2
+    dest: /var/snap/microk8s/current/args/certs.d/docker.io/hosts.toml
+  when:
+    - enable_registry_mirror
+
 - name: Create custom certificates
   become: true
   ansible.builtin.template:

@@ -65,3 +65,6 @@ add_workers_to_hostfile: false
 microk8s_csr_template: csr.conf.template.j2
 kubeconfig_local_location: "/tmp"
 kubeapi_loadbalancer_fqdn: nlb.lb.com
+enable_registry_mirror: false
+registry_mirror_fqdn: example.com
+registry_mirror_port: 9000
