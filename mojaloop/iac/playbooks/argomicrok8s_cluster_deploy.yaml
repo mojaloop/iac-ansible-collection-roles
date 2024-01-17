@@ -8,6 +8,7 @@
 - hosts: master
   become: true
   roles:
+    - role: mojaloop.iac.k8s_node_common
     - role: mojaloop.iac.microk8s
       vars:
         microk8s_enable_HA: true
@@ -45,6 +46,7 @@
 - hosts: agent
   become: true
   roles:
+    - role: mojaloop.iac.k8s_node_common
     - role: mojaloop.iac.microk8s
       vars:
         microk8s_enable_HA: true

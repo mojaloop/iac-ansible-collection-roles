@@ -8,12 +8,14 @@
 - hosts: master
   become: true
   roles:
+    - mojaloop.iac.k8s_node_common
     - mojaloop.iac.k3s_common
     - mojaloop.iac.k3s_master
 
 - hosts: agent
   become: true
   roles:
+    - mojaloop.iac.k8s_node_common
     - mojaloop.iac.k3s_common
     - mojaloop.iac.k3s_worker
 

@@ -1,0 +1,19 @@
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Configure multipathd to ignore longhorn volumes
+  blockinfile:
+    path: /etc/multipath.conf
+    block: |
+      blacklist {
+        devnode "^sd[a-z0-9]+"
+      }
+  register: multipathconf
+  when: "'multipath-tools' in ansible_facts.packages"
+
+- name: Restart multipathd
+  ansible.builtin.service:
+    name: multipathd
+    state: restarted
+  when: "'multipath-tools' in ansible_facts.packages and multipathconf.changed"
