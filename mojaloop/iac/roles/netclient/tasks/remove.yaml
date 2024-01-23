@@ -1,0 +1,32 @@
+- name: Get netclient list output
+  shell: "netclient list"
+  register: _result
+
+- name: get nodes in network
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
+  loop: "{{ _result.stdout }}"
+
+- name: delete nodes in network
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}
+    method: DELETE
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
+  loop: "{{ _result.stdout }}"
+
+- name: delete network
+  uri:
+    url: https://{{ netmaker_api_host }}/api/network/{{ item.network }}
+    method: DELETE
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
