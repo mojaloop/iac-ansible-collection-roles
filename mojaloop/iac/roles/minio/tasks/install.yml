@@ -1,0 +1,34 @@
+---
+# tasks file for minio
+- name: "Create working directory for minio"
+  file:
+    path: "{{ minio_work_dir }}"
+    state: directory 
+    recurse: yes
+
+- name: "Create nginx.conf"
+  template:
+    src: "../templates/nginx.conf.j2"
+    dest: "{{ minio_work_dir }}/nginx.conf"
+  notify: Restart MinIO service
+
+- name: "Deploy minio docker-compose file"
+  template:
+    src: "../templates/docker-compose.yml.j2"
+    dest: "{{ minio_work_dir }}/docker-compose.yml"
+  notify: Restart MinIO service
+
+- name: "Create systemd service for minio"
+  template:
+    src: "../templates/minio.service.j2"
+    dest: "/etc/systemd/system/minio.service"
+  notify: Restart MinIO service
+
+- name: "Set minio service to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "minio"
+    state: started
+
+

@@ -1,0 +1,6 @@
+---
+# handlers file for minio
+- name: Restart MinIO service
+  systemd:
+    name: "minio"
+    state: restarted

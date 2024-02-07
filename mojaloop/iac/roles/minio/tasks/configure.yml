@@ -1,0 +1,49 @@
+---
+# configure     
+
+- name: "Check if mc is installed"
+  command: which mc
+  changed_when: false
+  failed_when: false
+  register: mc_installed
+
+#- debug:
+#    var: mc_installed
+
+- name: "Install minio client"
+  get_url:
+    url: "{{ minio_client_download_url }}"
+    dest: /usr/local/bin/mc
+    mode: 0700
+  when: not mc_installed 
+      
+- name: "Create minio alias"
+  command: mc alias set infitx-minio http://localhost:9000 {{ minio_root_user }} {{ minio_root_password }} 
+
+- name: "Check if user is created with policy"
+  shell: 'mc admin user info infitx-minio gitlab-user --quiet --json'
+  register: mc_gitlab_user_info
+
+- set_fact:
+    mc_gitlab_access_policy: "{{ mc_gitlab_user_info.stdout | from_json | json_query('policyName') }}"
+
+#- debug:
+#   var: mc_gitlab_access_policy
+
+- name: "Create minio user for gitlab"
+  command: mc admin user add infitx-minio {{ gitlab_minio_user }} {{ gitlab_minio_secret }}
+
+- name: "Copy policy.json"
+  template: 
+    src: policy.json
+    dest: /tmp/policy.json
+    owner: root
+    group: root
+
+- name: "Create access policy for gitlab"
+  command: mc admin policy create infitx-minio gitlab-access-policy /tmp/policy.json
+    
+
+- name: "Attacth policy to gitlab user"
+  command: mc admin policy attach infitx-minio gitlab-access-policy --user {{ gitlab_minio_user }}
+  when: mc_gitlab_access_policy != 'gitlab-access-policy'
