@@ -7,3 +7,4 @@ egress_gateway_cidr: 10.106.0.0/23
 netmaker_api_host: api.netmaker.domain
 netmaker_master_key: crazypassword
 teardown: false
+netmaker_env_network_name: none
