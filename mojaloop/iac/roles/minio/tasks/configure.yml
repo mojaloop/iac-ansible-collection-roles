@@ -10,6 +10,15 @@
 #- debug:
 #    var: mc_installed
 
+- name: Wait minio healthcheck api to respond
+  uri:
+    url: http://localhost:9000/minio/health/live
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 10 # Every 10 seconds
+
 - name: "Install minio client"
   get_url:
     url: "{{ minio_client_download_url }}"
@@ -23,6 +32,7 @@
 - name: "Check if user is created with policy"
   shell: 'mc admin user info infitx-minio gitlab-user --quiet --json'
   register: mc_gitlab_user_info
+  ignore_errors: true  
 
 - set_fact:
     mc_gitlab_access_policy: "{{ mc_gitlab_user_info.stdout | from_json | json_query('policyName') }}"
