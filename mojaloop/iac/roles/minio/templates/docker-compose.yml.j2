@@ -3,13 +3,7 @@ version: '3.7'
 # Settings and configurations that are common for all containers
 x-minio-common: &minio-common
   image: quay.io/minio/minio:{{ minio_image_version }}
-{% if num_minio_nodes == 1 and num_data_drives_per_node == 1 %}
-  command: server --console-address ":9001" /data1/minio
-{% elif num_minio_nodes == 1 and num_data_drives_per_node > 1 %}
-  command: server --console-address ":9001" /data{1...{{ num_data_drives_per_node }}}/minio
-{% else %}
-  command: server --console-address ":9001" http://minio{1...{{ num_minio_nodes }}}/data{1...{{ num_data_drives_per_node }}}
-{% endif %}
+  command: server --console-address ":9001" http://minio{1...4}/data{1...2}
   expose:
     - "9000"
     - "9001"
@@ -22,19 +16,38 @@ x-minio-common: &minio-common
     timeout: 5s
     retries: 5
 
-# limiting the number of minio nodes to 1
-# loop can be used when scaling it up in future
-# also limiting the data drives to 1 , as there is only one docker-extra volume provisioned in docker node
+# starts 4 docker containers running minio server instances.
+# using nginx reverse proxy, load balancing, you can access
+# it through port 9000.
 services:
-{% for i in range(num_minio_nodes) %}
-  minio{{ i + 1}}:
-   <<: *minio-common
-   hostname: minio{{ i + 1 }}
-   volumes:
-{% for j in range(num_data_drives_per_node) %}
-     - data{{ i + 1 }}-{{ j + 1 }}:/data{{ j + 1 }}
-{% endfor %}
-{% endfor %}
+  minio1:
+    <<: *minio-common
+    hostname: minio1
+    volumes:
+      - data1-1:/data1
+      - data1-2:/data2
+
+  minio2:
+    <<: *minio-common
+    hostname: minio2
+    volumes:
+      - data2-1:/data1
+      - data2-2:/data2
+
+  minio3:
+    <<: *minio-common
+    hostname: minio3
+    volumes:
+      - data3-1:/data1
+      - data3-2:/data2
+
+  minio4:
+    <<: *minio-common
+    hostname: minio4
+    volumes:
+      - data4-1:/data1
+      - data4-2:/data2
+
   nginx:
     image: nginx:{{ nginx_image_version }}
     hostname: nginx
@@ -44,16 +57,19 @@ services:
       - "9000:9000"
       - "9001:9001"
     depends_on:
-{% for i in range(num_minio_nodes) %}
-      - minio{{ i + 1 }}
-{% endfor %}
+      - minio1
+      - minio2
+      - minio3
+      - minio4
 
+## By default this config uses default local driver,
+## For custom volumes replace with volume driver configuration.
 volumes:
-#  extra:
-#   external:
-#     name: "{{ docker_extra_volume_name }}"
-{% for i in range(num_minio_nodes) %}
-{% for j in range(num_data_drives_per_node) %}
-  data{{ i + 1 }}-{{ j + 1 }}:
-{% endfor %}
-{% endfor %}
+  data1-1:
+  data1-2:
+  data2-1:
+  data2-2:
+  data3-1:
+  data3-2:
+  data4-1:
+  data4-2:
