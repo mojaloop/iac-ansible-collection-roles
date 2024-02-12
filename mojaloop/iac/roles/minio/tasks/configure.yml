@@ -7,9 +7,6 @@
   failed_when: false
   register: mc_installed
 
-#- debug:
-#    var: mc_installed
-
 - name: Wait minio healthcheck api to respond
   uri:
     url: http://localhost:9000/minio/health/live
@@ -37,8 +34,6 @@
 - set_fact:
     mc_gitlab_access_policy: "{{ mc_gitlab_user_info.stdout | from_json | json_query('policyName') }}"
 
-#- debug:
-#   var: mc_gitlab_access_policy
 
 - name: "Create minio user for gitlab"
   command: mc admin user add infitx-minio {{ gitlab_minio_user }} {{ gitlab_minio_secret }}
