@@ -1,0 +1,10 @@
+[Unit]
+Description=minio docker-compose unit
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker-compose -f {{ minio_work_dir }}/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f {{ minio_work_dir }}/docker-compose.yml down
+
+[Install]
+WantedBy=docker.service
