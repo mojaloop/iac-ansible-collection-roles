@@ -31,12 +31,3 @@
       Authorization: Bearer {{ netmaker_master_key }}
     status_code: [204, 400]
   loop: "{{ _env_nodes.content }}"
-
-- name: delete network
-  uri:
-    url: https://{{ netmaker_api_host }}/api/network/{{ netmaker_env_network_name }}
-    method: DELETE
-    headers:
-      Content-Type: application/json
-      Authorization: Bearer {{ netmaker_master_key }}
-    status_code: [204, 400]
