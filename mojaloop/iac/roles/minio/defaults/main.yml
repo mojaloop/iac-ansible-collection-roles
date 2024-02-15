@@ -6,6 +6,6 @@ minio_root_password: changeme
 minio_image_version: RELEASE.2024-02-04T22-36-13Z
 nginx_image_version: 1.19.2-alpine
 docker_extra_volume_name: docker-extra
-minio_client_download_url: https://dl.min.io/client/mc/release/linux-arm64/mc  #https://dl.min.io/client/mc/release/linux-amd64/mc
+minio_client_download_url: https://dl.min.io/client/mc/release/linux-amd64/mc  #https://dl.min.io/client/mc/release/linux-arm64/mc 
 gitlab_minio_user: gitlab-user
 gitlab_minio_secret: changeme
