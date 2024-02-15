@@ -9,3 +9,5 @@ docker_extra_volume_name: docker-extra
 minio_client_download_url: https://dl.min.io/client/mc/release/linux-amd64/mc  #https://dl.min.io/client/mc/release/linux-arm64/mc 
 gitlab_minio_user: gitlab-user
 gitlab_minio_secret: changeme
+minio_create_bucket_list: ["gitlab-registry", "gitlab-artifacts", "gitlab-external-diffs", "gitlab-lfs-objects", "gitlab-uploads", "gitlab-packages", "gitlab-dependency-proxy", "gitlab-terraform-state", "gitlab-registry", "gitlab-pages"]
+

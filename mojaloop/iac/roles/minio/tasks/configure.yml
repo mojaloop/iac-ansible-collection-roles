@@ -53,3 +53,7 @@
 - name: "Attacth policy to gitlab user"
   command: "{{ minio_work_dir }}/mc admin policy attach infitx-minio gitlab-access-policy --user {{ gitlab_minio_user }}"
   when: mc_gitlab_access_policy != 'gitlab-access-policy'
+
+- name: Create empty buckets for gitlab
+  command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ item }}"
+  with_items: "{{ minio_create_bucket_list }}"
