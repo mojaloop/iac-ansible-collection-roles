@@ -3,9 +3,9 @@ defaults
   timeout client 50000
   timeout server 50000
 
-frontend seaweed
-  bind :{{ seaweedfs_s3_listening_port }}
-  default_backend seaweed
+frontend minio
+  bind :{{ minio_listening_port }}
+  default_backend minio
 
 frontend nexus
   bind :{{ nexus_docker_repo_listening_port }}
@@ -17,8 +17,8 @@ frontend vault
   default_backend vault
 
 
-backend seaweed
-  server seaweed {{ seaweedfs_fqdn }}:{{ seaweedfs_s3_listening_port }}
+backend minio
+  server minio {{ minio_fqdn }}:{{ minio_listening_port }}
 
 backend nexus
   server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}

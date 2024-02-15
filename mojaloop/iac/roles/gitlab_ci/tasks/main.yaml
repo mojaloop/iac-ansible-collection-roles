@@ -77,9 +77,9 @@
     --output-limit 409600 \
     --cache-type s3 \
     --cache-shared=true \
-    --cache-s3-server-address '{{ seaweedfs_s3_server_host }}:{{ seaweedfs_s3_listening_port }}' \
-    --cache-s3-access-key '{{ seaweedfs_s3_gitlab_access_key }}' \
-    --cache-s3-secret-key '{{ seaweedfs_s3_gitlab_secret_key }}' \
+    --cache-s3-server-address '{{ minio_server_host }}:{{ minio_listening_port }}' \
+    --cache-s3-access-key '{{ gitlab_minio_user }}' \
+    --cache-s3-secret-key '{{ gitlab_minio_secret }}' \
     --cache-s3-bucket-name 'gitlab-ci' \
     --cache-s3-insecure=true"
   when: runner_exists.results[item].stdout == "0"
