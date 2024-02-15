@@ -1,8 +1,8 @@
 gitlab_runner_version: 15.11.0
 gitlab_server_hostname: gitlab.domain
 gitlab_external_url: changeme
-seaweedfs_s3_gitlab_access_key: s3accesskey
-seaweedfs_s3_gitlab_secret_key: s3accesssecret
-seaweedfs_s3_server_host: hostname
-seaweedfs_s3_listening_port: 9000
+gitlab_minio_user: s3accesskey
+gitlab_minio_secret: s3accesssecret
+minio_server_host: hostname
+minio_listening_port: 9000
 gitlab_runner_service_stop_timeout: 7200
