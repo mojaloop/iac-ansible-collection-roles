@@ -53,12 +53,12 @@
     mode: 'u=rw,g=r,o=r'
     backup: yes
 
-- name: Create empty buckets
-  amazon.aws.s3_bucket:
-    name: "{{ item }}"
-    state: present
-    endpoint_url: "{{ s3_server_url }}"
-    secret_key: "{{ s3_password }}"
-    region: "us-east-1"
-    access_key: "{{ s3_username }}"
-  with_items: "{{ s3_create_bucket_list }}"
+#- name: Create empty buckets
+#  amazon.aws.s3_bucket:
+#    name: "{{ item }}"
+#    state: present
+#    endpoint_url: "{{ s3_server_url }}"
+#    secret_key: "{{ s3_password }}"
+#    region: "us-east-1"
+#    access_key: "{{ s3_username }}"
+#  with_items: "{{ s3_create_bucket_list }}"
