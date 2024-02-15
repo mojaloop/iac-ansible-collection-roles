@@ -55,5 +55,5 @@
   when: mc_gitlab_access_policy != 'gitlab-access-policy'
 
 - name: Create empty buckets for gitlab
-  command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ item }}"
+  command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ item }} --ignore-existing"
   with_items: "{{ minio_create_bucket_list }}"
