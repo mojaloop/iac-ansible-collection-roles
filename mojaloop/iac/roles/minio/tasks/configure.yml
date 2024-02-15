@@ -28,7 +28,7 @@
   command: "{{ minio_work_dir }}/mc alias set infitx-minio http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9000 {{ minio_root_user }} {{ minio_root_password }}"
 
 - name: "Check if user is created with policy"
-  shell: '{{ minio_work_dir }}/mc admin user info infitx-minio gitlab-user --quiet --json'
+  shell: '{{ minio_work_dir }}/mc admin user info infitx-minio {{ gitlab_minio_user }} --quiet --json'
   register: mc_gitlab_user_info
   ignore_errors: true
 
