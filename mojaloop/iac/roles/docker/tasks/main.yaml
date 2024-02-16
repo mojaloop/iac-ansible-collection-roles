@@ -49,7 +49,7 @@
     src: "{{ ebs_volume_device_name }}"
     fstype: ext4
     state: mounted
-   when: docker_extra_vol_mount
+  when: docker_extra_vol_mount
 
 #- name: Create a volume
 #  community.docker.docker_volume:
