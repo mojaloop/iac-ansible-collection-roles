@@ -43,11 +43,19 @@
     dev: "{{ ebs_volume_device_name }}"
   when: docker_extra_vol_mount
 
-- name: Create a volume
-  community.docker.docker_volume:
-    name: "{{ docker_extra_volume_name }}"
-    state: present
-    driver_options:
-      type: ext4
-      device: "{{ ebs_volume_device_name }}"
-  when: docker_extra_vol_mount
+- name: Mount the extra vol disk
+  mount:
+    name: "/var/lib/docker/volumes"
+    src: "{{ ebs_volume_device_name }}"
+    fstype: ext4
+    state: mounted
+   when: docker_extra_vol_mount
+
+#- name: Create a volume
+#  community.docker.docker_volume:
+#    name: "{{ docker_extra_volume_name }}"
+#    state: present
+#    driver_options:
+#      type: ext4
+#      device: "{{ ebs_volume_device_name }}"
+#  when: docker_extra_vol_mount
