@@ -17,3 +17,4 @@ kustomize_version: "3.2.3"
 kubectl_version: "1.24.6"
 coredns_version: "1.28.2"
 coredns_max_scale: 10
+install_nodelocaldns: false
