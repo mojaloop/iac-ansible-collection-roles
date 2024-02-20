@@ -2,6 +2,9 @@
   shell: "netclient list"
   register: _bastion_netclient
 
+- set_fact:
+    network_list: '{% if "no such network" in _bastion_netclient.stdout %}{{ [] }}{% else %}{{ _bastion_netclient.stdout }}{% endif %}'
+
 - name: delete bastion node
   uri:
     url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}
@@ -10,7 +13,7 @@
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
     status_code: [200, 400]
-  loop: "{{ _bastion_netclient.stdout }}"
+  loop: "{{ network_list }}"
 
 - name: get nodes in env network
   uri:
