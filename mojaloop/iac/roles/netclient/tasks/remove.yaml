@@ -4,7 +4,7 @@
 
 - name: delete bastion node
   uri:
-    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.node_id }}
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}
     method: DELETE
     headers:
       Content-Type: application/json
@@ -24,7 +24,7 @@
 
 - name: delete nodes in network
   uri:
-    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.id }}
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.id }}
     method: DELETE
     headers:
       Content-Type: application/json
