@@ -29,5 +29,5 @@
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
-    status_code: [204, 400]
-  loop: "{{ _env_nodes.content }}"
+    status_code: [200, 400]
+  loop: "{{ _env_nodes.json }}"
