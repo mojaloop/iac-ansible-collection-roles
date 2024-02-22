@@ -10,10 +10,10 @@
   become: true
   ansible.builtin.file:
     state: absent
-    path: {{ microk8s_root_path }}
+    path: "{{ microk8s_root_path }}"
 
 - name: Remove longhorn data
   become: true
   ansible.builtin.file:
     state: absent
-    path: {{ longhorn_data_path }}
+    path: "{{ longhorn_data_path }}"
