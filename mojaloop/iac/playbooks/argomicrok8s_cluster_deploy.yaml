@@ -9,11 +9,21 @@
   become: true
   roles:
     - role: mojaloop.iac.k8s_node_common
+
+- hosts: agent
+  become: true
+  roles:
+    - role: mojaloop.iac.k8s_node_common
+
+- hosts: master
+  become: true
+  roles:
     - role: mojaloop.iac.microk8s
       vars:
         microk8s_enable_HA: true
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
+        add_workers_to_hostfile: true
         microk8s_plugins:
           dns: "1.1.1.1"
           ingress: false # Ingress controller for external access
@@ -46,7 +56,6 @@
 - hosts: agent
   become: true
   roles:
-    - role: mojaloop.iac.k8s_node_common
     - role: mojaloop.iac.microk8s
       vars:
         microk8s_enable_HA: true
