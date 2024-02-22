@@ -14,6 +14,7 @@
         microk8s_enable_HA: true
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
+        add_workers_to_hostfile: true
         microk8s_plugins:
           dns: "1.1.1.1"
           ingress: false # Ingress controller for external access
