@@ -3,7 +3,6 @@
   become: true
   snap:
     name: microk8s
-    classic: yes
     state: absent
 
 - name: Remove microk8s data
