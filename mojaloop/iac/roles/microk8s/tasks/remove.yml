@@ -1,0 +1,19 @@
+# for on premise installations
+- name: Remove microk8s
+  become: true
+  snap:
+    name: microk8s
+    classic: yes
+    state: absent
+
+- name: Remove microk8s data
+  become: true
+  ansible.builtin.file:
+    state: absent
+   path: {{ microk8s_root_path }}
+
+- name: Remove longhorn data
+  become: true
+  ansible.builtin.file:
+    state: absent
+     path: {{ longhorn_data_path }}
