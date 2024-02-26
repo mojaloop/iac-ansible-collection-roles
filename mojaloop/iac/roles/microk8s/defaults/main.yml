@@ -8,7 +8,7 @@ microk8s_version: "1.27/stable"
 microk8s_disable_snap_autoupdate: false
 
 # plugin configuration
-microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
+microk8s_dns_resolvers: 1.1.1.1
 registry_size: 20Gi
 microk8s_plugins:
   dns: "{{ microk8s_dns_resolvers }}" # CoreDNS
