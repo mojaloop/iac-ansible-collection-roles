@@ -34,7 +34,7 @@
 - name: Create config file for mk8s
   become: true
   ansible.builtin.template:
-    src: microk8s-config.yaml.tpl
+    src: microk8s-config.yaml.j2
     dest: /var/snap/microk8s/common/.microk8s.yaml
     mode: 0644
 
