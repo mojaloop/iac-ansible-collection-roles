@@ -1,0 +1,6 @@
+- hosts: bastion
+  become: true
+  vars:
+    teardown: true
+  roles:
+    - mojaloop.iac.netclient
