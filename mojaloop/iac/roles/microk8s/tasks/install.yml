@@ -25,6 +25,19 @@
     state: latest
   when: uname.stdout | regex_search('raspi')
 
+- name: "create directory for microk8s config"
+  file:
+    path: /var/snap/microk8s/common/
+    state: directory
+    recurse: yes
+
+- name: Create config file for mk8s
+  become: true
+  ansible.builtin.template:
+    src: microk8s-config.yaml.tpl
+    dest: /var/snap/microk8s/common/.microk8s.yaml
+    mode: 0644
+
 - name: Install microk8s
   become: true
   snap:
