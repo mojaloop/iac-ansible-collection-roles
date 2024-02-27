@@ -1,0 +1,9 @@
+# add k3s specific clean up steps
+
+
+- hosts: bastion
+  become: true
+  vars:
+    teardown: true
+  roles:
+    - mojaloop.iac.netclient

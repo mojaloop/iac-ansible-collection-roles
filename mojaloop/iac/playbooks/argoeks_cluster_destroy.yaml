@@ -1,3 +1,5 @@
+# add eks related clean up steps
+
 - hosts: bastion
   become: true
   vars:
