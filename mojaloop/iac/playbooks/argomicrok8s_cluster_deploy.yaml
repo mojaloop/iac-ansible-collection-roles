@@ -25,7 +25,6 @@
         microk8s_group_WORKERS: "agent"
         add_workers_to_hostfile: true
         microk8s_plugins:
-          dns: "{{ microk8s_dns_resolvers }}"
           ingress: false # Ingress controller for external access
           metrics-server: true # K8s Metrics Server for API access to service metrics
           rbac: true # Role-Based Access Control for authorisation
