@@ -3,4 +3,4 @@
 version: 0.1.0
 addons:
   - name: dns
-    disable: true
+    args: [{{ microk8s_dns_resolvers }}] 
