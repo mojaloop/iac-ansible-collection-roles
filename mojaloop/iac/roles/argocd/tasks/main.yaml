@@ -40,6 +40,12 @@
   loop: "{{ node_pool_labels }}"
   when: node_pool_labels is defined
 
+- name: apply node taints
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
+  loop: "{{ node_pool_taints }}"
+  when: node_pool_taints is defined
+
 - name: Upload ext secrets bootstrap files
   template:
     src: "templates/{{ item }}.yaml.j2"
