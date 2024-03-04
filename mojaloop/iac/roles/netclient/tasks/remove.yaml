@@ -15,6 +15,16 @@
     status_code: [200, 400]
   loop: "{{ network_list }}"
 
+- name: second attempt to delete bastion node
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}
+    method: DELETE
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
+  loop: "{{ network_list }}"
+
 - name: get nodes in env network
   uri:
     url: https://{{ netmaker_api_host }}/api/nodes/{{ netmaker_env_network_name }}
@@ -26,6 +36,16 @@
   register: _env_nodes
 
 - name: delete nodes in network
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.id }}
+    method: DELETE
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
+  loop: "{{ _env_nodes.json }}"
+
+- name: second attempt to delete nodes in network
   uri:
     url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.id }}
     method: DELETE
