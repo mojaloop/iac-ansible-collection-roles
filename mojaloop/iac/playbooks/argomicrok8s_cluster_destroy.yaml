@@ -1,4 +1,4 @@
-- hosts: agents
+- hosts: agent
   become: true
   vars:
     teardown: true
