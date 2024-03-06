@@ -1,5 +1,12 @@
 apiVersion: v1
 data:
+  url: https://{{ argocd_fqdn }}
+  oidc.config: |
+    name: Gitlab
+    issuer: {{ gitlab_oidc_issuer }}
+    clientID: $argo-oidc.clientid
+    clientSecret: $argo-oidc.clientsecret
+    requestedScopes: ["read_api"]
   application.instanceLabelKey: argocd.argoproj.io/instance
   kustomize.buildOptions: --enable-helm
   ui.bannercontent: "argocd application install"
