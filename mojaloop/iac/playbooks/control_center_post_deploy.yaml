@@ -7,7 +7,9 @@
 - hosts: bastion
   become: true
   roles:
-    - mojaloop.iac.netclient
+    - role: mojaloop.iac.netclient
+      vars:
+        create_egress_gateway: true
 
 - hosts: docker
   become: true
