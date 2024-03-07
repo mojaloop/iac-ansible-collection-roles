@@ -9,7 +9,20 @@
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
-    body: "{{ lookup('template', 'creategw.json.j2') }}"
+    body: "{{ lookup('template', 'createegressgw.json.j2') }}"
     body_format: json
     status_code: [200, 400]
   loop: "{{ _result.stdout }}"
+
+- name: Add ingress gw
+  uri:
+    url: https://{{ netmaker_api_host }}/api/nodes/{{ item.network }}/{{ item.node_id }}/creategateway
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    body: "{{ lookup('template', 'createingressgw.json.j2') }}"
+    body_format: json
+    status_code: [200, 400]
+  loop: "{{ _result.stdout }}"
+  when: create_egress_gateway

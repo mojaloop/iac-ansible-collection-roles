@@ -8,3 +8,4 @@ netmaker_api_host: api.netmaker.domain
 netmaker_master_key: crazypassword
 teardown: false
 netmaker_env_network_name: none
+create_egress_gateway: false
