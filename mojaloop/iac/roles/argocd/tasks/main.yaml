@@ -68,6 +68,7 @@
     - vault-service-account-etc
     - vault-env
     - netclient
+    - argo-oidc-secrets
     #- coredns-values
 
 # - name: Install coredns
