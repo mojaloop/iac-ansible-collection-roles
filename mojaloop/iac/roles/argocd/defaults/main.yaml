@@ -18,5 +18,5 @@ kubectl_version: "1.24.6"
 coredns_version: "1.28.2"
 coredns_max_scale: 10
 install_nodelocaldns: false
-gitlab_oidc_issuer: http://issuer-fqdn/oidc
-argocd_fqdn: argocd.example.com
+gitlab_server_url: http://issuer-fqdn
+cluster_domain: example.com

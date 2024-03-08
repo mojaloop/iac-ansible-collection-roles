@@ -1,9 +1,9 @@
 apiVersion: v1
 data:
-  url: https://{{ argocd_fqdn }}
+  url: https://argocd.{{ cluster_domain }}
   oidc.config: |
     name: Gitlab
-    issuer: {{ gitlab_oidc_issuer }}
+    issuer: {{ gitlab_server_url }}
     clientID: $argo-oidc.clientid
     clientSecret: $argo-oidc.clientsecret
     requestedScopes: ["read_api"]
