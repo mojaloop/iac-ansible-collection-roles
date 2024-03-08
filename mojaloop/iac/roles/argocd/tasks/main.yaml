@@ -70,7 +70,6 @@
     - vault-env
     - netclient
     - argo-oidc-secrets
-    - argocd-cmd-params-cm
     - argocd-server-patch
     - argocd-cmd-params-cm-patch
     #- coredns-values
