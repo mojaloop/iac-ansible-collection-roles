@@ -20,3 +20,4 @@ coredns_max_scale: 10
 install_nodelocaldns: false
 gitlab_server_url: http://issuer-fqdn
 cluster_domain: example.com
+oidc_admin_group: tenant-admins
