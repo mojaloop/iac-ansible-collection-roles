@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  labels:
+    app.kubernetes.io/name: argocd-rbac-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  policy.csv: |
+    p, group:{{ oidc_admin_group }}, applications, sync, my-project/*, allow
+    g, group:{{ oidc_admin_group }}, role:admin
+  policy.default: role:readonly
+  scopes: '[groups]'

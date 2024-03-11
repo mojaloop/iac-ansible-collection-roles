@@ -14,10 +14,14 @@ resources:
 - argo-oidc-secrets.yaml
 
 patches:
-- path: argo-cm.yaml
+- path: argocd-cm-patch.yaml
   target:
     kind: ConfigMap
     name: argocd-cm
+- path: argocd-rbac-cm-patch.yaml
+  target:
+    kind: ConfigMap
+    name: argocd-rbac-cm    
 - path: argocd-lovely-plugin.yaml
   target:
     kind: Deployment
@@ -26,3 +30,12 @@ patches:
   target:
     kind: Deployment
     name: argocd-repo-server
+    name: argocd-repo-server
+- path: argocd-cmd-params-cm-patch.yaml
+  target:
+    kind: ConfigMap
+    name: argocd-cmd-params-cm
+- path: argocd-server-patch.yaml
+  target:
+    kind: Deployment
+    name: argocd-server    
