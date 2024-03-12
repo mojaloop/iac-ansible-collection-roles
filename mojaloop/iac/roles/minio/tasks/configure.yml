@@ -1,15 +1,16 @@
 ---
-# configure     
+# configure
 
 - name: "Check if mc is installed"
-  command: which mc
+  stat:
+     path: "{{ minio_work_dir }}/mc"
   changed_when: false
   failed_when: false
   register: mc_installed
 
 - name: Wait minio healthcheck api to respond
   uri:
-    url: http://localhost:9000/minio/health/live
+    url: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9000/minio/health/live
     method: GET
   register: _result
   until: _result.status == 200
@@ -19,36 +20,40 @@
 - name: "Install minio client"
   get_url:
     url: "{{ minio_client_download_url }}"
-    dest: /usr/local/bin/mc
+    dest: "{{ minio_work_dir }}/mc"
     mode: 0700
-  when: not mc_installed 
-      
+  when: not mc_installed.stat.exists
+
 - name: "Create minio alias"
-  command: mc alias set infitx-minio http://localhost:9000 {{ minio_root_user }} {{ minio_root_password }} 
+  command: "{{ minio_work_dir }}/mc alias set infitx-minio http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9000 {{ minio_root_user }} {{ minio_root_password }}"
 
 - name: "Check if user is created with policy"
-  shell: 'mc admin user info infitx-minio gitlab-user --quiet --json'
+  shell: '{{ minio_work_dir }}/mc admin user info infitx-minio {{ gitlab_minio_user }} --quiet --json'
   register: mc_gitlab_user_info
-  ignore_errors: true  
+  ignore_errors: true
 
 - set_fact:
     mc_gitlab_access_policy: "{{ mc_gitlab_user_info.stdout | from_json | json_query('policyName') }}"
 
 
 - name: "Create minio user for gitlab"
-  command: mc admin user add infitx-minio {{ gitlab_minio_user }} {{ gitlab_minio_secret }}
+  command: "{{ minio_work_dir }}/mc admin user add infitx-minio {{ gitlab_minio_user }} {{ gitlab_minio_secret }}"
 
 - name: "Copy policy.json"
-  template: 
+  template:
     src: policy.json
     dest: /tmp/policy.json
     owner: root
     group: root
 
 - name: "Create access policy for gitlab"
-  command: mc admin policy create infitx-minio gitlab-access-policy /tmp/policy.json
-    
+  command: "{{ minio_work_dir }}/mc admin policy create infitx-minio gitlab-access-policy /tmp/policy.json"
+
 
 - name: "Attacth policy to gitlab user"
-  command: mc admin policy attach infitx-minio gitlab-access-policy --user {{ gitlab_minio_user }}
+  command: "{{ minio_work_dir }}/mc admin policy attach infitx-minio gitlab-access-policy --user {{ gitlab_minio_user }}"
   when: mc_gitlab_access_policy != 'gitlab-access-policy'
+
+- name: Create empty buckets for gitlab
+  command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ item }} --ignore-existing"
+  with_items: "{{ minio_create_bucket_list }}"

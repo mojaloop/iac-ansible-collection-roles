@@ -58,7 +58,8 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ argotmpvalues.path }}/{{ item }}.yaml"
   with_items:
-    - argo-cm
+    - argocd-cm-patch
+    - argocd-rbac-cm-patch
     - argo-gitlab
     - argo-root-app
     - argo-service-acct-patch
@@ -68,6 +69,9 @@
     - vault-service-account-etc
     - vault-env
     - netclient
+    - argo-oidc-secrets
+    - argocd-server-patch
+    - argocd-cmd-params-cm-patch    
     #- coredns-values
 
 # - name: Install coredns
