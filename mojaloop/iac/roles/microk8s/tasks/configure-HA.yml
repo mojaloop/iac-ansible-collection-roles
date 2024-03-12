@@ -66,9 +66,7 @@
         - join_command_output.rc > 0
 
   become: true
-  when:
-    - inventory_hostname != designated_host
-    - inventory_hostname in groups[microk8s_group_HA]
+  when: (inventory_hostname in groups[microk8s_group_HA]) and (inventory_hostname != designated_host or groups[microk8s_group_HA] | length == 1)
 
 - name: configure cluster addons
   include_tasks: addons.yml
