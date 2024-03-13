@@ -11,7 +11,7 @@
   template:
     src: "../templates/dex-service.j2"
     dest: "/etc/systemd/system/dex.service"
-  notify: Restart dex
+  notify: Restart Dex
 
 - name: "deploy dex compose file"
   template:
