@@ -1,0 +1,10 @@
+{
+        email {{ dex_acme_email }}
+}
+
+
+
+# Dex
+https://{{ dex_fqdn }} {
+        reverse_proxy http://dex:5556
+}

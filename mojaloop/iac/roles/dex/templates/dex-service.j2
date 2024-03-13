@@ -1,0 +1,10 @@
+[Unit]
+Description=dex docker-compose unit
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker-compose -f {{ dex_root_dir }}/dex-docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f {{ dex_root_dir }}/dex-docker-compose.yml down
+
+[Install]
+WantedBy=docker.service

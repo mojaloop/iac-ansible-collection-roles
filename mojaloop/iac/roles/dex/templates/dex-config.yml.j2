@@ -1,0 +1,26 @@
+issuer: https://{{ dex_fqdn }}/dex
+
+storage:
+  type: sqlite3
+  config:
+    file: /data/sqlite/dex.db
+
+web:
+  http: 0.0.0.0:5556
+
+oauth2:
+  skipApprovalScreen: true
+
+connectors:
+  - type: gitlab
+    id: gitlab
+    name: GitLab
+    config:
+      baseURL: {{ dex_oidc_issuer }}
+      clientID: {{ dex_oidc_client_id }}
+      clientSecret: {{ dex_oidc_client_secret }}
+      redirectURI: https://{{ dex_fqdn }}/dex/callback
+      groups:
+      - {{ dex_oidc_admin_group }}
+      useLoginAsID: false
+

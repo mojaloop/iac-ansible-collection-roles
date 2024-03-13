@@ -1,0 +1,39 @@
+- name: Update apt cache
+  shell: apt update
+
+- name: "create directory for project"
+  file:
+    path: "{{ dex_root_dir }}"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/dex-service.j2"
+    dest: "/etc/systemd/system/dex.service"
+  notify: Restart dex
+
+- name: "deploy dex compose file"
+  template:
+    src: "../templates/dex-docker-compose.yml.j2"
+    dest: "{{ dex_root_dir}}/dex-docker-compose.yml"
+  notify: Restart Dex
+
+- name: "deploy dex config file"
+  template:
+    src: "../templates/dex-config.yml.j2"
+    dest: "{{ dex_root_dir}}/dex-config.yml"
+  notify: Restart Dex
+
+- name: "deploy caddy file"
+  template:
+    src: "../templates/Caddyfile.j2"
+    dest: "{{ dex_root_dir}}/Caddyfile"
+  notify: Restart Dex
+
+- name: "set Dex to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "dex"
+    state: started
