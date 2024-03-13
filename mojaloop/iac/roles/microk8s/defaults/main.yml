@@ -2,9 +2,10 @@
 #
 # defaults file for ansible_role_microk8s
 #
-
+microk8s_oidc_issuer_url: haproxyurl
+microk8s_oidc_client_id: dexclientid
 # version management
-microk8s_version: "1.27/stable"
+microk8s_version: "1.29/stable"
 microk8s_disable_snap_autoupdate: false
 
 # plugin configuration

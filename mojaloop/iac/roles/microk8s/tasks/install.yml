@@ -118,3 +118,22 @@
     content: |
       127.0.0.1 api.snapcraft.io
   when: microk8s_disable_snap_autoupdate
+
+- name: Copy issuer ca crt
+  become: true
+  shell: |
+    openssl s_client -showcerts {{ microk8s_oidc_issuer_url }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${SNAP_DATA}/certs/{{ microk8s_oidc_issuer_url }}.crt
+  when: microk8s_configure_oidc
+
+- name: Copy oidc config
+  become: true
+  blockinfile:
+    dest: /var/snap/microk8s/current/args/kube-apiserver
+    marker: "# {mark} ANSIBLE MANAGED: microk8s oidc config"
+    content: |
+      --oidc-issuer-url={{ microk8s_oidc_issuer_url }}
+      --oidc-ca-file=${SNAP_DATA}/certs/{{ microk8s_oidc_issuer_url }}.crt
+      --oidc-client-id={{ microk8s_oidc_client_id }}
+      --oidc-username-claim={{ microk8s_oidc_issuer_url }}
+      --oidc-username-prefix=oidc:
+  when: microk8s_configure_oidc
