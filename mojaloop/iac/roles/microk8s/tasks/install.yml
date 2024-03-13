@@ -122,7 +122,7 @@
 - name: Copy issuer ca crt
   become: true
   shell: |
-    openssl s_client -showcerts {{ k8s_oidc_issuer_url }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${SNAP_DATA}/certs/{{ k8s_oidc_issuer_url }}.crt
+    openssl s_client -showcerts {{ k8s_oidc_issuer_fqdn }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${SNAP_DATA}/certs/{{ k8s_oidc_issuer_fqdn }}.crt
   when: k8s_configure_oidc
 
 - name: Copy oidc config
@@ -131,9 +131,9 @@
     dest: /var/snap/microk8s/current/args/kube-apiserver
     marker: "# {mark} ANSIBLE MANAGED: microk8s oidc config"
     content: |
-      --oidc-issuer-url={{ k8s_oidc_issuer_url }}
-      --oidc-ca-file=${SNAP_DATA}/certs/{{ k8s_oidc_issuer_url }}.crt
+      --oidc-issuer-url=https://{{ k8s_oidc_issuer_fqdn }}
+      --oidc-ca-file=${SNAP_DATA}/certs/{{ k8s_oidc_issuer_fqdn }}.crt
       --oidc-client-id={{ k8s_oidc_client_id }}
-      --oidc-username-claim={{ k8s_oidc_issuer_url }}
+      --oidc-username-claim={{ k8s_oidc_issuer_fqdn }}
       --oidc-username-prefix=oidc:
   when: k8s_configure_oidc
