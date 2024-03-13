@@ -119,10 +119,17 @@
       127.0.0.1 api.snapcraft.io
   when: microk8s_disable_snap_autoupdate
 
+- name: Create folder for dex certificate
+  become: true
+  file:
+    path: /usr/share/ca-certificates/dex
+    state: directory
+    mode: 0755
+
 - name: Copy issuer ca crt
   become: true
   shell: |
-    openssl s_client -showcerts {{ k8s_oidc_issuer_fqdn }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${SNAP_DATA}/certs/{{ k8s_oidc_issuer_fqdn }}.crt
+    openssl s_client -showcerts {{ k8s_oidc_issuer_fqdn }}:443 2>/dev/null < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/share/ca-certificates/dex/{{ k8s_oidc_issuer_fqdn }}.crt
   when: k8s_configure_oidc
 
 - name: Copy oidc config
@@ -132,7 +139,7 @@
     marker: "# {mark} ANSIBLE MANAGED: microk8s oidc config"
     content: |
       --oidc-issuer-url=https://{{ k8s_oidc_issuer_fqdn }}
-      --oidc-ca-file=${SNAP_DATA}/certs/{{ k8s_oidc_issuer_fqdn }}.crt
+      --oidc-ca-file=/usr/share/ca-certificates/dex/{{ k8s_oidc_issuer_fqdn }}.crt
       --oidc-client-id={{ k8s_oidc_client_id }}
       --oidc-username-claim=email
       --oidc-groups-claim=groups
