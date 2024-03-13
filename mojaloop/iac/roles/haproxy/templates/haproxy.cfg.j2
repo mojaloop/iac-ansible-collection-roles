@@ -16,6 +16,10 @@ frontend vault
   bind :{{ local_vault_listening_port }}
   default_backend vault
 
+frontend dex
+  mode tcp
+  bind :{{ local_dex_listening_port }}
+  default_backend dex
 
 backend minio
   server minio {{ minio_fqdn }}:{{ minio_listening_port }}
@@ -26,3 +30,7 @@ backend nexus
 backend vault
   mode tcp
   server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
+
+backend dex
+  mode tcp
+  server dex {{ dex_fqdn }}:{{ dex_listening_port }} ssl verify none
