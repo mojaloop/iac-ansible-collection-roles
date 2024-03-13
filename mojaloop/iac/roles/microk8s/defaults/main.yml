@@ -3,7 +3,7 @@
 # defaults file for ansible_role_microk8s
 #
 k8s_configure_oidc: false
-k8s_oidc_issuer_url: haproxyurl
+k8s_oidc_issuer_fqdn: haproxyurl
 k8s_oidc_client_id: dexclientid
 # version management
 microk8s_version: "1.29/stable"
