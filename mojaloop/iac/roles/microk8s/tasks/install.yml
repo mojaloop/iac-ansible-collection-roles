@@ -134,6 +134,7 @@
       --oidc-issuer-url=https://{{ k8s_oidc_issuer_fqdn }}
       --oidc-ca-file=${SNAP_DATA}/certs/{{ k8s_oidc_issuer_fqdn }}.crt
       --oidc-client-id={{ k8s_oidc_client_id }}
-      --oidc-username-claim={{ k8s_oidc_issuer_fqdn }}
+      --oidc-username-claim=email
+      --oidc-groups-claim=groups
       --oidc-username-prefix=oidc:
   when: k8s_configure_oidc
