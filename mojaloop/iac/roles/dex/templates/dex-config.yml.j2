@@ -11,6 +11,13 @@ web:
 oauth2:
   skipApprovalScreen: true
 
+staticClients:
+  - id: {{ dex_static_client_id }}
+    redirectURIs:
+      - http://localhost:8000  # for kubelogin
+    name: '{{ dex_static_client_id }}'
+    secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+
 connectors:
   - type: gitlab
     id: gitlab

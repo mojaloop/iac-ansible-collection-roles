@@ -7,3 +7,4 @@ dex_oidc_issuer: https://gitlab.com
 dex_oidc_client_id: clientid
 dex_oidc_client_secret: crazysecret
 dex_oidc_admin_group: tenant-admins
+dex_static_client_id: local-k8s-cluster
