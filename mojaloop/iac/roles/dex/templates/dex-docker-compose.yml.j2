@@ -5,13 +5,7 @@ services:
     image: dexidp/dex:v{{ dex_image_version }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - dex_data:/data
-    configs:
-      - source: dex_config
-        target: /config.yml
-        uid: "1001"
-        gid: "1001"
-        mode: 0600
+      - {{ dex_root_dir}}/dex-config.yml:/config.yml
     command: ['dex', 'serve','/config.yml']
 
   caddy: # The reverse proxy that manages traffic for Netmaker
@@ -28,7 +22,3 @@ services:
 volumes:
   caddy_data: {} # runtime data for caddy
   caddy_conf: {} # configuration file for Caddy
-  dex_data: {}
-configs:
-  dex_config:
-    file: {{ dex_root_dir}}/dex-config.yml
