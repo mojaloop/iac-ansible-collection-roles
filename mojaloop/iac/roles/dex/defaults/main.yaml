@@ -1,8 +1,6 @@
 dex_fqdn: a.b.c
 dex_root_dir: /root/dex-compose
 dex_image_version: 2.38.0
-dex_caddy_image_version: 2.6.2
-dex_acme_email: cicd.automation@modusbox.com
 dex_oidc_issuer: https://gitlab.com
 dex_oidc_client_id: clientid
 dex_oidc_client_secret: crazysecret
