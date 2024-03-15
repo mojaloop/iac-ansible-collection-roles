@@ -8,6 +8,6 @@ metadata:
 data:
   policy.csv: |
     p, role:org-admin, applications, *, */*, allow
-    g, group:{{ oidc_admin_group }}, role:org-admin
+    g, {{ oidc_admin_group }}, role:org-admin
   policy.default: role:readonly
-  scopes: '[groups]'
+  scopes: '[groups_direct]'

@@ -12,7 +12,7 @@ data:
     issuer: {{ gitlab_server_url }}
     clientID: $argo-oidc:clientid
     clientSecret: $argo-oidc:clientsecret
-    requestedScopes: ["openid", "profile", "email", "groups"]
+    requestedScopes: ["openid", "profile", "email", "read_api"]
   application.instanceLabelKey: argocd.argoproj.io/instance
   kustomize.buildOptions: --enable-helm
   ui.bannercontent: "argocd application install"
