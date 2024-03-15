@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   policy.csv: |
-    p, group:{{ oidc_admin_group }}, applications, sync, my-project/*, allow
-    g, group:{{ oidc_admin_group }}, role:admin
+    p, role:org-admin, applications, *, */*, allow
+    g, {{ oidc_admin_group }}, role:org-admin
   policy.default: role:readonly
-  scopes: '[groups]'
+  scopes: '[groups_direct]'
