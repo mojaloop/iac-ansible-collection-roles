@@ -5,30 +5,7 @@ services:
     image: dexidp/dex:v{{ dex_image_version }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - dex_data:/data
-    configs:
-      - source: dex_config
-        target: /config.yml
-        uid: "1001"
-        gid: "1001"
-        mode: 0600
+      - {{ dex_root_dir}}/dex-config.yml:/config.yml
     command: ['dex', 'serve','/config.yml']
-
-  caddy: # The reverse proxy that manages traffic for Netmaker
-    image: caddy:{{ dex_caddy_image_version }}
-    container_name: caddy
-    restart: unless-stopped
-    volumes:
-      - {{ dex_root_dir}}/Caddyfile:/etc/caddy/Caddyfile # Config file for Caddy
-      - caddy_data:/data
-      - caddy_conf:/config
     ports:
-      - "80:80"
-      - "443:443"
-volumes:
-  caddy_data: {} # runtime data for caddy
-  caddy_conf: {} # configuration file for Caddy
-  dex_data: {}
-configs:
-  dex_config:
-    file: {{ dex_root_dir}}/dex-config.yml
+      - "5556:5556"

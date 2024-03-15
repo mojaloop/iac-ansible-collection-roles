@@ -25,12 +25,6 @@
     dest: "{{ dex_root_dir}}/dex-config.yml"
   notify: Restart Dex
 
-- name: "deploy caddy file"
-  template:
-    src: "../templates/Caddyfile.j2"
-    dest: "{{ dex_root_dir}}/Caddyfile"
-  notify: Restart Dex
-
 - name: "set Dex to auto restart"
   systemd:
     enabled: true
