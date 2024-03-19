@@ -28,9 +28,11 @@ backend nexus
   server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
 
 backend vault
-  mode tcp
+  mode http
+  http-request set-header Host {{ vault_fqdn }}
   server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
 
 backend dex
-  mode tcp
+  mode http
+  http-request set-header Host {{ dex_fqdn }}
   server dex {{ dex_fqdn }}:{{ dex_listening_port }} ssl verify none
