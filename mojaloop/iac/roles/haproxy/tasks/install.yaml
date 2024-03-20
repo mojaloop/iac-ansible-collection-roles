@@ -29,14 +29,6 @@
     mode: "0640"
   notify: restart haproxy
 
-- name: "set haproxy to auto restart"
-  systemd:
-    enabled: true
-    daemon_reload: true
-    name: "haproxy"
-    state: started
-    force: true
-
 - name: Create HAProxy SSL Directory.
   ansible.builtin.file:
     path: "{{ haproxy_ssl_certificate_dir }}"
@@ -89,3 +81,11 @@
         state: present
         mode: "0640"
       notify: restart haproxy
+
+- name: "set haproxy to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "haproxy"
+    state: started
+    force: true
