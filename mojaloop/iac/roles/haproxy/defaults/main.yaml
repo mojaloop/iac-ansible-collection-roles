@@ -10,3 +10,18 @@ vault_fqdn: private_ip
 enable_internal_egress_lb: true
 dex_fqdn: private_ip
 dex_listening_port: 443
+haproxy_host_fqdn: example.com
+haproxy_create_self_signed_cert: true
+haproxy_ssl_certificate_dir: "/etc/haproxy/ssl"
+haproxy_country_name: "US"
+haproxy_state_or_province_name: "NY"
+haproxy_locality_name: "anywhere"
+haproxy_organization_name: "not used"
+haproxy_organizational_unit_name: "not important"
+haproxy_email_address: "none@none.com"
+haproxy_common_name: "{{ haproxy_host_fqdn }}"
+haproxy_ssl_certificate_key_file: "{{ haproxy_ssl_certificate_dir }}/haproxy.key"
+haproxy_ssl_certificate_csr_file: "{{ haproxy_ssl_certificate_dir }}/haproxy.csr"
+haproxy_ssl_certificate_crt_file: "{{ haproxy_ssl_certificate_dir }}/haproxy.crt"
+haproxy_ssl_certificate_pkcs12_file: "{{ haproxy_ssl_certificate_dir }}/haproxy.p12"
+haproxy_ssl_certificate_chain_file: "{{ haproxy_ssl_certificate_dir }}/haproxy.pem"

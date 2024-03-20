@@ -17,8 +17,7 @@ frontend vault
   default_backend vault
 
 frontend dex
-  mode tcp
-  bind :{{ local_dex_listening_port }}
+  bind :{{ local_dex_listening_port }} ssl crt {{ haproxy_ssl_certificate_chain_file }} 
   default_backend dex
 
 backend minio
