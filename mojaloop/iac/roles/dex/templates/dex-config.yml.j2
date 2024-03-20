@@ -17,7 +17,7 @@ oauth2:
 staticClients:
   - id: {{ dex_static_client_id }}
     redirectURIs:
-      - http://localhost:8000  # for kubelogin
+      - https://{{ dex_fqdn }}/dex/callback
     name: '{{ dex_static_client_id }}'
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
 

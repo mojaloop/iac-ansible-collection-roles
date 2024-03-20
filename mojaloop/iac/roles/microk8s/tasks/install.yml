@@ -138,7 +138,7 @@
     dest: /var/snap/microk8s/current/args/kube-apiserver
     marker: "# {mark} ANSIBLE MANAGED: microk8s oidc config"
     content: |
-      --oidc-issuer-url=https://{{ k8s_oidc_issuer_fqdn }}
+      --oidc-issuer-url=https://{{ k8s_oidc_issuer_fqdn }}/dex
       --oidc-ca-file=/usr/share/ca-certificates/dex/{{ k8s_oidc_issuer_fqdn }}.crt
       --oidc-client-id={{ k8s_oidc_client_id }}
       --oidc-username-claim=email
