@@ -80,3 +80,12 @@
         state: present
         friendly_name: "pkcs12_file"
       notify: restart haproxy
+
+    - name: Parse PKCS12 file
+      community.crypto.openssl_pkcs12:
+        action: parse
+        src: "{{ haproxy_ssl_certificate_pkcs12_file }}"
+        path: "{{ haproxy_ssl_certificate_chain_file }}"
+        state: present
+        mode: "0640"
+      notify: restart haproxy
