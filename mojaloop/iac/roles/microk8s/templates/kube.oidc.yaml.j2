@@ -4,7 +4,7 @@ metadata:
   name: keycloak-admins-binding
 subjects:
   - kind: Group
-    name: oidc:{{ dex_oidc_admin_group }}
+    name: oidc:{{ k8s_oidc_admin_group }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
