@@ -17,7 +17,7 @@ oauth2:
 staticClients:
   - id: {{ dex_static_client_id }}
     redirectURIs:
-      - https://{{ dex_fqdn }}/dex/callback
+      - http://localhost:8000
     name: '{{ dex_static_client_id }}'
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
 
