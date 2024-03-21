@@ -29,59 +29,6 @@
     mode: "0640"
   notify: restart haproxy
 
-- name: Create HAProxy SSL Directory.
-  ansible.builtin.file:
-    path: "{{ haproxy_ssl_certificate_dir }}"
-    state: directory
-    mode: "0750"
-
-- name: Generate self-signed TLS certificate
-  when: haproxy_create_self_signed_cert | bool
-  block:
-    - name: Generate an OpenSSL Private Key (4096 bits)
-      community.crypto.openssl_privatekey:
-        path: "{{ haproxy_ssl_certificate_key_file }}"
-        size: "4096"
-        type: "RSA"
-
-    - name: Generate an OpenSSL Certificate Signing Request
-      community.crypto.openssl_csr:
-        path: "{{ haproxy_ssl_certificate_csr_file }}"
-        privatekey_path: "{{ haproxy_ssl_certificate_key_file }}"
-        country_name: "{{ haproxy_country_name }}"
-        state_or_province_name: "{{ haproxy_state_or_province_name }}"
-        locality_name: "{{ haproxy_locality_name }}"
-        organization_name: "{{ haproxy_organization_name }}"
-        organizational_unit_name: "{{ haproxy_organizational_unit_name }}"
-        email_address: "{{ haproxy_email_address }}"
-        common_name: "{{ haproxy_common_name }}"
-
-    - name: Generate a Self Signed OpenSSL certificate
-      community.crypto.x509_certificate:
-        path: "{{ haproxy_ssl_certificate_crt_file }}"
-        privatekey_path: "{{ haproxy_ssl_certificate_key_file }}"
-        csr_path: "{{ haproxy_ssl_certificate_csr_file }}"
-        provider: "selfsigned"
-
-    - name: Generate PKCS12 file
-      community.crypto.openssl_pkcs12:
-        action: export
-        path: "{{ haproxy_ssl_certificate_pkcs12_file }}"
-        certificate_path: "{{ haproxy_ssl_certificate_crt_file }}"
-        privatekey_path: "{{ haproxy_ssl_certificate_key_file }}"
-        state: present
-        friendly_name: "pkcs12_file"
-      notify: restart haproxy
-
-    - name: Parse PKCS12 file
-      community.crypto.openssl_pkcs12:
-        action: parse
-        src: "{{ haproxy_ssl_certificate_pkcs12_file }}"
-        path: "{{ haproxy_ssl_certificate_chain_file }}"
-        state: present
-        mode: "0640"
-      notify: restart haproxy
-
 - name: "set haproxy to auto restart"
   systemd:
     enabled: true

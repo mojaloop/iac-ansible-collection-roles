@@ -16,22 +16,17 @@ frontend vault
   bind :{{ local_vault_listening_port }}
   default_backend vault
 
-frontend dex
-  bind :{{ local_dex_listening_port }} ssl crt {{ haproxy_ssl_certificate_chain_file }} 
-  default_backend dex
-
 backend minio
-  server minio {{ minio_fqdn }}:{{ minio_listening_port }}
+  mode http
+  http-request set-header Host {{ minio_fqdn }}
+  server minio {{ minio_fqdn }}:443
 
 backend nexus
-  server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
+  mode http
+  http-request set-header Host {{ nexus_fqdn }}
+  server nexus {{ nexus_fqdn }}:443
 
 backend vault
   mode http
   http-request set-header Host {{ vault_fqdn }}
-  server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
-
-backend dex
-  mode http
-  http-request set-header Host {{ dex_fqdn }}
-  server dex {{ dex_fqdn }}:{{ dex_listening_port }} ssl verify none
+  server vault {{ vault_fqdn }}:443 ssl verify none
