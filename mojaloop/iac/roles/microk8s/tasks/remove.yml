@@ -1,9 +1,13 @@
 # for on premise installations
+- name: Reset microk8s
+  become: true
+  command: "microk8s reset"
+  ignore_errors: true
+
 - name: Remove microk8s
   become: true
-  snap:
-    name: microk8s
-    state: absent
+  command: "snap remove --purge microk8s"
+  ignore_errors: true
 
 - name: Remove microk8s data
   become: true
