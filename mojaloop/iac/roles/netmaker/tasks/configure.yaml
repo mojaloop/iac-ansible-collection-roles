@@ -18,7 +18,7 @@
       Authorization: Bearer {{ netmaker_master_key }}
     body: "{{ lookup('template', 'createadminuser.json.j2') }}"
     body_format: json
-    status_code: [200, 400]
+    status_code: [200, 400, 500]
 
 - name: Add networks if don't exist
   uri:
@@ -72,11 +72,10 @@
   register: key_response2
 
 - name: copy keys
-  copy: 
+  copy:
     content: "{{ key_response2.content }}"
     dest: "{{ netmaker_enrollment_key_list_file_location }}"
   delegate_to: localhost
-
 # - name: Save access token for bastion netclient
 #   vars:
 #     query: "[?tags[0]=='{{ netmaker_control_network_name }}-access'].token"
