@@ -1,0 +1,10 @@
+[Unit]
+Description=headscale docker-compose unit
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker-compose -f {{ netmaker_root_dir }}/headscale-docker-compose.yaml up
+ExecStop=/usr/bin/docker-compose -f {{ netmaker_root_dir }}/headscale-docker-compose.yaml down
+
+[Install]
+WantedBy=docker.service
