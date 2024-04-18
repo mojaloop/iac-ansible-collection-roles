@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
 data:
-  url: https://argocd.{{ cluster_domain }}
+  url: https://argocd.{{ argocd_domain }}
   oidc.config: |
     name: Gitlab
     issuer: {{ gitlab_server_url }}
