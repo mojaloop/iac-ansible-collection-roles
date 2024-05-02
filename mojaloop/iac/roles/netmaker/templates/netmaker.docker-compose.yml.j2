@@ -65,15 +65,15 @@ services:
     ports:
       - "80:80"
       - "443:443"
-  coredns:
-    container_name: coredns
-    image: coredns/coredns
-    command: -conf /root/dnsconfig/Corefile
-    depends_on:
-      - netmaker
-    restart: always
-    volumes:
-      - dnsconfig:/root/dnsconfig
+#  coredns:
+#    container_name: coredns
+#    image: coredns/coredns
+#    command: -conf /root/dnsconfig/Corefile
+#    depends_on:
+#      - netmaker
+#    restart: always
+#    volumes:
+#      - dnsconfig:/root/dnsconfig
   mq: # the mqtt broker for netmaker
     container_name: mq
     image: eclipse-mosquitto:2.0.15-openssl
