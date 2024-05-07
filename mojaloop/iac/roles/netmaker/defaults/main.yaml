@@ -1,7 +1,7 @@
 netmaker_base_domain: a.b.c
 netmaker_root_dir: /root/netmaker-compose
 netmaker_server_public_ip: 127.0.0.1
-netmaker_image_version: 0.18.6
+netmaker_image_version: 0.24.0
 netmaker_caddy_image_version: 2.6.2
 netmaker_acme_email: cicd.automation@modusbox.com
 netmaker_mq_pw: crazypassword
@@ -16,7 +16,7 @@ netmaker_enrollment_key_list_file_location: /tmp/keylist.json
 netmaker_control_network_address_cidr_start: 10.20.30.0/24
 netmaker_networks:
   - network_name: cntrlctr
-    node_keys: 
+    node_keys:
       - ops
   - network_name: dev
     node_keys:

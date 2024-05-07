@@ -37,13 +37,11 @@ spec:
       - name: netclient
         image: gravitl/netclient:v{{ netmaker_image_version }}
         env:
-        - name: NETCLIENT_ROAMING
-          value: "no"
-        - name: NETCLIENT_PORT
+        - name: PORT
           value: "31821"
-        - name: NETCLIENT_IS_STATIC
+        - name: IS_STATIC
           value: "yes"
-        - name: NETCLIENT_ENDPOINT
+        - name: ENDPOINT
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
