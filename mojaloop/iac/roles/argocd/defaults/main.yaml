@@ -9,7 +9,7 @@ tenant_vault_token: token
 tenant_vault_server_url: "https://tenantvault"
 kubeconfig_location: "/root/.kube"
 root_app_path: "infra/app-yamls"
-netmaker_image_version: "0.18.7"
+netmaker_image_version: "0.24.0"
 wireguard_node_port: "31821"
 cluster_name: envname
 kubeconfig_local_location: "/tmp"
