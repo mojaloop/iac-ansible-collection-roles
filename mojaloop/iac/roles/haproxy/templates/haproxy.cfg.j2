@@ -26,13 +26,3 @@ backend nexus
 backend vault
   mode tcp
   server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
-
-{{- if managed_services_enabled }}
-
-backend account_lookup_db
-  server {{ account_lookup_instance_address }}:{{ alb_db_listening_port }}
-
-backend central_ledger_db
-  server {{ central_ledger_instance_address }}:{{ alb_db_listening_port }}
-
-{{- endif }}
