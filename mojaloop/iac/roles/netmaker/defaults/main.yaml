@@ -1,7 +1,7 @@
 netmaker_base_domain: a.b.c
 netmaker_root_dir: /root/netmaker-compose
 netmaker_server_public_ip: 127.0.0.1
-netmaker_image_version: 0.18.6
+netmaker_image_version: 0.24.0
 netmaker_caddy_image_version: 2.6.2
 netmaker_acme_email: cicd.automation@modusbox.com
 netmaker_mq_pw: crazypassword
