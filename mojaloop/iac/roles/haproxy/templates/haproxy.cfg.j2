@@ -51,10 +51,10 @@ backend {{ msp.name }}
 
 {% for msp in managed_kafka_svc %}
 
-backend {{ mps.name }}
+backend {{ msp.name }}
   mode {{ msp.mode }}
   balance roundrobin
 {%for broker in msp.managed_kafka_brokers_list %}
-  server {{ msp.name }}{{ loop.index }} {{ broker }}:{{ msp.dest_port }}
+  server {{ msp.name }}{{ loop.index }} {{ broker }}
 {% endfor %}  
 {% endfor %}
