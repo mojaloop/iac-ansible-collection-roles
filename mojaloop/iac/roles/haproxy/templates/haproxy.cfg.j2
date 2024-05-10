@@ -16,6 +16,12 @@ frontend vault
   bind :{{ local_vault_listening_port }}
   default_backend vault
 
+{% for msp in managed_svc_ports %}
+frontend {{ msp.name }}
+  mode {{ msp.mode }}
+  bind :{{ msp.local_listening_port }}
+  default_backend {{ msp.name }}
+{% endfor %}
 
 backend minio
   server minio {{ minio_fqdn }}:{{ minio_listening_port }}
@@ -26,3 +32,9 @@ backend nexus
 backend vault
   mode tcp
   server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
+
+{% for msp in managed_svc_ports %}
+backend {{ msp.name }}
+  mode {{ msp.mode }}
+  server {{ msp.name }} {{ msp.dest_fqdn }}:{{ msp.dest_port }}
+{% endfor %}
