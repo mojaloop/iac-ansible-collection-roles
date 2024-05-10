@@ -21,6 +21,7 @@ frontend {{ msp.name }}
   mode {{ msp.mode }}
   bind :{{ msp.local_listening_port }}
   default_backend {{ msp.name }}
+  
 {% endfor %}
 
 backend minio
