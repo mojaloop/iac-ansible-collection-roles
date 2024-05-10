@@ -16,12 +16,20 @@ frontend vault
   bind :{{ local_vault_listening_port }}
   default_backend vault
 
-{% for msp in managed_svc_ports %}
+{% for msp in managed_rds_svc %}
 frontend {{ msp.name }}
   mode {{ msp.mode }}
   bind :{{ msp.local_listening_port }}
   default_backend {{ msp.name }}
-  
+
+{% endfor %}
+
+{% for msp in managed_kafka_svc %}
+frontend {{ msp.name }}
+  mode {{ msp.mode }}
+  bind :{{ msp.local_listening_port }}  
+  default_backend {{ msp.name }}
+
 {% endfor %}
 
 backend minio
@@ -34,8 +42,19 @@ backend vault
   mode tcp
   server vault {{ vault_fqdn }}:{{ vault_listening_port }} ssl verify none
 
-{% for msp in managed_svc_ports %}
+{% for msp in managed_rds_svc %}
+
 backend {{ msp.name }}
   mode {{ msp.mode }}
   server {{ msp.name }} {{ msp.dest_fqdn }}:{{ msp.dest_port }}
+{% endfor %}
+
+{% for msp in managed_kafka_svc %}
+
+backend {{ mps.name }}
+  mode {{ msp.mode }}
+  balance roundrobin
+{%for broker in msp.managed_kafka_brokers_list %}
+  server {{ msp.name }}{{ loop.index }} {{ broker }}:{{ msp.dest_port }}
+{% endfor %}  
 {% endfor %}
