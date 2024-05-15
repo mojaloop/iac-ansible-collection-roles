@@ -68,7 +68,7 @@
     - namespace
     - vault-service-account-etc
     - vault-env
-    - netclient
+    #- netclient
     - argo-oidc-secrets
     - argocd-server-patch
     - argocd-cmd-params-cm-patch    
