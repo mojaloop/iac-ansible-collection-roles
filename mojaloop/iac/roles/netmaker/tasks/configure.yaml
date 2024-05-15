@@ -18,7 +18,7 @@
       Authorization: Bearer {{ netmaker_master_key }}
     body: "{{ lookup('template', 'createadminuser.json.j2') }}"
     body_format: json
-    status_code: [200, 400]
+    status_code: [200, 400, 500]
 
 - name: Add networks if don't exist
   uri:
