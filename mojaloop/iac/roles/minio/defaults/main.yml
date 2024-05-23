@@ -11,3 +11,4 @@ gitlab_minio_user: gitlab-user
 gitlab_minio_secret: changeme
 minio_create_bucket_list: ["gitlab-registry", "gitlab-artifacts", "gitlab-external-diffs", "gitlab-lfs-objects", "gitlab-uploads", "gitlab-packages", "gitlab-dependency-proxy", "gitlab-terraform-state", "gitlab-ci", "gitlab-pages"]
 mimir_minio_bucket: central-observability-mimir
+mimir_data_expiry_days: "365"

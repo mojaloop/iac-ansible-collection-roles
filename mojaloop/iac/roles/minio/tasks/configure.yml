@@ -90,3 +90,8 @@
 
 - name: "Create empty bucket for mimir"
   command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ mimir_minio_bucket }} --ignore-existing"
+
+- name: "Create lifecyle rule for mimir bucket"
+  command: "{{ minio_work_dir }}/mc ilm rule add --expire-days {{ mimir_data_expiry_days }} infitx-minio/{{ mimir_minio_bucket }} "
+
+
