@@ -61,6 +61,7 @@
 - name: "Create minio user for mimir"
   command: "{{ minio_work_dir }}/mc admin user add infitx-minio {{ mimir_minio_user }} {{ mimir_minio_password }}"
 
+# policy source: # https://github.dev/mojaloop/iac-ansible-collection-roles/blob/main/mojaloop/iac/roles/minio/tasks/configure.yml
 - name: "Copy mimir policy.json"
   template:
     src: mimir-policy.json.j2
