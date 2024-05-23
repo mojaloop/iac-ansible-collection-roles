@@ -58,6 +58,17 @@
   command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ item }} --ignore-existing"
   with_items: "{{ minio_create_bucket_list }}"
 
+# Setup bucket for mimir
+
+- name: "Fetch mimir user"
+  shell: '{{ minio_work_dir }}/mc admin user info infitx-minio {{ mimir_minio_user }} --quiet --json'
+  register: mimir_minio_user_info
+  ignore_errors: true
+
+- set_fact:
+    mimir_minio_user_policy: "{{ mimir_minio_user_info.stdout | from_json | json_query('policyName') }}"
+
+
 - name: "Create minio user for mimir"
   command: "{{ minio_work_dir }}/mc admin user add infitx-minio {{ mimir_minio_user }} {{ mimir_minio_password }}"
 
@@ -73,8 +84,9 @@
   command: "{{ minio_work_dir }}/mc admin policy create infitx-minio mimir-access-policy /tmp/mimir-policy.json"
 
 
-- name: "Attacth policy to mimir user"
+- name: "Attach policy to mimir user"
   command: "{{ minio_work_dir }}/mc admin policy attach infitx-minio mimir-access-policy --user {{ mimir_minio_user }}"
+  when: mimir_minio_user_policy != 'mimir-access-policy'
 
 - name: "Create empty bucket for mimir"
   command: "{{ minio_work_dir }}/mc mb infitx-minio/{{ mimir_minio_bucket }} --ignore-existing"
