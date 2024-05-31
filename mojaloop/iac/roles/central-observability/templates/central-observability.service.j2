@@ -1,0 +1,11 @@
+[Unit]
+Description=central-observability docker-compose unit
+After=docker.service
+
+[Service]
+WorkingDirectory={{ central_observability_root_dir }}
+ExecStart=/usr/bin/docker compose -f docker-compose.yaml up
+ExecStop=/usr/bin/docker compose -f docker-compose.yaml down
+
+[Install]
+WantedBy=docker.service
