@@ -13,4 +13,4 @@
   become: true
   roles:
     - mojaloop.iac.vault
-    - mojaloop.iac.mimir
+    - mojaloop.iac.central-observability
