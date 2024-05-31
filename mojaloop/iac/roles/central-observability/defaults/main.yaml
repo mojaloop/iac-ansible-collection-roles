@@ -1,0 +1,3 @@
+central_observability_root_dir: /root/central-observability-compose
+mimir_minio_user: update_me_please
+mimir_minio_password: update_me_please
