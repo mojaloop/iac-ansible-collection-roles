@@ -78,8 +78,8 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    depends_on:
-      - minio
+    # depends_on:
+    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
@@ -94,8 +94,8 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'    
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    depends_on:
-      - minio
+    # depends_on:
+    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
@@ -110,8 +110,8 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    depends_on:
-      - minio
+    # depends_on:
+    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
