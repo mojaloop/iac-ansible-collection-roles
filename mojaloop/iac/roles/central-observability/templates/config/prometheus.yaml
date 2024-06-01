@@ -1,13 +1,13 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 15s
   external_labels:
-    cluster: test-cluster-1
+    cluster: central-observability
 
 # rule_files:
 #   - /etc/prometheus/rules.yaml
 
 scrape_configs:
-  - job_name: demo/mimir
+  - job_name: mimir
     static_configs:
       - targets: ["mimir-1:8080"]
         labels:
