@@ -1,18 +1,18 @@
 version: "3.4"
 services:
-  minio:
-    image: minio/minio
-    entrypoint: [""]
-    command: ["sh", "-c", "mkdir -p /data/mimir && minio server --console-address :9001 --quiet /data"]
-    environment:
-      - MINIO_ROOT_USER=mimir
-      - MINIO_ROOT_PASSWORD=supersecret
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-    ports:
-      - 9000:9000      
-      - 9001:9001      
-    volumes:
-      - minio-data:/data
+  # minio:
+  #   image: minio/minio
+  #   entrypoint: [""]
+  #   command: ["sh", "-c", "mkdir -p /data/mimir && minio server --console-address :9001 --quiet /data"]
+  #   environment:
+  #     - MINIO_ROOT_USER=mimir
+  #     - MINIO_ROOT_PASSWORD=supersecret
+  #     - MINIO_PROMETHEUS_AUTH_TYPE=public
+  #   ports:
+  #     - 9000:9000      
+  #     - 9001:9001      
+  #   volumes:
+  #    - minio-data:/data
 
   grafana:
     image: grafana/grafana:latest
@@ -122,4 +122,4 @@ volumes:
   mimir-1-data:
   mimir-2-data:
   mimir-3-data:
-  minio-data:
+  # minio-data:
