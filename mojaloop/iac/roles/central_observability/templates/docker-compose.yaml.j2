@@ -77,7 +77,7 @@ services:
     environment:
       - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
       - MINIO_USERNAME={{ mimir_minio_user }}
-      - MINIO_PASSWORD={{ mimir_minio_password }}
+      - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
     depends_on:
       - minio
@@ -93,7 +93,7 @@ services:
     environment:
       - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
       - MINIO_USERNAME={{ mimir_minio_user }}
-      - MINIO_PASSWORD={{ mimir_minio_password }}    
+      - MINIO_PASSWORD='{{ mimir_minio_password }}'    
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
     depends_on:
       - minio
@@ -109,7 +109,7 @@ services:
     environment:
       - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
       - MINIO_USERNAME={{ mimir_minio_user }}
-      - MINIO_PASSWORD={{ mimir_minio_password }}  
+      - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
     depends_on:
       - minio
