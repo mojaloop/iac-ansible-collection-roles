@@ -1,23 +1,9 @@
 version: "3.4"
 services:
-  # minio:
-  #   image: minio/minio
-  #   entrypoint: [""]
-  #   command: ["sh", "-c", "mkdir -p /data/mimir && minio server --console-address :9001 --quiet /data"]
-  #   environment:
-  #     - MINIO_ROOT_USER=mimir
-  #     - MINIO_ROOT_PASSWORD=supersecret
-  #     - MINIO_PROMETHEUS_AUTH_TYPE=public
-  #   ports:
-  #     - 9000:9000      
-  #     - 9001:9001      
-  #   volumes:
-  #    - minio-data:/data
-
   grafana:
     image: grafana/grafana:11.0.0
     environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true # TODO: enable auth
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_USERS_DEFAULT_THEME=light
       - GF_LOG_MODE=console
@@ -78,8 +64,6 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    # depends_on:
-    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
@@ -94,8 +78,6 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'    
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    # depends_on:
-    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
@@ -110,8 +92,6 @@ services:
       - MINIO_USERNAME={{ mimir_minio_user }}
       - MINIO_PASSWORD='{{ mimir_minio_password }}'
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
-    # depends_on:
-    #   - minio
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
       - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
@@ -121,4 +101,3 @@ volumes:
   mimir-1-data:
   mimir-2-data:
   mimir-3-data:
-  # minio-data:
