@@ -6,15 +6,19 @@
 
 
 - name: "copy configuration files"
-  copy:
+  synchronize:
     src: "../templates/config/"
     dest: "{{ central_observability_root_dir }}/config/"
+    delete: true
+    recursive: true
   notify: restart-docker-compose
 
 - name: "copy grafana dashboards"
-  copy:
+  synchronize:
     src: "../templates/dashboards/"
     dest: "{{ central_observability_root_dir }}/dashboards/"
+    delete: true
+    recursive: true    
   notify: restart-docker-compose
 
 - name: "copy docker compose file"
