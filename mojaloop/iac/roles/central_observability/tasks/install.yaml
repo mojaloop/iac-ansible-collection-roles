@@ -5,7 +5,7 @@
     recurse: yes
 
 
-- name: "copy configuration files"
+- name: "sync config files with remote host"
   synchronize:
     src: "../templates/config/"
     dest: "{{ central_observability_root_dir }}/config/"
@@ -13,7 +13,7 @@
     recursive: true
   notify: restart-docker-compose
 
-- name: "copy grafana dashboards"
+- name: "copy grafana dashboards with remote host"
   synchronize:
     src: "../templates/dashboards/"
     dest: "{{ central_observability_root_dir }}/dashboards/"
