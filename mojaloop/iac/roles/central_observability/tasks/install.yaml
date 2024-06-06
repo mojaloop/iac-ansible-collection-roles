@@ -17,14 +17,20 @@
     dest: "{{ central_observability_root_dir }}/dashboards/"
   notify: restart-docker-compose
 
-- name: "copy docker compose file"
+- name: "templatize docker compose file"
   template:
     src: "../templates/docker-compose.yaml.j2"
     dest: "{{ central_observability_root_dir }}/docker-compose.yaml"
   notify: restart-docker-compose
 
+- name: "templatize prometheus config"
+  template:
+    src: "../templates/prometheus.yaml.j2"
+    dest: "{{ central_observability_root_dir }}/prometheus.yaml"
+  notify: restart-docker-compose
 
-- name: "copy systemd service file"
+
+- name: "templatize systemd service file"
   template:
     src: "../templates/central-observability.service.j2"
     dest: "/etc/systemd/system/central-observability.service"
