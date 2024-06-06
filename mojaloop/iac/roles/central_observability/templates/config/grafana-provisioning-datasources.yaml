@@ -3,6 +3,7 @@ apiVersion: 1
 datasources:
   - name: Mimir
     type: prometheus
+    uid: mimir01
     access: proxy
     orgId: 1
     url: http://load-balancer:9009/prometheus
@@ -16,6 +17,7 @@ datasources:
     isDefault: true
   - name: Prometheus
     type: prometheus
+    uid: prometheus01
     access: proxy
     orgId: 1
     url: http://prometheus:9090

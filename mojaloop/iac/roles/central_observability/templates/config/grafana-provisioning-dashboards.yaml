@@ -1,26 +1,12 @@
 apiVersion: 1
 
 providers:
-  # - name: "LocalDashboards"
-  #   orgId: 1
-  #   type: file
-  #   disableDeletion: false
-  #   updateIntervalSeconds: 60
-  #   allowUiUpdates: false
-  #   options:
-  #     path: /var/lib/grafana/dashboards
-  #     foldersFromFilesStructure: true
-  - name: "GrafanaComDashboards"
+  - name: "LocalDashboards"
     orgId: 1
-    folder: minio
-    type: gnet
+    type: file
     disableDeletion: false
-    editable: true
-    updateIntervalSeconds: 600
+    updateIntervalSeconds: 60
+    allowUiUpdates: false
     options:
-      url: https://grafana.com/api/dashboards/
-      dashboards:
-        - id: 13502
-          revision: 26
-          uid: minio-dashboard-001
-          slug: minio-dashboard
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: true
