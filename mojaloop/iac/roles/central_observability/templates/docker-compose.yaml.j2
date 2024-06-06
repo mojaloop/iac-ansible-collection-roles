@@ -35,10 +35,9 @@ services:
       - --web.console.libraries=/usr/share/prometheus/console_libraries
       - --web.console.templates=/usr/share/prometheus/consoles
     volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - ../../../../../operations/mimir-mixin-compiled/rules.yaml:/etc/prometheus/rules.yaml
-    ports:
-      - 9090:9090
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    # ports:
+    #   - 9090:9090
     depends_on:
       - "mimir-1"
       - "mimir-2"

@@ -21,7 +21,7 @@ scrape_configs:
   - job_name: minio-cluster
     metrics_path: /minio/v2/metrics/cluster
     static_configs:
-    - targets: [minio.labs221.mojaloop.live:9000]
+    - targets: [{{ minio_server_host }}:{{ minio_listening_port }}]
 remote_write:
   - url: http://load-balancer:9009/api/v1/push
     # Add X-Scope-OrgID header so that Mimir knows what tenant the remote write data should be stored in.
