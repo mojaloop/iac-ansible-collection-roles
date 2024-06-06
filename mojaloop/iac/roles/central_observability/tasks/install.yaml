@@ -6,19 +6,15 @@
 
 
 - name: "sync config files with remote host"
-  synchronize:
+  copy:
     src: "../templates/config/"
     dest: "{{ central_observability_root_dir }}/config/"
-    delete: true
-    recursive: true
   notify: restart-docker-compose
 
 - name: "copy grafana dashboards with remote host"
-  synchronize:
+  copy:
     src: "../templates/dashboards/"
     dest: "{{ central_observability_root_dir }}/dashboards/"
-    delete: true
-    recursive: true    
   notify: restart-docker-compose
 
 - name: "copy docker compose file"
