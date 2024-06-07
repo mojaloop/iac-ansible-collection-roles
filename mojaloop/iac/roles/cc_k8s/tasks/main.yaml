@@ -52,4 +52,4 @@
   shell: |
     helm repo add rook https://charts.rook.io/release
     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set installCRDs=true --values {{ cctmpvalues.path }}/rook-ceph-values.yaml
-    kubectl apply -f { cctmpvalues.path }}/rook-ceph-crs.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f { cctmpvalues.path }}/rook-ceph-crs.yaml
