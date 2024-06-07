@@ -1,0 +1,53 @@
+#Create a temporary directory for storing values files or other config
+- name: install kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0700
+
+- name: install kustomize
+  get_url:
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
+    dest: /usr/local/bin/kustomize
+    mode: 0700
+
+- name: Create temporary directory for cc boot
+  tempfile:
+    state: directory
+    suffix: values
+  register: cctmpvalues
+
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: directory
+    recurse: yes
+
+- name: copy kubeconfig
+  copy:
+    src: "{{ kubeconfig_local_location }}/kubeconfig"
+    dest: "{{ kubeconfig_location }}/kubeconfig"
+
+- name: apply node labels
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels, wantlist=True) %} {{ labels.key }}={{ labels.value }}{% endfor %}
+  loop: "{{ node_pool_labels }}"
+  when: node_pool_labels is defined
+
+- name: apply node taints
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
+  loop: "{{ node_pool_taints }}"
+  when: node_pool_taints is defined
+
+- name: Upload cc bootstrap files
+  template:
+    src: "templates/{{ item }}.yaml.j2"
+    dest: "{{ cctmpvalues.path }}/{{ item }}.yaml"
+  with_items:
+    - rook-ceph
+
+- name: Install rook/ceph
+  shell: |
+    helm repo add rook https://charts.rook.io/release
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set installCRDs=true --values {{ cctmpvalues.path }}/rook-ceph-values.yaml

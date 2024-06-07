@@ -1,0 +1,9 @@
+argocd_version: "2.8.2"
+rook_ceph_version: "1.14.5"
+external_secrets_version: "0.9.0"
+external_secrets_namespace: "external-secrets"
+kubeconfig_location: "/root/.kube"
+cluster_name: envname
+kubeconfig_local_location: "/tmp"
+kustomize_version: "3.2.3"
+kubectl_version: "1.24.6"
