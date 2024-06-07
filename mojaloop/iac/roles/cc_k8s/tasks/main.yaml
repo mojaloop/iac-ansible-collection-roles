@@ -45,7 +45,7 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ cctmpvalues.path }}/{{ item }}.yaml"
   with_items:
-    - rook-ceph
+    - rook-ceph-values
 
 - name: Install rook/ceph
   shell: |
