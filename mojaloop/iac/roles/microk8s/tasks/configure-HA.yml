@@ -49,6 +49,12 @@
       command: "microk8s status --wait-ready"
       changed_when: false
 
+    - name: Create tmp kubeconfig file 
+      file:
+        path: /tmp/kubeconfig
+        state: touch
+      delegate_to: "{{ designated_host }}"
+      
     - name: Replace IP with LB in kubeconfig
       command: 'microk8s config view | sed "s/{{ ansible_default_ipv4.address }}/{{ kubeapi_loadbalancer_fqdn }}/" > /tmp/kubecfg'
       when: kubeapi_loadbalancer_fqdn != 'none'
