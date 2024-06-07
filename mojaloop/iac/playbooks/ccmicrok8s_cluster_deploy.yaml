@@ -3,7 +3,6 @@
   roles:
     - mojaloop.iac.bastion_common
     - mojaloop.iac.docker
-    - mojaloop.iac.nexus_server
 
 - hosts: master
   become: true

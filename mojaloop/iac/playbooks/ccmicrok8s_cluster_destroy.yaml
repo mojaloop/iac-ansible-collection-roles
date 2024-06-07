@@ -11,10 +11,3 @@
     teardown: true
   roles:
     - role: mojaloop.iac.microk8s
-
-- hosts: bastion
-  become: true
-  vars:
-    teardown: true
-  roles:
-    - mojaloop.iac.netclient
