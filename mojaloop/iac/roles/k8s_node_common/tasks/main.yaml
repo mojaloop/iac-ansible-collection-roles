@@ -17,8 +17,3 @@
     name: multipathd
     state: restarted
   when: "'multipath-tools' in ansible_facts.packages and multipathconf.changed"
-
-- name: Install yq
-  become: true
-  snap:
-    name: yq
