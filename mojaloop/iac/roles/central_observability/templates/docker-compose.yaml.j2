@@ -53,7 +53,7 @@ services:
       - "mimir-2"
       - "mimir-3"
     ports:
-      - 9009:9009
+      - {{ mimir_listening_port }}:9009
 
   mimir-1:
     image: grafana/mimir:2.12.0
