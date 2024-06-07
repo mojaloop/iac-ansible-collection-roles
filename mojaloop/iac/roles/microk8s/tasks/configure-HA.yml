@@ -54,16 +54,16 @@
         path: /tmp/kubeconfig
         state: touch
       delegate_to: "{{ designated_host }}"
-      
+
     - name: Replace IP with LB in kubeconfig
-      command: 'microk8s config view | sed "s/{{ ansible_default_ipv4.address }}/{{ kubeapi_loadbalancer_fqdn }}/" > /tmp/kubecfg'
+      command: 'microk8s config view | sed "s/{{ ansible_default_ipv4.address }}/{{ kubeapi_loadbalancer_fqdn }}/" > /tmp/kubeconfig'
       when: kubeapi_loadbalancer_fqdn != 'none'
       delegate_to: "{{ designated_host }}"
       delegate_facts: true
 
     - name: Fetch kubeconfig
       fetch:
-        src: "/tmp/kubecfg"
+        src: "/tmp/kubeconfig"
         dest: "{{ kubeconfig_local_location }}/kubeconfig"
         flat: yes
       delegate_to: "{{ designated_host }}"
