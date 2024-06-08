@@ -58,6 +58,7 @@
   shell: |
     cd {{ rook_gitrepo_location }}
     git config --global advice.detachedHead false
+    rm -rf rook
     git clone https://github.com/rook/rook.git
     cd rook
     git checkout v{{ rook_ceph_version }}
