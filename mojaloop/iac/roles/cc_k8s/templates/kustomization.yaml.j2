@@ -13,6 +13,7 @@ patches:
     kind: ConfigMap
     metadata:
       name: rook-ceph-operator-config
+      namesapce: {{ rook_ceph_namespace }}
     data:
       ROOK_CSI_KUBELET_DIR_PATH: {{ rook_csi_kubelet_dir_path }}
       ROOK_ENABLE_DISCOVERY_DAEMON: "true"
