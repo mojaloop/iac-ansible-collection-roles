@@ -23,6 +23,12 @@
     state: directory
     recurse: yes
 
+- name: "create directory for rook git repo"
+  file:
+    path: "{{ rook_gitrepo_location }}"
+    state: directory
+    recurse: yes
+
 - name: copy kubeconfig
   copy:
     src: "{{ kubeconfig_local_location }}/kubeconfig"
