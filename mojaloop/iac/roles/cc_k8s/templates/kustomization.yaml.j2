@@ -3,9 +3,9 @@ kind: Kustomization
 namespace: {{ rook_ceph_namespace }}
 
 resources:
-- {{ rook_gitrepo_location }}/rook/deploy/examples/crds.yaml
-- {{ rook_gitrepo_location }}/rook/deploy/examples/common.yaml
-- {{ rook_gitrepo_location }}/rook/deploy/examples/operator.yaml
+- crds.yaml
+- common.yaml
+- operator.yaml
 
 patches:
 - patch: |-
