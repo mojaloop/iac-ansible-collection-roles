@@ -50,6 +50,10 @@
 
 - name: Install rook/ceph
   shell: |
+    cd {{ rook_gitrepo_location }}
+    git clone https://github.com/rook/rook.git
+    cd rook
+    git checkout v{{ rook_ceph_version }}
     kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
