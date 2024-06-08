@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: {{ rook_ceph_namespace }}
+
+resources:
+- https://raw.githubusercontent.com/rook/rook/v{{ rook_ceph_version }}/deploy/examples/crds.yaml
+- https://raw.githubusercontent.com/rook/rook/v{{ rook_ceph_version }}/deploy/examples/common.yaml
+- https://raw.githubusercontent.com/rook/rook/v{{ rook_ceph_version }}/deploy/examples/operator.yaml
+
+patches:
+- patch: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: rook-ceph-operator-config
+    data:
+      ROOK_CSI_KUBELET_DIR_PATH: {{ rook_csi_kubelet_dir_path }}
+      ROOK_ENABLE_DISCOVERY_DAEMON: "true"

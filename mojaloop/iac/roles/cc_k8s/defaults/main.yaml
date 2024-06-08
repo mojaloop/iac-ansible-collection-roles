@@ -8,3 +8,4 @@ cluster_name: envname
 kubeconfig_local_location: "/tmp"
 kustomize_version: "3.2.3"
 kubectl_version: "1.24.6"
+rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
