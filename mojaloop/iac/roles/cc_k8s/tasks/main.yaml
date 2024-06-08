@@ -61,7 +61,7 @@
     git clone https://github.com/rook/rook.git
     cd rook
     git checkout v{{ rook_ceph_version }}
-    cp rook/deploy/examples/crds.yaml rook/deploy/examples/common.yaml rook/deploy/examples/operator.yaml  {{ cctmpvalues.path }}
+    cp deploy/examples/crds.yaml deploy/examples/common.yaml deploy/examples/operator.yaml  {{ cctmpvalues.path }}
     kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
