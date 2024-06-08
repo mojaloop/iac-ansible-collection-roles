@@ -51,5 +51,5 @@
 - name: Install rook/ceph
   shell: |
     kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f { cctmpvalues.path }}/rook-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f { cctmpvalues.path }}/rook-ceph-crs.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
