@@ -53,6 +53,9 @@
   with_items:
     - kustomization
     - rook-ceph-crs
+    - cockroach-db-values
+    - zitadel-cert-job
+    - zitadel-values
 
 - name: Install rook/ceph
   shell: |
@@ -66,3 +69,14 @@
     kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
+    kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/replicapool
+    helm repo add cockroachdb https://charts.cockroachdb.com/
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
+
+    # Generate a TLS certificate for the zitadel DB user
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
+
+    # Install ZITADEL
+    helm repo add zitadel https://charts.zitadel.com
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
