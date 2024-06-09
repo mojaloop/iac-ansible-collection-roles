@@ -63,5 +63,7 @@
 - hosts: bastion
   become: true
   roles:
-    - geerlingguy.k8s.helm
-    - mojaloop.iac.cc_k8s
+    - role: geerlingguy.k8s.helm
+      vars:
+        helm_version: "v3.14.0"
+    - role: mojaloop.iac.cc_k8s
