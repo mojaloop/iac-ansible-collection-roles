@@ -71,3 +71,4 @@ registry_mirror_port: 9000
 teardown: false
 microk8s_root_path: /var/snap/microk8s/
 longhorn_data_path: /var/lib/longhorn/
+microk8s_apiserver_port: 16443

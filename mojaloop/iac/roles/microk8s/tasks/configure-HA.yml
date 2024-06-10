@@ -57,6 +57,12 @@
       delegate_to: "{{ designated_host }}"
       delegate_facts: true
 
+    - name: Replace IP with LB in kubeconfig
+      command: yq e -i  '.clusters[0].cluster.server = "https://{{kubeapi_loadbalancer_fqdn}}:{{microk8s_apiserver_port}}"' "{{ kubeconfig_local_location }}/kubeconfig"
+      when: kubeapi_loadbalancer_fqdn != "none"
+      delegate_to: localhost
+      delegate_facts: true      
+
     - name: Set the microk8s join command on the microk8s node
       command: "{{ microk8s_join_command.stdout }}"
       when: microk8s_cluster_node.stdout.find(inventory_hostname) == -1
