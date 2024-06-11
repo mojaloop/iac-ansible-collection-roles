@@ -94,7 +94,7 @@
     kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
-    kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml
+    kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml || true
 
 - name: Install zitadel
   shell: |
