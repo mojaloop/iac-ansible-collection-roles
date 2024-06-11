@@ -70,7 +70,7 @@ spec:
     istio: {{ istio_internal_gateway_name }}
   servers:
   - hosts:
-    - '*.{{ private_subdomain }}'
+    - '*.{{ dns_private_subdomain }}'
     port:
       name: https
       number: 443
@@ -91,7 +91,7 @@ spec:
     istio: {{ istio_external_gateway_name }}
   servers:
   - hosts:
-    - '*.{{ public_subdomain }}'
+    - '*.{{ dns_api_public_domain }}'
     port:
       name: https
       number: 443
