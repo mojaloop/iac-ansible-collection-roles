@@ -56,6 +56,13 @@
     - cockroach-db-values
     - zitadel-cert-job
     - zitadel-values
+    - netbird-values
+    - lets-encrypt-cluster-issuer
+    - ext-dns-values
+    - ext-dns-crs
+
+- name: Install externaldns/certmanager
+  shell: |
 
 - name: Install rook/ceph
   shell: |
@@ -70,6 +77,21 @@
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
     kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/replicapool
+    #change sc to default
+    export default_sc=$(kubectl get sc -o jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')    
+    if [ "{{ rook_ceph_storage_class }}" != "$default_sc" ]; then kubectl patch storageclass $default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'; fi
+    kubectl patch storageclass {{ rook_ceph_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+- name: Install utils
+  shell: |
+    helm repo add cert-manager https://charts.jetstack.io
+    helm install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set installCRDs=true
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace
+
+- name: Install zitadel
+  shell: |
     helm repo add cockroachdb https://charts.cockroachdb.com/
     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
 
@@ -80,3 +102,10 @@
     # Install ZITADEL
     helm repo add zitadel https://charts.zitadel.com
     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
+
+# - name: Install netbird
+#   shell: |
+
+#     # install netbird
+#     helm repo add jaconi https://charts.jaconi.io
+#     helm install netbird jaconi/netbird --version {{ netbird_chart_version }} --values {{ cctmpvalues.path }}/netbird-values.yaml
