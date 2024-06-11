@@ -2,7 +2,7 @@ zitadel:
   masterkey: x123456789012345678901234567891y
   configmapConfig:
     ExternalSecure: false
-    ExternalDomain: 127.0.0.1.sslip.io
+    ExternalDomain: zitadel.{{ dns_public_subdomain }}
     TLS:
       Enabled: false
     Database:

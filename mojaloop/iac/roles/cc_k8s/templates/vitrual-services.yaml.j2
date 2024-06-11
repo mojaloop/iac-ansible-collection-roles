@@ -17,14 +17,3 @@ spec:
             host: zitadel
             port:
               number: 8080
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: zit-server-dtrl
-  namespace: {{ zitadel_namespace }}
-spec:
-  host: zitadel
-  trafficPolicy:
-    tls:
-      mode: SIMPLE
