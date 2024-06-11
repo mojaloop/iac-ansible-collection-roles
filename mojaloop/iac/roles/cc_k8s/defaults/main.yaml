@@ -42,4 +42,6 @@ external_ingress_health_port: 32081
 internal_ingress_https_port: 31443
 internal_ingress_http_port: 31080
 internal_ingress_health_port: 31081
+internal_load_balancer_dns: "dns.name"
+external_load_balancer_dns: "dns.name"
 reflector_helm_version: "7.1.262"
