@@ -15,7 +15,7 @@ spec:
     solvers:
     - selector:
         dnsZones:
-          - "{{ dns_api_public_domain }}"
+          - "{{ dns_public_subdomain }}"
       dns01:
         route53:
           region: {{ dns_cloud_api_region }}

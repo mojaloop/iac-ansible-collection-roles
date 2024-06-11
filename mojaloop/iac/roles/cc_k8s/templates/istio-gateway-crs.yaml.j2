@@ -29,10 +29,10 @@ spec:
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer
-  commonName: {{ dns_api_public_domain }}
+  commonName: {{ dns_public_subdomain }}
   dnsNames:
-    - "{{ dns_api_public_domain }}"
-    - "*.{{ dns_api_public_domain }}"
+    - "{{ dns_public_subdomain }}"
+    - "*.{{ dns_public_subdomain }}"
   secretTemplate:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
@@ -91,7 +91,7 @@ spec:
     istio: {{ istio_external_gateway_name }}
   servers:
   - hosts:
-    - '*.{{ dns_api_public_domain }}'
+    - '*.{{ dns_public_subdomain }}'
     port:
       name: https
       number: 443

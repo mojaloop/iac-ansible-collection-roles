@@ -66,6 +66,7 @@
     - istio-internal-ingress-gateway-values
     - istio-external-ingress-gateway-values
     - istio-gateway-crs
+    - vitrual-services
 
 - name: Install rook/ceph
   shell: |
@@ -117,6 +118,7 @@
     # Install ZITADEL
     helm repo add zitadel https://charts.zitadel.com
     helm upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/vitrual-services.yaml
 
 # - name: Install netbird
 #   shell: |
