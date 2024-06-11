@@ -64,3 +64,10 @@
       Authorization: Bearer {{ netmaker_master_key }}
     status_code: [200, 400]
   loop: "{{ _env_nodes.json }}"
+
+- name: remove netclient package
+  package:
+    name:
+      - wireguard
+      - netclient={{ netmaker_image_version }}-0
+    state: absent  
