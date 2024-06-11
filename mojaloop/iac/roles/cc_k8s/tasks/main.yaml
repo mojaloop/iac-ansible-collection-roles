@@ -61,6 +61,8 @@
     - lets-encrypt-cluster-issuer
     - ext-dns-values
     - ext-dns-crs
+    - istio-istiod-values
+    - istio-base-values
 
 - name: Install rook/ceph
   shell: |
@@ -84,6 +86,9 @@
 - name: Install utils
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add istio https://istio-release.storage.googleapis.com/charts
+    helm upgrade --install istio-base istio/base --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-base-values.yaml
+    helm upgrade --install istio-istiod istio/istiod --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-istiod-values.yaml
     helm repo add cert-manager https://charts.jetstack.io
     helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set crds.enabled=true
     kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
