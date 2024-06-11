@@ -84,11 +84,11 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add cert-manager https://charts.jetstack.io
-    helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set installCRDs=true
+    helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set crds.enabled=true
     kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
-    kubectl -n {{ external_dns_namespace }} apply -f {{ cctmpvalues.path }}/ext-dns-crs.yaml
+    kubectl -n {{ external_dns_namespace }} create secret {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml
 
 - name: Install zitadel
   shell: |
