@@ -63,6 +63,9 @@
     - ext-dns-crs
     - istio-istiod-values
     - istio-base-values
+    - istio-internal-ingress-gateway-values
+    - istio-external-ingress-gateway-values
+    - istio-gateway-crs
 
 - name: Install rook/ceph
   shell: |
@@ -86,15 +89,20 @@
 - name: Install utils
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add ember https://emberstack.github.io/helm-charts
+    helm upgrade --install reflector ember/reflector --version {{ reflector_helm_version }} -n reflector --create-namespace --set nameOverride=reflector
     helm repo add istio https://istio-release.storage.googleapis.com/charts
     helm upgrade --install istio-base istio/base --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-base-values.yaml
     helm upgrade --install istio-istiod istio/istiod --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-istiod-values.yaml
+    helm upgrade --install int-gateway istio/gateway --version {{ istio_helm_version }} -n {{ istio_internal_gateway_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-internal-ingress-gateway-values.yaml
+    helm upgrade --install ext-gateway istio/gateway --version {{ istio_helm_version }} -n {{ istio_external_gateway_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-external-ingress-gateway-values.yaml
     helm repo add cert-manager https://charts.jetstack.io
     helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set crds.enabled=true
     kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
     kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml || true
+    kubectl apply -f {{ cctmpvalues.path }}/istio-gateway-crs.yaml
 
 - name: Install zitadel
   shell: |

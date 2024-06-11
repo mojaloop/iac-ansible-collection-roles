@@ -30,3 +30,16 @@ dns_private_subdomain: "x.y.internal"
 istio_proxy_log_level: "info"
 istio_namespace: "istio-system"
 istio_helm_version: "1.22.1"
+istio_internal_gateway_name: "istio-internal-ingress-gw"
+istio_external_gateway_name: "istio-external-ingress-gw"
+istio_external_gateway_namespace: "istio-ingress-ext"
+istio_internal_gateway_namespace: "istio-ingress-int"
+default_external_ssl_certificate: "ext-ingress-letsencrypt"
+default_internal_ssl_certificate: "int-ingress-letsencrypt"
+external_ingress_https_port: 32443
+external_ingress_http_port: 32080
+external_ingress_health_port: 32081
+internal_ingress_https_port: 31443
+internal_ingress_http_port: 31080
+internal_ingress_health_port: 31081
+reflector_helm_version: "7.1.262"
