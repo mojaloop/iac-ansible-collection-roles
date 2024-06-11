@@ -71,8 +71,9 @@
     git checkout v{{ rook_ceph_version }}
     cp deploy/examples/crds.yaml deploy/examples/common.yaml deploy/examples/operator.yaml  {{ cctmpvalues.path }}
     kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
     kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/replicapool
     #change sc to default
     export default_sc=$(kubectl get sc -o jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')    
@@ -81,25 +82,27 @@
 
 - name: Install utils
   shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add cert-manager https://charts.jetstack.io
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set installCRDs=true
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
+    helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set installCRDs=true
+    kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
     helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ external_dns_namespace }} apply -f {{ cctmpvalues.path }}/ext-dns-crs.yaml
+    helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
+    kubectl -n {{ external_dns_namespace }} apply -f {{ cctmpvalues.path }}/ext-dns-crs.yaml
 
 - name: Install zitadel
   shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add cockroachdb https://charts.cockroachdb.com/
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
+    helm upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
 
     # Generate a TLS certificate for the zitadel DB user
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
+    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
+    kubectl -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
 
     # Install ZITADEL
     helm repo add zitadel https://charts.zitadel.com
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
+    helm upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
 
 # - name: Install netbird
 #   shell: |
