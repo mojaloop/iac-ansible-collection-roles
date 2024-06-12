@@ -90,17 +90,14 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add rook https://charts.rook.io/release
     helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
-    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --values {{ cctmpvalues.path }}/rook-ceph-cluster-values.yaml
+    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }}
 
 - name: Wait for blockpool
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get -n {{ rook_ceph_namespace }} CephBlockPool/ceph-blockpool --ignore-not-found | wc -l
-  register: blockpoolcount
-  until: blockpoolcount.stdout | int != 0
-  retries: 30
-  delay: 5
-
-- name: Wait for blockpool to be ready
   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
+  register: blockpool
+  until: blockpool is not failed
+  retries: 50
+  delay: 10
 
 - name: Install zitadel
   shell: |
