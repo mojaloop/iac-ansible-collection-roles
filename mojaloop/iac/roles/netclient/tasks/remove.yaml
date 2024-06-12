@@ -54,3 +54,20 @@
       Authorization: Bearer {{ netmaker_master_key }}
     status_code: [200, 400]
   loop: "{{ _env_nodes.json }}"
+
+- name: delete netclient host from netmaker server
+  uri:
+    url: https://{{ netmaker_api_host }}/api/hosts/{ item.hostid }}
+    method: DELETE
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200, 400]
+  loop: "{{ _env_nodes.json }}"
+
+- name: remove netclient package
+  package:
+    name:
+      - wireguard
+      - netclient={{ netmaker_image_version }}-0
+    state: absent  
