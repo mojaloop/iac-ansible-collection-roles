@@ -7,9 +7,7 @@ services:
       # - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_SECURITY_ADMIN_USER={{ central_observability_grafana_root_user }} 
       - GF_SECURITY_ADMIN_PASSWORD={{ central_observability_grafana_root_password }}
-      - GF_USERS_DEFAULT_THEME=light
       - GF_LOG_MODE=console
-      # - GF_LOG_LEVEL=debug
     volumes:
       - ./config/grafana-provisioning-dashboards.yaml:/etc/grafana/provisioning/dashboards/provisioning-dashboards.yaml:ro
       - ./config/grafana-provisioning-datasources.yaml:/etc/grafana/provisioning/datasources/provisioning-datasources.yaml:ro
