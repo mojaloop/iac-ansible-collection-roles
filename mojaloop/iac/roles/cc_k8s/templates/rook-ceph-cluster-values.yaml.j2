@@ -462,43 +462,7 @@ cephBlockPools:
       #        - matchLabelExpressions:
       #            - key: rook-ceph-role
       #              values:
-      #                - storage-node
-      # see https://github.com/rook/rook/blob/v1.14.5/Documentation/Storage-Configuration/Block-Storage-RBD/block-storage.md#provision-storage for available configuration
-      parameters:
-        # (optional) mapOptions is a comma-separated list of map options.
-        # For krbd options refer
-        # https://docs.ceph.com/docs/latest/man/8/rbd/#kernel-rbd-krbd-options
-        # For nbd options refer
-        # https://docs.ceph.com/docs/latest/man/8/rbd-nbd/#options
-        # mapOptions: lock_on_read,queue_depth=1024
-
-        # (optional) unmapOptions is a comma-separated list of unmap options.
-        # For krbd options refer
-        # https://docs.ceph.com/docs/latest/man/8/rbd/#kernel-rbd-krbd-options
-        # For nbd options refer
-        # https://docs.ceph.com/docs/latest/man/8/rbd-nbd/#options
-        # unmapOptions: force
-
-        # RBD image format. Defaults to "2".
-        imageFormat: "2"
-
-        # RBD image features, equivalent to OR'd bitfield value: 63
-        # Available for imageFormat: "2". Older releases of CSI RBD
-        # support only the `layering` feature. The Linux kernel (KRBD) supports the
-        # full feature complement as of 5.4
-        imageFeatures: layering
-
-        # These secrets contain Ceph admin credentials.
-        csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-        csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
-        csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
-        csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
-        csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
-        csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-        # Specify the filesystem type of the volume. If not specified, csi-provisioner
-        # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
-        # in hyperconverged settings where the volume is mounted on the same node as the osds.
-        csi.storage.k8s.io/fstype: ext4
+      #                - storage-node      
 
 # -- A list of CephFileSystem configurations to deploy
 # @default -- See [below](#ceph-file-systems)
@@ -536,19 +500,7 @@ cephFileSystems:
       volumeBindingMode: "Immediate"
       mountOptions: []
       # see https://github.com/rook/rook/blob/v1.14.5/Documentation/Storage-Configuration/Shared-Filesystem-CephFS/filesystem-storage.md#provision-storage for available configuration
-      parameters:
-        # The secrets contain Ceph admin credentials.
-        csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-        csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
-        csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-        csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
-        csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-        csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-        # Specify the filesystem type of the volume. If not specified, csi-provisioner
-        # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
-        # in hyperconverged settings where the volume is mounted on the same node as the osds.
-        csi.storage.k8s.io/fstype: ext4
-
+      
 # -- Settings for the filesystem snapshot class
 # @default -- See [CephFS Snapshots](../Storage-Configuration/Ceph-CSI/ceph-csi-snapshot.md#cephfs-snapshots)
 cephFileSystemVolumeSnapshotClass:
@@ -676,4 +628,4 @@ cephObjectStores:
 
 # -- CSI driver name prefix for cephfs, rbd and nfs.
 # @default -- `namespace name where rook-ceph operator is deployed`
-#csiDriverNamePrefix:
+csiDriverNamePrefix:
