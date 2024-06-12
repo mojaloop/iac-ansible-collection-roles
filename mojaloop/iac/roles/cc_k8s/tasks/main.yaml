@@ -91,12 +91,16 @@
     helm repo add rook https://charts.rook.io/release
     helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
     helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --values {{ cctmpvalues.path }}/rook-ceph-cluster-values.yaml
-    kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
 
-    #change sc to default
-    #export default_sc=$(kubectl get sc -o jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')    
-    #if [ "{{ rook_ceph_storage_class }}" != "$default_sc" ]; then kubectl patch storageclass $default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'; fi
-    #kubectl patch storageclass {{ rook_ceph_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+- name: Wait for blockpool
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get -n {{ rook_ceph_namespace }} CephBlockPool/ceph-blockpool --ignore-not-found | wc -l
+  register: blockpoolcount
+  until: blockpoolcount is not 0
+  retries: 30
+  delay: 5
+
+- name: Wait for blockpool to be ready
+    kubectl -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
 
 - name: Install zitadel
   shell: |
