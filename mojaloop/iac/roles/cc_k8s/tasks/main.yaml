@@ -89,8 +89,8 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add rook https://charts.rook.io/release
-    helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n rook_ceph_namespace --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
-    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n rook_ceph_namespace --create-namespace --values {{ cctmpvalues.path }}/rook-ceph-cluster-values.yaml
+    helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
+    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --values {{ cctmpvalues.path }}/rook-ceph-cluster-values.yaml
     kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/ceph-blockpool
 
     #change sc to default
