@@ -9,8 +9,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD='{{ central_observability_grafana_root_password }}'
       # - GF_SERVER_ROOT_URL={{ central_observability_grafana_root_url }} 
       - GF_AUTH_GITLAB_ENABLED=true
-      - GF_AUTH_GITLAB_CLIENT_ID={{ central_observability_grafana_auth_gitlab_client_id }}
-      - GF_AUTH_GITLAB_CLIENT_SECRET={{ central_observability_grafana_auth_gitlab_client_secret}}
+      - GF_AUTH_GITLAB_CLIENT_ID={{ central_observability_grafana_oidc_client_id }}
+      - GF_AUTH_GITLAB_CLIENT_SECRET={{ central_observability_grafana_oidc_client_secret}}
       - GF_AUTH_GITLAB_ROLE_ATTRIBUTE_PATH='Editor'
       - GF_LOG_MODE=console
     volumes:
