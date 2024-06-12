@@ -95,7 +95,7 @@
 - name: Wait for blockpool
   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get -n {{ rook_ceph_namespace }} CephBlockPool/ceph-blockpool --ignore-not-found | wc -l
   register: blockpoolcount
-  until: blockpoolcount is not "0"
+  until: blockpoolcount.stdout | int != 0
   retries: 30
   delay: 5
 
