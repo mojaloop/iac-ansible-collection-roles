@@ -100,7 +100,7 @@
   delay: 5
 
 - name: Wait for blockpool to be ready
-    kubectl -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
+  shell: kubectl -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
 
 - name: Install zitadel
   shell: |
