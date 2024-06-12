@@ -52,8 +52,7 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ cctmpvalues.path }}/{{ item }}.yaml"
   with_items:
-    - kustomization
-    - rook-ceph-crs
+    - ceph-blockpool
     - cockroach-db-values
     - zitadel-cert-job
     - zitadel-values
@@ -67,25 +66,6 @@
     - istio-external-ingress-gateway-values
     - istio-gateway-crs
     - vitrual-services
-
-- name: Install rook/ceph
-  shell: |
-    cd {{ rook_gitrepo_location }}
-    git config --global advice.detachedHead false
-    rm -rf rook
-    git clone https://github.com/rook/rook.git
-    cd rook
-    git checkout v{{ rook_ceph_version }}
-    cp deploy/examples/crds.yaml deploy/examples/common.yaml deploy/examples/operator.yaml  {{ cctmpvalues.path }}
-    kustomize build {{ cctmpvalues.path }} > {{ cctmpvalues.path }}/rook-deploy.yaml
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/rook-deploy.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/rook-ceph-crs.yaml
-    kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/replicapool
-    #change sc to default
-    export default_sc=$(kubectl get sc -o jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')    
-    if [ "{{ rook_ceph_storage_class }}" != "$default_sc" ]; then kubectl patch storageclass $default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'; fi
-    kubectl patch storageclass {{ rook_ceph_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 - name: Install utils
   shell: |
@@ -104,6 +84,19 @@
     helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
     kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml || true
     kubectl apply -f {{ cctmpvalues.path }}/istio-gateway-crs.yaml
+
+- name: Install rook/ceph
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add rook https://charts.rook.io/release
+    helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n rook_ceph_namespace --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
+    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n rook_ceph_namespace --create-namespace --values {{ cctmpvalues.path }}/rook-ceph-cluster-values.yaml
+    kubectl -n rook-ceph wait --for=jsonpath='{.status.phase}'=Ready CephBlockPool/ceph-blockpool
+
+    #change sc to default
+    #export default_sc=$(kubectl get sc -o jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')    
+    #if [ "{{ rook_ceph_storage_class }}" != "$default_sc" ]; then kubectl patch storageclass $default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'; fi
+    #kubectl patch storageclass {{ rook_ceph_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 - name: Install zitadel
   shell: |

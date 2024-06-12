@@ -1,10 +1,18 @@
 zitadel:
   masterkey: x123456789012345678901234567891y
   configmapConfig:
-    ExternalSecure: false
+    ExternalPort: 443
+    ExternalSecure: true
     ExternalDomain: zitadel.{{ dns_public_subdomain }}
     TLS:
       Enabled: false
+    FirstInstance:
+      Org:
+        Human:
+          # use the loginname root@zitadel.zitadel.{{ dns_public_subdomain }}
+          Username: 'zitadel-admin'
+          Password: '#RootPassword1!'
+          PasswordChangeRequired: false
     Database:
       Cockroach:
         Host: zitadel-db-cockroachdb-public
