@@ -5,7 +5,8 @@ mimir_minio_bucket: central-observability-mimir
 mimir_listening_port: 9009
 central_observability_grafana_root_user: update_me_please
 central_observability_grafana_root_password: update_me_please
-central_observability_grafana_root_url: update_me_please
+central_observability_grafana_fqdn: grafana
 enable_central_observability_grafana_oidc: true
 central_observability_grafana_oidc_client_id: update_me_please
 central_observability_grafana_oidc_client_secret: update_me_please
+gitlab_external_url: https://gitlab.com
