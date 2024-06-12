@@ -10,7 +10,7 @@ services:
       # - GF_SERVER_ROOT_URL={{ central_observability_grafana_root_url }} 
       - GF_AUTH_GITLAB_ENABLED=true
       - GF_AUTH_GITLAB_CLIENT_ID={{ central_observability_grafana_oidc_client_id }}
-      - GF_AUTH_GITLAB_CLIENT_SECRET={{ central_observability_grafana_oidc_client_secret}}
+      - GF_AUTH_GITLAB_CLIENT_SECRET="${GF_AUTH_GITLAB_CLIENT_SECRET}"
       - GF_AUTH_GITLAB_ROLE_ATTRIBUTE_PATH='Editor'
       - GF_LOG_MODE=console
     volumes:
@@ -67,7 +67,7 @@ services:
     environment:
       - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
       - MINIO_USERNAME={{ mimir_minio_user }}
-      - MINIO_PASSWORD='{{ mimir_minio_password }}'
+      - MINIO_PASSWORD="${MINIO_PASSWORD}"
       - MINIO_BUCKET={{ mimir_minio_bucket }}    
     volumes:
       - ./config/mimir.yaml:/etc/mimir.yaml
