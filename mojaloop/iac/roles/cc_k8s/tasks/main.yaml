@@ -52,7 +52,7 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ cctmpvalues.path }}/{{ item }}.yaml"
   with_items:
-    - ceph-blockpool
+    - rook-ceph-cluster-values
     - cockroach-db-values
     - zitadel-cert-job
     - zitadel-values
