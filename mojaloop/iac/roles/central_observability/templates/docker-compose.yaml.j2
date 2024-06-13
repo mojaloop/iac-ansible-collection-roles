@@ -5,7 +5,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER={{ central_observability_grafana_root_user }} 
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-      - GF_SERVER_ROOT_URL={{ central_observability_grafana_fqdn }}
+      - GF_SERVER_ROOT_URL=http://{{ central_observability_grafana_fqdn }}:{{ central_observability_grafana_listening_port }}
       - GF_AUTH_GITLAB_ENABLED={{ enable_central_observability_grafana_oidc }}
       - GF_AUTH_GITLAB_CLIENT_ID={{ central_observability_grafana_oidc_client_id }}
       - GF_AUTH_GITLAB_CLIENT_SECRET=${GF_AUTH_GITLAB_CLIENT_SECRET}
