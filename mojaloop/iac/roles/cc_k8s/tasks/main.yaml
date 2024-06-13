@@ -114,6 +114,18 @@
     helm upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
     kubectl apply -f {{ cctmpvalues.path }}/vitrual-services.yaml
 
+- name: Wait for zitadel key
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
+  register: adminkey
+  until: adminkey is not failed
+  retries: 50
+  delay: 10
+
+- name: Fecth zitadel key
+  copy:
+    content: "{{ adminkey.stdout }}"
+    dest: "{{ zitadel_local_location }}/zitadel-admin-sa.json"
+  delegate_to: localhost
 # - name: Install netbird
 #   shell: |
 
