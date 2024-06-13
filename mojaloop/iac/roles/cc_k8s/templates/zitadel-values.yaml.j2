@@ -8,11 +8,14 @@ zitadel:
       Enabled: false
     FirstInstance:
       Org:
-        Human:
-          # use the loginname root@zitadel.zitadel.{{ dns_public_subdomain }}
-          Username: 'zitadel-admin'
-          Password: '#RootPassword1!'
-          PasswordChangeRequired: false
+        Machine:
+          Machine:
+            Username: zitadel-admin-sa
+            Name: Admin
+          MachineKey:
+            ExpirationDate: "2026-01-01T00:00:00Z"
+            # Type: 1 means JSON. This is currently the only supported machine key type.
+            Type: 1
     Database:
       Cockroach:
         Host: zitadel-db-cockroachdb-public
