@@ -121,7 +121,7 @@
   retries: 50
   delay: 10
 
-- name: Fecth zitadel key
+- name: Fetch zitadel key
   copy:
     content: "{{ adminkey.stdout }}"
     dest: "{{ zitadel_local_location }}/zitadel-admin-sa.json"
