@@ -168,8 +168,11 @@
 - name: Install netbird
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helmfile --version
+    helm repo add stunner https://l7mp.io/stunner
+    helm upgrade --install stunner stunner/stunner-gateway-operator -n {{ stunner_system_namespace }} --create-namespace
+    kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
     kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml
+    helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
 
 #     helm repo add jaconi https://charts.jaconi.io
 #     helm install netbird jaconi/netbird --version {{ netbird_chart_version }} --values {{ cctmpvalues.path }}/netbird-values.yaml
