@@ -1,0 +1,21 @@
+repositories:
+  - name: netbird
+    url: git+https://github.dev/totmicro/helms/charts?ref=main
+  - name: stunner
+    url: https://l7mp.io/stunner
+
+releases:
+  - name: stunner
+    namesapce: stunner-system
+    chart: stunner/stunner-gateway-operator
+
+  - name: netbird
+    namespace: {{ netbird_namespace }}
+    version: {{ netbird_chart_version }}
+    chart: netbird/netbird
+    values:
+      - netbird-values.yaml
+
+  #- name: netbird-dashboard
+  #  namespace: netbird
+  #  chart: netbird/netbird-dashboard

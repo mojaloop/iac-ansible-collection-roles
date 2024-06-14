@@ -1,424 +1,107 @@
----
-## @section NetBird Parameters
-
-auth:
-  ## @param auth.audience
-  ##
-  audience: account
-
-  ## @param auth.authority
-  ##
-  authority: http://keycloak.localtest.me:9000/realms/helm-charts
-  # authority: https://<tenant-name>.us.auth0.com
-
-  device:
-    ## @param auth.device.provider
-    ##
-    provider: none
-    # provider: hosted
-    # audience: account
-    # authority: https://example.com
-    # clientID: netbird-management
-    # deviceAuthorizationEndpoint: https://example.com/auth/device
-    # tokenEndpoint: https://example.com/token
-    # scope: openid
-    # useIDToken: false
-
-idp:
-
-  ## @param idp.managerType none, keycloak, or auth0
-  ##
-  managerType: none
-  # clientID:
-  # secretKeyRef:
-  #   name: idp-credentials
-  #   key: secretkey
-  # grantType:
-
-  # Auth0
-  # audience:
-  # authIssuer:
-
-  # Keycloak
-  # adminEndpoint:
-  # tokenEndpoint:
-
-stun:
-  ## @param stun.uri
-  ##
-  uri: stun:example.com:3478
-
-turn:
-  ## @param turn.uri
-  ##
-  uri: turn:example.com:3478
-  # user: turn-user
-  # secretKeyRef:
-  #   name: turn-credentials
-  #   key: password
-
-## @param nameOverride
-##
-nameOverride: ""
-
-## @param fullnameOverride
-##
-fullnameOverride: ""
-
-## @section NetBird Management
-
+configuration: |-
+    {
+      "Stuns": [
+        {
+          "Proto": "udp",
+          "URI": "stun:netbird.{{ dns_public_subdomain }}:3478",
+          "Username": "",
+          "Password": ""
+        }
+      ],
+      "TURNConfig": {
+        "TimeBasedCredentials": false,
+        "CredentialsTTL": "12h0m0s",
+        "Secret": "secret",
+        "Turns": [
+          {
+            "Proto": "udp",
+            "URI": "turn:netbird.{{ dns_public_subdomain }}:3478",
+            "Username": "self",
+            "Password": "ref+k8s://v1/Secret/netbird/{{ netbird_management_turn_secret }}/turn_server_password+"
+          }
+        ]
+      },
+      "Signal": {
+        "Proto": "https",
+        "URI": "netbird.{{ dns_public_subdomain }}:443",
+        "Username": "",
+        "Password": ""
+      },
+      "HttpConfig": {
+        "AuthIssuer": "https://zitadel.{{ dns_public_subdomain }}",
+        "AuthAudience": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_dashboard_client_id+",
+        "OIDCConfigEndpoint":"https://zitadel.{{ dns_public_subdomain }}/.well-known/openid-configuration"
+        "LetsEncryptDomain": "",
+        "CertFile": "",
+        "CertKey": "",
+        "AuthUserIDClaim": "",
+        "IdpSignKeyRefreshEnabled": false
+      },
+      "IdpManagerConfig": {
+        "ManagerType": "zitadel",
+        "ClientConfig": {
+          "Issuer": "https://zitadel.{{ dns_public_subdomain }}",
+          "TokenEndpoint": "https://zitadel.{{ dns_public_subdomain }}/oauth/v2/token",
+          "ClientID": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_service_user_client_id+",
+          "ClientSecret": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_service_user_client_secret+",
+          "GrantType": "client_credentials"
+        },
+        "ExtraConfig": {
+            "ManagementEndpoint": "https://zitadel.{{ dns_public_subdomain }}/management/v1"
+        }
+      },
+      "DeviceAuthorizationFlow": {
+        "Provider": "hosted",
+        "ProviderConfig": {
+          "ClientID": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
+          "ClientSecret": "",
+          "Audience": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
+          "TokenEndpoint": "https://authentik.example.com/application/o/token/",
+          "DeviceAuthEndpoint": "https://authentik.example.com/application/o/device/",
+          "AuthorizationEndpoint": "",
+          "Scope": "openid",
+          "UseIDToken": false,
+          "RedirectURLs": null
+        }
+      },
+      "PKCEAuthorizationFlow": {
+        "ProviderConfig": {
+          "ClientID": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
+          "ClientSecret": "",
+          "Domain": "",
+          "Audience": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
+          "DeviceAuthEndpoint": "",
+          "Scope": "openid profile email offline_access api",
+          "UseIDToken": false,
+          "RedirectURLs": ["http://localhost:53000/","http://localhost:54000/"]
+        }
+      },
+      "StoreConfig": {
+        "Engine": "postgres"
+      },
+      "ReverseProxy": {
+        "TrustedHTTPProxies": null,
+        "TrustedHTTPProxiesCount": 0,
+        "TrustedPeers": null
+      }
+    }
+envRaw:
+  - name: NETBIRD_STORE_ENGINE_POSTGRES_DSN
+    valueFrom:
+      secretKeyRef:
+        name: {{ netbird_management_secret }}
+        key: postgres_DSN
 management:
-  ## @param management.logLevel
-  ##
-  logLevel: info
-
-  ## @param management.replicaCount
-  ##
-  replicaCount: 1
-
-  image:
-    ## @param management.image.repository
-    ##
-    repository: netbirdio/management
-
-    ## @param management.image.pullPolicy
-    ##
-    pullPolicy: IfNotPresent
-
-    # yamllint disable-line rule:line-length
-    ## @param management.image.tag Overrides the image tag whose default is the chart appVersion.
-    ##
-    tag: ""
-
-  ## @param management.imagePullSecrets
-  imagePullSecrets: []
-
-  serviceAccount:
-    # yamllint disable-line rule:line-length
-    ## @param management.serviceAccount.create Specifies whether a service account should be created.
-    ##
-    create: true
-
-    # yamllint disable-line rule:line-length
-    ## @param management.serviceAccount.annotations Annotations to add to the service account.
-    ##
-    annotations: {}
-
-    # yamllint disable-line rule:line-length
-    ## @param management.serviceAccount.name The name of the service account to use.
-    ##
-    name: ""
-
-  # yamllint disable-line rule:line-length
-  ## @param management.deploymentAnnotations Annotations to add to the management deployment.
-  ##
-  deploymentAnnotations: {}
-
-  # yamllint disable-line rule:line-length
-  ## @param management.podAnnotations Annotations to add to the management pod(s).
-  ##
-  podAnnotations: {}
-
-  ## @param management.podSecurityContext
-  ##
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  ## @param management.securityContext
-  ##
-  securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  service:
-    ## @param management.service.type
-    ##
-    type: ClusterIP
-
-    ## @param management.service.port
-    ##
-    port: 80
-
   ingress:
-    ## @param management.ingress.enabled
-    ##
     enabled: false
-
-    ## @param management.ingress.className
-    ##
-    className: ""
-
-    ## @param management.ingress.annotations
-    ##
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-
-    hosts:
-      ## @param management.ingress.hosts[0].host
-      ##
-      - host: example.com
-        paths:
-          ## @param management.ingress.hosts[0].paths[0].path
-          ##
-          - path: /
-            ## @param management.ingress.hosts[0].paths[0].pathType
-            ##
-            pathType: ImplementationSpecific
-    ## @param management.ingress.tls
-    ##
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
-  ## @param management.resources
-  ##
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as
-    # a conscious choice for the user. This also increases chances charts run on
-    # environments with little resources, such as Minikube. If you do want to
-    # specify resources, uncomment the following lines, adjust them as
-    # necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-  autoscaling:
-    ## @param management.autoscaling.enabled
-    ##
+  ingressGrpc:
     enabled: false
-
-    ## @param management.autoscaling.minReplicas
-    ##
-    minReplicas: 1
-
-    ## @param management.autoscaling.maxReplicas
-    ##
-    maxReplicas: 100
-
-    ## @param management.autoscaling.targetCPUUtilizationPercentage
-    ##
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
-  ## @param management.nodeSelector
-  ##
-  nodeSelector: {}
-
-  ## @param management.tolerations
-  ##
-  tolerations: []
-
-  ## @param management.affinity
-  ##
-  affinity: {}
-
   persistentVolume:
-    ## @param management.persistentVolume.enabled
-    ##
-    enabled: true
+    enabled: false
 
-    ## @param management.persistentVolume.accessModes
-    ##
-    accessModes:
-      - ReadWriteOnce
-
-    ## @param management.persistentVolume.size
-    ##
-    size: 100Mi
-
-  ## @param management.dnsDomain
-  ##
-  dnsDomain: netbird.selfhosted
-
-## @section NetBird Signal
-
+  podCommand:
+    xtraArgs:
+      - --single-account-mode-domain=example.com
 signal:
-  ## @param signal.logLevel
-  ##
-  logLevel: info
-
-  ## @param signal.uri
-  ##
-  uri: example.com:10000
-
-  ## @param signal.protocol grpc, http, https
-  ##
-  protocol: https
-
-  ## @param signal.replicaCount
-  ##
-  replicaCount: 1
-
-  image:
-    ## @param signal.image.repository
-    ##
-    repository: netbirdio/signal
-
-    ## @param signal.image.pullPolicy
-    ##
-    pullPolicy: IfNotPresent
-
-    # yamllint disable-line rule:line-length
-    ## @param signal.image.tag Overrides the image tag whose default is the chart appVersion.
-    ##
-    tag: ""
-
-  ## @param signal.imagePullSecrets
-  imagePullSecrets: []
-
-  serviceAccount:
-    # yamllint disable-line rule:line-length
-    ## @param signal.serviceAccount.create Specifies whether a service account should be created.
-    ##
-    create: true
-
-    # yamllint disable-line rule:line-length
-    ## @param signal.serviceAccount.annotations Annotations to add to the service account.
-    ##
-    annotations: {}
-
-    ## @param signal.serviceAccount.name The name of the service account to use.
-    ##
-    name: ""
-
-  # yamllint disable-line rule:line-length
-  ## @param signal.deploymentAnnotations Annotations to add to the signal deployment.
-  ##
-  deploymentAnnotations: {}
-
-  ## @param signal.podAnnotations Annotations to add to the signal pod(s).
-  ##
-  podAnnotations: {}
-
-  ## @param signal.podSecurityContext
-  ##
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  ## @param signal.securityContext
-  ##
-  securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  service:
-    ## @param signal.service.type
-    ##
-    type: ClusterIP
-
-    ## @param signal.service.port
-    ##
-    port: 80
-
   ingress:
-    ## @param signal.ingress.enabled
-    ##
     enabled: false
-
-    ## @param signal.ingress.className
-    ##
-    className: ""
-
-    ## @param signal.ingress.annotations
-    ##
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-
-    hosts:
-      ## @param signal.ingress.hosts[0].host
-      ##
-      - host: example.com
-        paths:
-          ## @param signal.ingress.hosts[0].paths[0].path
-          ##
-          - path: /
-            ## @param signal.ingress.hosts[0].paths[0].pathType
-            ##
-            pathType: ImplementationSpecific
-    ## @param signal.ingress.tls
-    ##
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
-  ## @param signal.resources
-  ##
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as
-    # a conscious choice for the user. This also increases chances charts run on
-    # environments with little resources, such as Minikube. If you do want to
-    # specify resources, uncomment the following lines, adjust them as
-    # necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-  autoscaling:
-    ## @param signal.autoscaling.enabled
-    ##
-    enabled: false
-
-    ## @param signal.autoscaling.minReplicas
-    ##
-    minReplicas: 1
-
-    ## @param signal.autoscaling.maxReplicas
-    ##
-    maxReplicas: 100
-
-    ## @param signal.autoscaling.targetCPUUtilizationPercentage
-    ##
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
-  ## @param signal.nodeSelector
-  ##
-  nodeSelector: {}
-
-  ## @param signal.tolerations
-  ##
-  tolerations: []
-
-  ## @param signal.affinity
-  ##
-  affinity: {}
-
-  persistentVolume:
-    ## @param signal.persistentVolume.enabled
-    ##
-    enabled: true
-
-    ## @param signal.persistentVolume.accessModes
-    ##
-    accessModes:
-      - ReadWriteOnce
-
-    ## @param signal.persistentVolume.size
-    ##
-    size: 100Mi

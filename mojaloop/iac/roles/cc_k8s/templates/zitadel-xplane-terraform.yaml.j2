@@ -54,5 +54,5 @@ spec:
   providerConfigRef:
     name: zitadel-init
   writeConnectionSecretToRef:
-    namespace: zitadel
-    name: terraform-zitadel-init-output
+    namespace: {{ netbird_namespace }}
+    name: {{ netbird_management_secret }}

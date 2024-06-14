@@ -11,6 +11,12 @@
     dest: /usr/local/bin/kustomize
     mode: 0700
 
+- name: install helmfile
+  get_url:
+    url: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64
+    dest: /usr/local/bin/helmfile
+    mode: 0700
+
 - name: Create temporary directory for cc boot
   tempfile:
     state: directory
@@ -56,7 +62,7 @@
     - cockroach-db-values
     - zitadel-cert-job
     - zitadel-values
-    - netbird-values
+    - netbird-helmfile
     - lets-encrypt-cluster-issuer
     - ext-dns-values
     - ext-dns-crs
@@ -68,10 +74,16 @@
     - vitrual-services
     - crossplane-providers
     - zitadel-xplane-terraform
+    - netbird-helmfile
+    - netbird-values
+    - netbird-random-secrets
+    - zitadel-random-secrets
 
 - name: Install utils
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add mittwald https://helm.mittwald.de
+    helm upgrade --install kubernetes-secret-generator mittwald/kubernetes-secret-generator
     helm repo add ember https://emberstack.github.io/helm-charts
     helm upgrade --install reflector ember/reflector --version {{ reflector_helm_version }} -n reflector --create-namespace --set nameOverride=reflector
     helm repo add istio https://istio-release.storage.googleapis.com/charts
@@ -119,6 +131,7 @@
     # Generate a TLS certificate for the zitadel DB user
     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
     kubectl -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
+    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-random-secrets.yaml
 
     # Install ZITADEL
     helm repo add zitadel https://charts.zitadel.com
@@ -134,7 +147,8 @@
 
 - name: Use TF module to perform zitadel config
   shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig    
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig   
+    kubectl create ns {{ netbird_namespace }} || true 
     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
 
 - name: Wait for zitadel tf output
@@ -143,9 +157,12 @@
   until: outputsecret is not failed
   retries: 50
   delay: 10
-# - name: Install netbird
-#   shell: |
 
-#     # install netbird
+- name: Install netbird
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helmfile --version
+    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml
+
 #     helm repo add jaconi https://charts.jaconi.io
 #     helm install netbird jaconi/netbird --version {{ netbird_chart_version }} --values {{ cctmpvalues.path }}/netbird-values.yaml
