@@ -88,7 +88,13 @@
     kubectl apply -f {{ cctmpvalues.path }}/istio-gateway-crs.yaml
     helm repo add crossplane-stable https://charts.crossplane.io/stable
     helm upgrade --install crossplane crossplane-stable/crossplane --version {{ crossplane_helm_version }} -n {{ crossplane_namespace }} --create-namespace
-    kubectl apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
+
+- name: Wait for xplane provider CRD
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
+  register: xplaneprovider
+  until: xplaneprovider is not failed
+  retries: 50
+  delay: 10
 
 - name: Install rook/ceph
   shell: |
