@@ -66,6 +66,8 @@
     - istio-external-ingress-gateway-values
     - istio-gateway-crs
     - vitrual-services
+    - crossplane-providers
+    - zitadel-xplane-terraform
 
 - name: Install utils
   shell: |
@@ -84,6 +86,9 @@
     helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
     kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml || true
     kubectl apply -f {{ cctmpvalues.path }}/istio-gateway-crs.yaml
+    helm repo add crossplane-stable https://charts.crossplane.io/stable
+    helm upgrade --install crossplane crossplane-stable/crossplane --version {{ crossplane_helm_version }} -n {{ crossplane_namespace }} --create-namespace
+    kubectl apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
 
 - name: Install rook/ceph
   shell: |
@@ -121,11 +126,17 @@
   retries: 50
   delay: 10
 
-- name: Fetch zitadel key
-  copy:
-    content: "{{ adminkey.stdout }}"
-    dest: "{{ zitadel_local_location }}/zitadel-admin-sa.json"
-  delegate_to: localhost
+- name: Use TF module to perform zitadel config
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig    
+    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
+
+- name: Wait for zitadel tf output
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} terraform-zitadel-init-output
+  register: outputsecret
+  until: outputsecret is not failed
+  retries: 50
+  delay: 10
 # - name: Install netbird
 #   shell: |
 
