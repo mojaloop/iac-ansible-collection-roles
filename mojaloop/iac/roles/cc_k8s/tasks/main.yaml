@@ -11,11 +11,17 @@
     dest: /usr/local/bin/kustomize
     mode: 0700
 
-- name: install helmfile
-  get_url:
-    url: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64
-    dest: /usr/local/bin/helmfile
-    mode: 0700
+- name: download helmfile
+  ansible.builtin.unarchive:
+    src: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: copy helmfile bin
+  copy:
+    src: "/tmph/elmfile_{{ helmfile_version }}_linux_amd64/helmfile"
+    dest: "/usr/local/bin/helmfile"
+    mode: "u+rwx"
 
 - name: Create temporary directory for cc boot
   tempfile:
