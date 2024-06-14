@@ -22,6 +22,7 @@
     src: "/tmp/helmfile"
     dest: "/usr/local/bin/helmfile"
     mode: "u+rwx"
+    remote_src: yes
 
 - name: Create temporary directory for cc boot
   tempfile:
