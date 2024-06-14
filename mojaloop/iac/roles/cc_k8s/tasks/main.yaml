@@ -159,7 +159,7 @@
     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
 
 - name: Wait for zitadel tf output
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} terraform-zitadel-init-output
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ netbird_namespace }} {{ netbird_management_secret }}
   register: outputsecret
   until: outputsecret is not failed
   retries: 50
