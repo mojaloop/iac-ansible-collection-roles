@@ -11,7 +11,7 @@ spec:
     - filename: zitadel-admin-sa.json
       source: Secret
       secretRef:
-        namespace: { { zitadel_namespace } }
+        namespace: {{ zitadel_namespace }}
         name: zitadel-admin-sa
         key: zitadel-admin-sa
   # This optional configuration block can be used to inject HCL into any
@@ -45,11 +45,11 @@ spec:
   forProvider:
     # Use any module source supported by terraform init -from-module.
     source: Remote
-    module: git::https://github.com/mojaloop/iac-modules.git//terraform/config-params/ccnew-config?ref={{ zitadel_terraform_modules_tag )}
+    module: git::https://github.com/mojaloop/iac-modules.git//terraform/config-params/ccnew-config?ref={{ zitadel_terraform_modules_tag }}
     # Variables can be specified inline as a list of key-value pairs or as an json object, or loaded from a ConfigMap or Secret.
     vars:
       - key: tenancy_domain
-        value: { { dns_public_subdomain } }
+        value: {{ dns_public_subdomain }}
   # All Terraform outputs are written to the connection secret.
   writeConnectionSecretToRef:
     namespace: zitadel
