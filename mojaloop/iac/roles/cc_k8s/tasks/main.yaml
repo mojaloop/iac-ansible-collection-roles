@@ -19,7 +19,7 @@
 
 - name: copy helmfile bin
   copy:
-    src: "/tmph/elmfile_{{ helmfile_version }}_linux_amd64/helmfile"
+    src: "/tmp/helmfile"
     dest: "/usr/local/bin/helmfile"
     mode: "u+rwx"
 
