@@ -163,7 +163,8 @@
 
 - name: Use TF module to perform zitadel config
   shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig   
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    #need to create this ns first so module can write secret to netbird ns
     kubectl create ns {{ netbird_namespace }} || true 
     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
 
@@ -180,10 +181,5 @@
     helm repo add stunner https://l7mp.io/stunner
     helm upgrade --install stunner stunner/stunner-gateway-operator -n {{ stunner_system_namespace }} --create-namespace
     kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
-    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml
-    mkdir -p {{ cctmpvalues.path }}/netbird-kustom
-    cp {{ cctmpvalues.path }}/netbird-kustomization.yaml {{ cctmpvalues.path }}/netbird-crs.yaml {{ cctmpvalues.path }}/netbird-kustom/
+    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml,{{ cctmpvalues.path }}/netbird-crs.yaml
     helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
-
-#     helm repo add jaconi https://charts.jaconi.io
-#     helm install netbird jaconi/netbird --version {{ netbird_chart_version }} --values {{ cctmpvalues.path }}/netbird-values.yaml
