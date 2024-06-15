@@ -26,8 +26,8 @@
 
 - name: install helm util
   shell: |
-    helm plugin install https://github.com/aslafy-z/helm-git --version 0.16.0
-    helm plugin install https://github.com/databus23/helm-diff --version 3.9.8
+    helm plugin install https://github.com/aslafy-z/helm-git --version 0.16.0 || true
+    helm plugin install https://github.com/databus23/helm-diff --version 3.9.8 || true
 
 - name: Create temporary directory for cc boot
   tempfile:
