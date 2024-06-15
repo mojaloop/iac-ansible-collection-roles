@@ -85,19 +85,15 @@ configuration: |-
         "TrustedPeers": null
       }
     }
-envRaw:
-  - name: NETBIRD_STORE_ENGINE_POSTGRES_DSN
-    valueFrom:
-      secretKeyRef:
-        name: {{ netbird_management_secret }}
-        key: postgres_DSN
+
 management:
   ingress:
     enabled: false
   ingressGrpc:
     enabled: false
   persistentVolume:
-    enabled: false
+    enabled: true
+    size: 5Gi
 
   podCommand:
     xtraArgs:
