@@ -11,6 +11,12 @@ releases:
     values:
       - netbird-values.yaml
 
-  #- name: netbird-dashboard
-  #  namespace: netbird
-  #  chart: netbird/netbird-dashboard
+  - name: netbird-dashboard
+    namespace: {{ netbird_namespace }}
+    version: {{ netbird_chart_version }}
+    chart: netbird/netbird-dashboard
+    values:
+      - netbird-ui-values.yaml
+
+  - name: netbird-crs
+    chart: ./netbird-kustomization.yaml

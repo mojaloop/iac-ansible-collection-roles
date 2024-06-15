@@ -56,8 +56,6 @@ configuration: |-
           "ClientID": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
           "ClientSecret": "",
           "Audience": "ref+k8s://v1/Secret/netbird/{{ netbird_management_secret }}/netbird_cli_client_id+",
-          "TokenEndpoint": "https://authentik.example.com/application/o/token/",
-          "DeviceAuthEndpoint": "https://authentik.example.com/application/o/device/",
           "AuthorizationEndpoint": "",
           "Scope": "openid",
           "UseIDToken": false,
@@ -97,7 +95,7 @@ management:
 
   podCommand:
     xtraArgs:
-      - --single-account-mode-domain=example.com
+      - --single-account-mode-domain={{ dns_public_subdomain }}
 signal:
   ingress:
     enabled: false
