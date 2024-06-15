@@ -47,8 +47,11 @@ spec:
     module: git::https://github.com/mojaloop/iac-modules.git//terraform/config-params/ccnew-config?ref={{ zitadel_terraform_modules_tag }}
     # Variables can be specified inline as a list of key-value pairs or as an json object, or loaded from a ConfigMap or Secret.
     vars:
-      - key: tenancy_domain
-        value: {{ dns_public_subdomain }}
+      - key: dashboard_fqdn
+        value: netbird-dashboard.{{ dns_public_subdomain }}
+      - key: zitadel_fqdn
+        value: zitadel.{{ dns_public_subdomain }}
+        
   # All Terraform outputs are written to the connection secret.
   providerConfigRef:
     name: zitadel-init
