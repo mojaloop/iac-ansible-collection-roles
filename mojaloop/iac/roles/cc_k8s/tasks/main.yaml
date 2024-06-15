@@ -89,7 +89,6 @@
     - netbird-helmfile
     - netbird-values
     - netbird-ui-values
-    - netbird-kustomization
     - netbird-crs
     - netbird-random-secrets
     - zitadel-random-secrets
