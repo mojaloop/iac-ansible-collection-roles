@@ -71,4 +71,4 @@ registry_mirror_port: 9000
 teardown: false
 microk8s_root_path: /var/snap/microk8s/
 longhorn_data_path: /var/lib/longhorn/
-dev_skip: false
+microk8s_dev_skip: false
