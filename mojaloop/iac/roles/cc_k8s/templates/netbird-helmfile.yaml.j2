@@ -1,7 +1,8 @@
 repositories:
   - name: netbird
     url: git+https://github.com/totmicro/helms@charts/netbird?ref=main
-
+  - name: netbird-dasboard
+    url: git+https://github.com/totmicro/helms@charts/netbird-dashboard?ref=main
 
 releases:
   - name: netbird
@@ -14,7 +15,7 @@ releases:
   - name: netbird-dashboard
     namespace: {{ netbird_namespace }}
     version: {{ netbird_chart_version }}
-    chart: netbird/netbird-dashboard
+    chart: netbird-dashboard/netbird-dashboard
     values:
       - netbird-ui-values.yaml
 
