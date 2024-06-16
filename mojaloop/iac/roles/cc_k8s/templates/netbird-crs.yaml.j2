@@ -11,12 +11,28 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /
+            prefix: /api
       route:
         - destination:
             host: netbird-management
             port:
-              number: 80
+            number: 80
+    - match:
+        - uri:
+            prefix: /management.ManagementService
+      route:
+        - destination:
+            host: netbird-management-grpc
+            port:
+            number: 80
+    - match:
+        - uri:
+            prefix: /signalexchange.SignalExchange
+      route:
+        - destination:
+            host: netbird-signal
+            port:
+            number: 80
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
