@@ -35,7 +35,7 @@ configuration: |-
         "CertFile": "",
         "CertKey": "",
         "AuthUserIDClaim": "",
-        "IdpSignKeyRefreshEnabled": false
+        "IdpSignKeyRefreshEnabled": true
       },
       "IdpManagerConfig": {
         "ManagerType": "zitadel",
@@ -94,6 +94,8 @@ management:
     size: 5Gi
 
   podCommand:
+    args:
+      - --log-level=debug
     xtraArgs:
       - --single-account-mode-domain={{ dns_public_subdomain }}
 signal:
