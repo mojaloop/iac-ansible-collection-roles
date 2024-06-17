@@ -4,8 +4,8 @@ configuration: |-
         {
           "Proto": "udp",
           "URI": "stun:netbird.{{ dns_public_subdomain }}:{{ stunner_nodeport_port }}",
-          "Username": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/username+",
-          "Password": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/password+"
+          "Username": "",
+          "Password": ""
         }
       ],
       "TURNConfig": {
@@ -15,9 +15,9 @@ configuration: |-
         "Turns": [
           {
             "Proto": "udp",
-            "URI": "turn:netbird.{{ dns_public_subdomain }}:3478",
-            "Username": "self",
-            "Password": "ref+k8s://v1/Secret/netbird/{{ netbird_management_turn_secret }}/turn_server_password+"
+            "URI": "turn:netbird.{{ dns_public_subdomain }}:{{ stunner_nodeport_port }}",
+            "Username": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/username+",
+            "Password": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/password+"
           }
         ]
       },
@@ -94,8 +94,6 @@ management:
     size: 5Gi
 
   podCommand:
-    args:
-      - --log-level=debug
     xtraArgs:
       - --single-account-mode-domain={{ dns_public_subdomain }}
 signal:
