@@ -58,3 +58,6 @@ zitadel_provider_version: "1.2.0"
 zitadel_terraform_modules_tag: "vexp-cck8s19"
 helmfile_version: "0.165.0"
 stunner_system_namespace: "stunner-system"
+stunner_nodeport_port: 31821
+stunner_impl_namespace: stunner-impl
+stunner_auth_secret: stunner-auth-secret

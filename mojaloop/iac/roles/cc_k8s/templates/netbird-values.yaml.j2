@@ -3,9 +3,9 @@ configuration: |-
       "Stuns": [
         {
           "Proto": "udp",
-          "URI": "stun:netbird.{{ dns_public_subdomain }}:3478",
-          "Username": "",
-          "Password": ""
+          "URI": "stun:netbird.{{ dns_public_subdomain }}:{{ stunner_nodeport_port }}",
+          "Username": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/username+",
+          "Password": "ref+k8s://v1/Secret/{{ stunner_impl_namespace }}/{{ stunner_auth_secret }}/password+"
         }
       ],
       "TURNConfig": {
