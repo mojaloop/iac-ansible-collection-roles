@@ -8,7 +8,7 @@ spec:
     group: "stunner.l7mp.io"
     kind: GatewayConfig
     name: stunner-gatewayconfig
-    namespace: "{{ stunner_system_namespace }}"
+    namespace: "{{ stunner_impl_namespace }}"
   description: "STUNner is a WebRTC ingress gateway for Kubernetes"
 
 ---
@@ -30,8 +30,7 @@ metadata:
   namespace: "{{ stunner_impl_namespace }}"
   annotations:
     stunner.l7mp.io/service-type: NodePort
-    stunner.l7mp.io/nodeport:
-      udp-listener: {{ stunner_nodeport_port }}
+    stunner.l7mp.io/nodeport: '{"udp-listener": {{ stunner_nodeport_port }} }'
 spec:
   gatewayClassName: stunner-gatewayclass
   listeners:
