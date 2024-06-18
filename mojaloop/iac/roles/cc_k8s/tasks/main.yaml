@@ -192,6 +192,6 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add hashicorp https://helm.releases.hashicorp.com
     kubectl create ns {{ vault_namespace }} || true
-    kbuectl apply -f {{ cctmpvalues.path }}/vault-post-config.yaml
+    kbuectl apply -n {{ vault_namespace }} -f {{ cctmpvalues.path }}/vault-post-config.yaml
     helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
     helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
