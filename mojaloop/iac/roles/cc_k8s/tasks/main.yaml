@@ -191,7 +191,7 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add hashicorp https://helm.releases.hashicorp.com
-    kbuectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
     helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
-    kbuectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server 
+    kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server 
     helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
