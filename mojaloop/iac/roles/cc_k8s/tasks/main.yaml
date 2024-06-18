@@ -93,6 +93,9 @@
     - netbird-random-secrets
     - zitadel-random-secrets
     - stunner-crs
+    - consul-values
+    - vault-values
+    - vault-post-config
 
 - name: Install utils
   shell: |
@@ -183,3 +186,12 @@
     kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
     kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml,{{ cctmpvalues.path }}/netbird-crs.yaml
     helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
+
+- name: Install vault
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add hashicorp https://helm.releases.hashicorp.com
+    kubectl create ns {{ vault_namespace }} || true
+    kbuectl apply -f {{ cctmpvalues.path }}/vault-post-config.yaml
+    helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
+    helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml

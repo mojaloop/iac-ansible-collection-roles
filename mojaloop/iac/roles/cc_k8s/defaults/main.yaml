@@ -61,3 +61,9 @@ stunner_system_namespace: "stunner-system"
 stunner_nodeport_port: 31821
 stunner_impl_namespace: stunner-impl
 stunner_auth_secret: stunner-auth-secret
+consul_replicas: 1
+consult_storage_size: 3Gi
+consul_namespace: consul
+vault_namespace: vault
+consul_helm_version: "1.4.0"
+vault_helm_version: "0.24.1"
