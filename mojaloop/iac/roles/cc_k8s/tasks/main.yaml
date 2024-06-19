@@ -96,6 +96,8 @@
     - consul-values
     - vault-values
     - vault-crs
+    - netbird-xplane-terraform
+    - vault-xplane-terraform
 
 - name: Install utils
   shell: |
@@ -163,15 +165,30 @@
   retries: 50
   delay: 10
 
-- name: Use TF module to perform zitadel config
+- name: Use zitadel TF module to perform zitadel init
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
+
+- name: Install vault
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add hashicorp https://helm.releases.hashicorp.com
+    kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
+    helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
+    kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server 
+    helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
+    kubectl -n {{ vault_namespace }} apply -f {{ cctmpvalues.path }}/vault-xplane-terraform.yaml
+
+- name: Use TF module to perform zitadel netbird config
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     #need to create this ns first so module can write secret to netbird ns
     kubectl create ns {{ netbird_namespace }} || true 
-    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
+    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-xplane-terraform.yaml
 
 - name: Wait for zitadel tf output
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ netbird_namespace }} {{ netbird_management_secret }}
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ netbird_namespace }} {{ netbird_preconfig_secret }}
   register: outputsecret
   until: outputsecret is not failed
   retries: 50
@@ -186,12 +203,3 @@
     kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
     kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml,{{ cctmpvalues.path }}/netbird-crs.yaml
     helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
-
-- name: Install vault
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add hashicorp https://helm.releases.hashicorp.com
-    kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
-    helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
-    kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server 
-    helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
