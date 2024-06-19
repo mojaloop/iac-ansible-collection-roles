@@ -23,6 +23,12 @@
     dest: "{{ central_observability_root_dir }}/docker-compose.yaml"
   notify: restart-docker-compose
 
+- name: "make secrets.env file"
+  template:
+    src: "../templates/secrets.env.j2"
+    dest: "{{ central_observability_root_dir }}/secrets.env"
+  notify: restart-docker-compose
+
 - name: "templatize prometheus config"
   template:
     src: "../templates/prometheus.yaml.j2"

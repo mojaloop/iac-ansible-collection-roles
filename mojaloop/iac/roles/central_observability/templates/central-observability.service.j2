@@ -4,8 +4,8 @@ After=docker.service
 
 [Service]
 WorkingDirectory={{ central_observability_root_dir }}
-ExecStart=/usr/bin/docker-compose -f docker-compose.yaml up
-ExecStop=/usr/bin/docker-compose -f docker-compose.yaml down
+ExecStart=/usr/bin/docker-compose -f docker-compose.yaml --env-file secrets.env up
+ExecStop=/usr/bin/docker-compose -f docker-compose.yaml --env-file secrets.env down
 
 [Install]
 WantedBy=docker.service
