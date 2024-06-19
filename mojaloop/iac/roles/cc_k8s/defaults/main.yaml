@@ -67,3 +67,4 @@ consul_namespace: consul
 vault_namespace: vault
 consul_helm_version: "1.4.0"
 vault_helm_version: "0.24.1"
+vault_keys_secret: "vault-keys"
