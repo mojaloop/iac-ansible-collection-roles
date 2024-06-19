@@ -7,3 +7,5 @@ nexus_fqdn: private_ip
 minio_fqdn: private_ip
 vault_fqdn: private_ip
 enable_internal_egress_lb: true
+mimir_fqdn: to_be_updated
+mimir_listening_port: to_be_updated

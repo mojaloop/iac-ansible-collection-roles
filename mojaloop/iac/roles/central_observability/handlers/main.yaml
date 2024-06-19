@@ -1,0 +1,4 @@
+- name: restart-docker-compose
+  systemd:
+    name: "central-observability"
+    state: restarted

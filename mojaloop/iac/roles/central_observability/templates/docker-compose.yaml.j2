@@ -1,0 +1,94 @@
+version: "3.4"
+services:
+  grafana:
+    image: grafana/grafana:11.0.0
+    environment:
+      - GF_SECURITY_ADMIN_USER={{ central_observability_grafana_root_user }} 
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SERVER_ROOT_URL=http://{{ central_observability_grafana_fqdn }}:{{ central_observability_grafana_listening_port }}
+      - GF_AUTH_GITLAB_ENABLED={{ enable_central_observability_grafana_oidc }}
+      - GF_AUTH_GITLAB_CLIENT_ID={{ central_observability_grafana_oidc_client_id }}
+      - GF_AUTH_GITLAB_CLIENT_SECRET=${GF_AUTH_GITLAB_CLIENT_SECRET}
+      - GF_AUTH_GITLAB_AUTH_URL={{ gitlab_external_url }}/oauth/authorize
+      - GF_AUTH_GITLAB_TOKEN_URL={{ gitlab_external_url }}/oauth/token
+      - GF_AUTH_GITLAB_API_URL={{ gitlab_external_url }}/api/v4
+      - GF_AUTH_GITLAB_ROLE_ATTRIBUTE_PATH='Editor'
+      - GF_LOG_MODE=console
+    volumes:
+      - ./config/grafana-provisioning-dashboards.yaml:/etc/grafana/provisioning/dashboards/provisioning-dashboards.yaml:ro
+      - ./config/grafana-provisioning-datasources.yaml:/etc/grafana/provisioning/datasources/provisioning-datasources.yaml:ro
+      - ./dashboards/:/var/lib/grafana/dashboards/:ro
+    ports:
+      - 3000:3000
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - "mimir-1"
+      - "mimir-2"
+      - "mimir-3"
+
+  load-balancer:
+    image: nginx:1.27.0
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - "mimir-1"
+      - "mimir-2"
+      - "mimir-3"
+    ports:
+      - {{ mimir_listening_port }}:9009
+
+  mimir-1:
+    image: grafana/mimir:2.12.0
+    command: ["-config.file=/etc/mimir.yaml", "-config.expand-env=true"]
+    hostname: mimir-1
+    environment:
+      - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
+      - MINIO_USERNAME={{ mimir_minio_user }}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET={{ mimir_minio_bucket }}    
+    volumes:
+      - ./config/mimir.yaml:/etc/mimir.yaml
+      - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
+      - mimir-1-data:/data
+
+  mimir-2:
+    image: grafana/mimir:2.12.0
+    command: ["-config.file=/etc/mimir.yaml", "-config.expand-env=true"]
+    hostname: mimir-2
+    environment:
+      - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
+      - MINIO_USERNAME={{ mimir_minio_user }}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET={{ mimir_minio_bucket }}    
+    volumes:
+      - ./config/mimir.yaml:/etc/mimir.yaml
+      - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
+      - mimir-2-data:/data
+
+  mimir-3:
+    image: grafana/mimir:2.12.0
+    command: ["-config.file=/etc/mimir.yaml", "-config.expand-env=true"]
+    hostname: mimir-3
+    environment:
+      - MINIO_ENDPOINT={{ minio_server_host }}:{{ minio_listening_port }}
+      - MINIO_USERNAME={{ mimir_minio_user }}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET={{ mimir_minio_bucket }}    
+    volumes:
+      - ./config/mimir.yaml:/etc/mimir.yaml
+      - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
+      - mimir-3-data:/data
+
+volumes:
+  mimir-1-data:
+  mimir-2-data:
+  mimir-3-data:

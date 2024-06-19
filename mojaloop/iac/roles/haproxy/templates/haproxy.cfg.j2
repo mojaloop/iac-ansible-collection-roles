@@ -7,6 +7,11 @@ frontend minio
   bind :{{ minio_listening_port }}
   default_backend minio
 
+frontend mimir
+  bind :{{ mimir_listening_port }}
+  default_backend mimir
+
+
 frontend nexus
   bind :{{ nexus_docker_repo_listening_port }}
   default_backend nexus
@@ -34,6 +39,9 @@ frontend {{ msp.name }}
 
 backend minio
   server minio {{ minio_fqdn }}:{{ minio_listening_port }}
+
+backend mimir
+  server mimir {{ mimir_fqdn }}:{{ mimir_listening_port }}
 
 backend nexus
   server nexus {{ nexus_fqdn }}:{{ nexus_docker_repo_listening_port }}
