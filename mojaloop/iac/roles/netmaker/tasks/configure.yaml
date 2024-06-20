@@ -25,7 +25,10 @@
     url: https://api.{{ netmaker_base_domain }}/api/networks
     method: GET
     headers:
+      Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200]
+    return_content: true
   register: existing_netmaker_networks  
 
 - name: Compose the new network list
