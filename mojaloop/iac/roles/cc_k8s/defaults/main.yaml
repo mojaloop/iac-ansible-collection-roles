@@ -76,6 +76,7 @@ vault_rbac_admin_group: "techops-admin"
 zitadel_grant_prefix: "zitadel:grants"
 vault_log_level: "info"
 crossplane_debug: "debug"
+kubernetes_secret_generator_helm_version: "3.4.0"
 
 #monitoring
 monitoring_namespace: "monitoring"
