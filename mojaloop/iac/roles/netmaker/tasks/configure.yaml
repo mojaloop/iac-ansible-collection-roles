@@ -20,6 +20,24 @@
     body_format: json
     status_code: [200, 400, 500]
 
+- name: Get all existing networks 
+  uri:
+    url: https://api.{{ netmaker_base_domain }}/api/networks
+    method: GET
+    headers:
+      Authorization: Bearer {{ netmaker_master_key }}
+  register: existing_netmaker_networks  
+
+- name: Compose the new network list
+  set_fact:
+    new_netmaker_networks: '{{ new_netmaker_networks + [ {"network_name": item.name, "node_keys": item.node_keys }] }}'
+  when: item.name not in existing_netmaker_networks.content
+  with_items: "{{ netmaker_networks }}"    
+
+- name: set the existing network count
+  set_fact:
+    existing_network_count: {{ existing_netmaker_networks.content | length }}
+
 - name: Add networks if don't exist
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/networks
@@ -30,7 +48,7 @@
     body: "{{ lookup('template', 'createnetwork.json.j2') }}"
     body_format: json
     status_code: [200, 400]
-  loop: "{{ netmaker_networks }}"
+  loop: "{{ new_netmaker_networks }}"
   loop_control:
     index_var: ipindex
 
@@ -58,7 +76,7 @@
   vars:
     keytag: "{{ item.0.network_name }}-{{ item.1 }}"
   when: "keytag not in key_response.content"
-  loop: "{{ netmaker_networks | subelements('node_keys') }}"
+  loop: "{{ new_netmaker_networks | subelements('node_keys') }}"
 
 - name: Get keys again
   uri:
