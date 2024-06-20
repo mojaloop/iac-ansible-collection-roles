@@ -68,8 +68,8 @@
 - name: Upload cc util files
   template:
     src: "{{ item.src }}"
-    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "util"
+    dest: "utils/{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "utils/"
   when: item.state == 'file'
 
 # - name: Upload cc zitadel files
