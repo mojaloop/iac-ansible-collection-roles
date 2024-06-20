@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  headscale:
+    image: headscale/headscale:{{ headsccale_image_version }}
+    container_name: headscale
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Dublin
+    volumes:
+      - {{ headscale_root_dir}}/conf:/etc/headscale
+      - headscale-data:/var/lib/headscale
+    entrypoint: headscale serve
+    labels:
+      caddy: {{ headsccale_fqdn }}
+      caddy.reverse_proxy: {%raw%}"{{upstreams 8080}}"{%endraw%}
+
+  headscale-admin:
+    image: goodieshq/headscale-admin:{{ headsccale_admin_version }}
+    container_name: headscale-admin
+    restart: unless-stopped
+    labels:
+      caddy: {{ headsccale_fqdn }}
+      caddy.handle_path: "/admin/*"
+      caddy.handle_path.0_rewrite: "* /admin{uri}"
+      caddy.handle_path.1_reverse_proxy: {%raw%}"{{upstreams http 80}}"{%endraw%}"
+  caddy:
+    container_name: caddy
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  headscale-data:
