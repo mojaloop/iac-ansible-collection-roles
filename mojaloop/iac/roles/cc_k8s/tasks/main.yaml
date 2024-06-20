@@ -108,7 +108,7 @@
 - name: Install utils
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kustomize build {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
+    kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
     kubectl apply -f /tmp/utils-deploy.yaml
 
 # - name: Wait for xplane provider CRD

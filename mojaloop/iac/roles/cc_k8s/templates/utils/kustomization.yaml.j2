@@ -16,7 +16,7 @@ helmCharts:
 
 - name: kubernetes-secret-generator
   releaseName: kubernetes-secret-generator
-  version: {{ prometheus_crd_version }}
+  version: {{ kubernetes_secret_generator_helm_version }}
   namespace: default
   repo: https://helm.mittwald.de
 - name: reflector
