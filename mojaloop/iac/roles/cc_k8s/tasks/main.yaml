@@ -111,15 +111,15 @@
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
     kubectl apply -f /tmp/utils-deploy.yaml
     while true;do
-      kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.succeeded}'=1 job/cert-manager-startupapicheck || break
+      kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.succeeded}'=1 job/cert-manager-startupapicheck && break
       sleep 5 
     done
     while true;do
-      kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane || break
+      kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane && break
       sleep 5 
     done
     while true;do
-      kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod || break
+      kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod && break
       sleep 5 
     done
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
