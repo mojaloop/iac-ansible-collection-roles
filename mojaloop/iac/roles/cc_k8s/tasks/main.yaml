@@ -110,6 +110,9 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
     kubectl apply -f /tmp/utils-deploy.yaml
+    kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/cert-manager-webhook
+    kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane
+    kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
     kubectl apply -f /tmp/utils-crs-deploy.yaml
 
@@ -168,7 +171,7 @@
 #     helm repo add hashicorp https://helm.releases.hashicorp.com
 #     kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
 #     helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
-#     kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server
+#
 #     helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
 #     kubectl apply -f {{ cctmpvalues.path }}/vault-xplane-terraform.yaml
 
