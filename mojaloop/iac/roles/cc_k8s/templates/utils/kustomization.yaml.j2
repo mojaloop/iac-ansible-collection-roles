@@ -72,4 +72,4 @@ helmCharts:
   repo: https://charts.crossplane.io/stable
   namespace: {{ crossplane_namespace }}
   valuesInline:
-    args: "{\"--debug\"}"
+    args: {{ '{"--debug"}' }}
