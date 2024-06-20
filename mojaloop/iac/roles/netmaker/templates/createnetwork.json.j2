@@ -1,5 +1,5 @@
 {
-  "addressrange": "",
+  "addressrange": "{{ netmaker_control_network_address_cidr_start | ansible.utils.ipaddr('net') | ansible.utils.ipmath((existing_network_count + ipindex ) * 256)}}/{{ netmaker_control_network_address_cidr_start | ansible.utils.ipaddr('prefix') }}",
   "addressrange6": "",
   "defaultacl": "yes",
   "defaultudpholepunch": "yes",
