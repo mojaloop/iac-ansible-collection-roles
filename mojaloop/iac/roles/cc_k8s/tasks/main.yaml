@@ -65,11 +65,19 @@
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
 
-- name: Upload cc util files
+- name: Upload cc template dirs
+  file:
+    path: "{{ cctmpvalues.path }}/{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_filetree: "{{role_path}}/templates/"
+  when: item.state == 'directory'
+
+- name: Upload cc template files
   template:
     src: "{{ item.src }}"
-    dest: "{{ cctmpvalues.path }}/utils/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "{{role_path}}/templates/utils"
+    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/"
   when: item.state == 'file'
 
 # - name: Upload cc zitadel files
