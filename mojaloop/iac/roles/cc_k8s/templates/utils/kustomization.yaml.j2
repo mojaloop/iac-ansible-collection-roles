@@ -84,5 +84,5 @@ helmCharts:
   includeCRDs: true
   valuesInline:
     csi:
-      kubeletDirPath= {{ rook_csi_kubelet_dir_path }}
+      kubeletDirPath: {{ rook_csi_kubelet_dir_path }}
     enableDiscoveryDaemon: true
