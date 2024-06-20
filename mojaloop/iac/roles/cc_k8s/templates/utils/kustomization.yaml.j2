@@ -2,9 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespaces.yaml
-  - lets-encrypt-cluster-issuer.yaml
-  - istio-gateway-crs.yaml
-  - crossplane-providers.yaml
   
 secretGenerator:
 - name: {{ external_dns_credentials_secret }}

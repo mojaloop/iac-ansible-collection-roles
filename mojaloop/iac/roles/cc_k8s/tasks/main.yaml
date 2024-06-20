@@ -110,6 +110,8 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
     kubectl apply -f /tmp/utils-deploy.yaml
+    kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
+    kubectl apply -f /tmp/utils-crs-deploy.yaml
 
 # - name: Wait for xplane provider CRD
 #   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
