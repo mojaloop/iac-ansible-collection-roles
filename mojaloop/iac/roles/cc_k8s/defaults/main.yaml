@@ -75,6 +75,7 @@ netbird_terraform_modules_tag: "vexp-cck8s19"
 vault_rbac_admin_group: "techops-admin"
 zitadel_grant_prefix: "zitadel:grants"
 vault_log_level: "info"
+crossplane_debug: '''{"--debug"}'''
 
 #monitoring
 monitoring_namespace: "monitoring"
