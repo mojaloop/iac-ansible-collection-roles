@@ -122,30 +122,19 @@
       kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod && break
       sleep 5 
     done
+    while true;do
+      kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
+      sleep 5 
+    done
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
     kubectl apply -f /tmp/utils-crs-deploy.yaml
 
-# - name: Wait for xplane provider CRD
-#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
-#   register: xplaneprovider
-#   until: xplaneprovider is not failed
-#   retries: 50
-#   delay: 10
-
-# - name: Install rook/ceph
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     helm repo add rook https://charts.rook.io/release
-#     helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
-#     helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }}
-
-# - name: Wait for blockpool
-#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
-#   register: blockpool
-#   until: blockpool is not failed
-#   retries: 50
-#   delay: 10
-
+- name: Wait for blockpool
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
+  register: blockpool
+  until: blockpool is not failed
+  retries: 50
+  delay: 10
 # - name: Install zitadel
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig

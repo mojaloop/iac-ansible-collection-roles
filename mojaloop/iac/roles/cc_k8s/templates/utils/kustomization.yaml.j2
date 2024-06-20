@@ -75,3 +75,14 @@ helmCharts:
   valuesInline:
     args:
       - --{{ crossplane_debug }}
+
+- name: rook-ceph
+  releaseName: rook-ceph
+  version: {{ rook_ceph_version }}
+  repo: https://charts.rook.io/release
+  namespace: {{ rook_ceph_namespace }}
+  includeCRDs: true
+  valuesInline:
+    csi:
+      kubeletDirPath= {{ rook_csi_kubelet_dir_path }}
+    enableDiscoveryDaemon: true
