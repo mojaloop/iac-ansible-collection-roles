@@ -85,6 +85,8 @@ configuration: |-
     }
 
 management:
+  image:
+    tag: {{ netbird_image_version }}
   ingress:
     enabled: false
   ingressGrpc:
@@ -97,5 +99,7 @@ management:
     xtraArgs:
       - --single-account-mode-domain={{ dns_public_subdomain }}
 signal:
+  image:
+    tag: {{ netbird_image_version }}
   ingress:
     enabled: false

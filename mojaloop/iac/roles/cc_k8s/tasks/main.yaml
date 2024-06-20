@@ -65,141 +65,115 @@
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
 
-- name: Upload cc bootstrap files
+- name: Upload cc util files
   template:
-    src: "templates/{{ item }}.yaml.j2"
-    dest: "{{ cctmpvalues.path }}/{{ item }}.yaml"
-  with_items:
-    - rook-ceph-cluster-values
-    - cockroach-db-values
-    - zitadel-cert-job
-    - zitadel-values
-    - netbird-helmfile
-    - lets-encrypt-cluster-issuer
-    - ext-dns-values
-    - ext-dns-crs
-    - istio-istiod-values
-    - istio-base-values
-    - istio-internal-ingress-gateway-values
-    - istio-external-ingress-gateway-values
-    - istio-gateway-crs
-    - vitrual-services
-    - crossplane-providers
-    - zitadel-xplane-terraform
-    - netbird-helmfile
-    - netbird-values
-    - netbird-ui-values
-    - netbird-crs
-    - netbird-random-secrets
-    - zitadel-random-secrets
-    - stunner-crs
-    - consul-values
-    - vault-values
-    - vault-crs
-    - netbird-xplane-terraform
-    - vault-xplane-terraform
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "../templates/util"
+
+# - name: Upload cc zitadel files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+#   with_filetree: "../templates/zitadel"
+
+# - name: Upload cc vault files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+#   with_filetree: "../templates/vault"
+
+# - name: Upload cc netbird files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+#   with_filetree: "../templates/netbird"
 
 - name: Install utils
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add mittwald https://helm.mittwald.de
-    helm upgrade --install kubernetes-secret-generator mittwald/kubernetes-secret-generator
-    helm repo add ember https://emberstack.github.io/helm-charts
-    helm upgrade --install reflector ember/reflector --version {{ reflector_helm_version }} -n reflector --create-namespace --set nameOverride=reflector
-    helm repo add istio https://istio-release.storage.googleapis.com/charts
-    helm upgrade --install istio-base istio/base --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-base-values.yaml
-    helm upgrade --install istio-istiod istio/istiod --version {{ istio_helm_version }} -n {{ istio_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-istiod-values.yaml
-    helm upgrade --install int-gateway istio/gateway --version {{ istio_helm_version }} -n {{ istio_internal_gateway_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-internal-ingress-gateway-values.yaml
-    helm upgrade --install ext-gateway istio/gateway --version {{ istio_helm_version }} -n {{ istio_external_gateway_namespace }} --create-namespace --values {{ cctmpvalues.path }}/istio-external-ingress-gateway-values.yaml
-    helm repo add cert-manager https://charts.jetstack.io
-    helm upgrade --install cert-manager cert-manager/cert-manager --version {{ certmanager_helm_version }} -n {{ certmanager_namespace }} --create-namespace --set crds.enabled=true
-    kubectl -n {{ certmanager_namespace }} apply -f {{ cctmpvalues.path }}/lets-encrypt-cluster-issuer.yaml
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install external-dns bitnami/external-dns --version {{ external_dns_helm_version }} -n {{ external_dns_namespace }} --create-namespace --values {{ cctmpvalues.path }}/ext-dns-values.yaml
-    kubectl -n {{ external_dns_namespace }} create secret generic {{ external_dns_credentials_secret }} --from-file=credentials={{ cctmpvalues.path }}/ext-dns-crs.yaml || true
-    kubectl apply -f {{ cctmpvalues.path }}/istio-gateway-crs.yaml
-    helm repo add crossplane-stable https://charts.crossplane.io/stable
-    helm upgrade --install crossplane crossplane-stable/crossplane --version {{ crossplane_helm_version }} -n {{ crossplane_namespace }} --create-namespace --set args='{"--debug"}'
+    kustomize build {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
+    kubectl apply -f /tmp/utils-deploy.yaml
 
-- name: Wait for xplane provider CRD
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
-  register: xplaneprovider
-  until: xplaneprovider is not failed
-  retries: 50
-  delay: 10
+# - name: Wait for xplane provider CRD
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ cctmpvalues.path }}/crossplane-providers.yaml
+#   register: xplaneprovider
+#   until: xplaneprovider is not failed
+#   retries: 50
+#   delay: 10
 
-- name: Install rook/ceph
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add rook https://charts.rook.io/release
-    helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
-    helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }}
+# - name: Install rook/ceph
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     helm repo add rook https://charts.rook.io/release
+#     helm upgrade --install rook-ceph rook/rook-ceph --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }} --create-namespace --set csi.kubeletDirPath={{ rook_csi_kubelet_dir_path }} --set enableDiscoveryDaemon=true
+#     helm upgrade --install rook-ceph-cluster rook/rook-ceph-cluster --version {{ rook_ceph_version }} -n {{ rook_ceph_namespace }}
 
-- name: Wait for blockpool
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
-  register: blockpool
-  until: blockpool is not failed
-  retries: 50
-  delay: 10
+# - name: Wait for blockpool
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
+#   register: blockpool
+#   until: blockpool is not failed
+#   retries: 50
+#   delay: 10
 
-- name: Install zitadel
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add cockroachdb https://charts.cockroachdb.com/
-    helm upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
+# - name: Install zitadel
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     helm repo add cockroachdb https://charts.cockroachdb.com/
+#     helm upgrade --install zitadel-db cockroachdb/cockroachdb --version {{ cockroachdb_helm_version }} -n {{ zitadel_namespace }} --create-namespace --values {{ cctmpvalues.path }}/cockroach-db-values.yaml
 
-    # Generate a TLS certificate for the zitadel DB user
-    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
-    kubectl -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
-    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-random-secrets.yaml
+#     # Generate a TLS certificate for the zitadel DB user
+#     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-cert-job.yaml
+#     kubectl -n {{ zitadel_namespace }} wait --for=condition=complete job/create-zitadel-cert
+#     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-random-secrets.yaml
 
-    # Install ZITADEL
-    helm repo add zitadel https://charts.zitadel.com
-    helm upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/vitrual-services.yaml
+#     # Install ZITADEL
+#     helm repo add zitadel https://charts.zitadel.com
+#     helm upgrade --install zitadel zitadel/zitadel --version {{ zitadel_helm_version }} -n {{ zitadel_namespace }} --values {{ cctmpvalues.path }}/zitadel-values.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/vitrual-services.yaml
 
-- name: Wait for zitadel key
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
-  register: adminkey
-  until: adminkey is not failed
-  retries: 50
-  delay: 10
+# - name: Wait for zitadel key
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
+#   register: adminkey
+#   until: adminkey is not failed
+#   retries: 50
+#   delay: 10
 
-- name: Use zitadel TF module to perform zitadel init
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
+# - name: Use zitadel TF module to perform zitadel init
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
 
-- name: Install vault
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add hashicorp https://helm.releases.hashicorp.com
-    kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
-    helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
-    kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server 
-    helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/vault-xplane-terraform.yaml
+# - name: Install vault
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     helm repo add hashicorp https://helm.releases.hashicorp.com
+#     kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
+#     helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
+#     kubectl wait -n {{ consul_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 statefulset/consul-server
+#     helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/vault-xplane-terraform.yaml
 
-- name: Use TF module to perform zitadel netbird config
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    #need to create this ns first so module can write secret to netbird ns
-    kubectl create ns {{ netbird_namespace }} || true 
-    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-xplane-terraform.yaml
+# - name: Use TF module to perform zitadel netbird config
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     #need to create this ns first so module can write secret to netbird ns
+#     kubectl create ns {{ netbird_namespace }} || true
+#     kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-xplane-terraform.yaml
 
-- name: Wait for zitadel tf output
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ netbird_namespace }} {{ netbird_preconfig_secret }}
-  register: outputsecret
-  until: outputsecret is not failed
-  retries: 50
-  delay: 10
+# - name: Wait for zitadel tf output
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ netbird_namespace }} {{ netbird_preconfig_secret }}
+#   register: outputsecret
+#   until: outputsecret is not failed
+#   retries: 50
+#   delay: 10
 
-- name: Install netbird
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add stunner https://l7mp.io/stunner
-    helm upgrade --install stunner stunner/stunner-gateway-operator -n {{ stunner_system_namespace }} --create-namespace
-    kubectl create ns {{ stunner_impl_namespace }} || true
-    kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
-    kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml,{{ cctmpvalues.path }}/netbird-crs.yaml
-    helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
+# - name: Install netbird
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     helm repo add stunner https://l7mp.io/stunner
+#     helm upgrade --install stunner stunner/stunner-gateway-operator -n {{ stunner_system_namespace }} --create-namespace
+#     kubectl create ns {{ stunner_impl_namespace }} || true
+#     kubectl apply -f {{ cctmpvalues.path }}/stunner-crs.yaml
+#     kubectl -n {{ netbird_namespace }} apply -f {{ cctmpvalues.path }}/netbird-random-secrets.yaml,{{ cctmpvalues.path }}/netbird-crs.yaml
+#     helmfile apply -f {{ cctmpvalues.path }}/netbird-helmfile.yaml
