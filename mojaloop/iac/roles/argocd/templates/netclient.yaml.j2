@@ -37,13 +37,11 @@ spec:
       - name: netclient
         image: gravitl/netclient:v{{ netmaker_image_version }}
         env:
-        - name: NETCLIENT_ROAMING
-          value: "no"
-        - name: NETCLIENT_PORT
+        - name: PORT
           value: "31821"
-        - name: NETCLIENT_IS_STATIC
+        - name: IS_STATIC
           value: "yes"
-        - name: NETCLIENT_ENDPOINT
+        - name: ENDPOINT
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
@@ -55,6 +53,8 @@ spec:
         volumeMounts:
         - mountPath: /etc/netclient
           name: etc-netclient
+        - mountPath: /var/log/netclient.log
+          name: log-netclient
         securityContext:
           privileged: true
       volumes:
@@ -62,6 +62,10 @@ spec:
           path: /etc/netclient
           type: DirectoryOrCreate
         name: etc-netclient
+      - hostPath:
+          path: /var/log/netclient.log
+          type: FileOrCreate  
+        name: log-netclient  
       tolerations:
       - operator: "Exists"
         
@@ -84,5 +88,5 @@ spec:
   data:
     - secretKey: TOKEN # Key given to the secret to be created on the cluster
       remoteRef: 
-        key: {{ cluster_name }}/netmaker_env_token
+        key: {{ cluster_name }}/netmaker_ops_token
         property: value
