@@ -69,7 +69,8 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "../templates/util"
+  with_filetree: "templates/util"
+  when: item.state == 'file'
 
 # - name: Upload cc zitadel files
 #   template:
