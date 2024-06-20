@@ -18,7 +18,9 @@ netmaker_networks:
   - network_name: cntrlctr
     node_keys: 
       - ops
+    network_cidr: 10.20.30.0/24   
   - network_name: dev
     node_keys:
       - k8s
       - cc-svcs
+    network_cidr: 10.20.31.0/24
