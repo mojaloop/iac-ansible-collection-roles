@@ -5,11 +5,18 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-- name: install kustomize
-  get_url:
-    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
-    dest: /usr/local/bin/kustomize
-    mode: 0700
+- name: download kustomize
+  ansible.builtin.unarchive:
+    src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: copy kustomize bin
+  copy:
+    src: "/tmp/kustomize"
+    dest: "/usr/local/bin/kustomize"
+    mode: "u+rwx"
+    remote_src: yes
 
 - name: download helmfile
   ansible.builtin.unarchive:
