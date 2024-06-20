@@ -123,7 +123,7 @@
       sleep 5 
     done
     while true;do
-      kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
+      kubectl wait -n {{ rook_ceph_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
       sleep 5 
     done
     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
