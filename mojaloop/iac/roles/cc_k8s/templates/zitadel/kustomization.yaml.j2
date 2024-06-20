@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespaces.yaml
   - zitadel-cert-job.yaml
-  - create-zitadel-cert
   - zitadel-random-secrets.yaml
   - vitrual-services.yaml
   - zitadel-xplane-terraform.yaml
@@ -23,3 +22,11 @@ helmCharts:
     repo: https://charts.zitadel.com
     valuesFile: zitadel-values.yaml
     namespace: {{ zitadel_namespace }}
+
+patches:
+  - target:
+      kind: CronJob
+    patch: |
+      - op: replace
+        path: /apiVersion
+        value: batch/v1

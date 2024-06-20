@@ -2,6 +2,7 @@ apiVersion: tf.upbound.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: zitadel-post-config
+  namespace: {{ zitadel_namespace }}
 spec:
   # Note that unlike most provider configs this one supports an array of
   # credentials. This is because each Terraform workspace uses a single
@@ -40,6 +41,7 @@ apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
   name: zitadel-post-config
+  namespace: {{ zitadel_namespace }}
 spec:
   forProvider:
     # Use any module source supported by terraform init -from-module.
