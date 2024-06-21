@@ -12,7 +12,7 @@
 - name: Find the networks to be deleted
   set_fact:
      networks_to_delete: '{{ ( networks_to_delete | list ) + ( [ {"network_name": item.netid}] | list )}}'
-  when: item.netid not in netmaker_networks
+  when: netmaker_networks | selectattr(network_name,'equalto',item.netid) | list | count > 0
   with_items: "{{ existing_netmaker_networks.content }}"
 
 - name: Get exisitng enrollment keys
@@ -35,6 +35,7 @@
 - name: Delete networks in netmaker
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/networks/{{ item.network_name }}
+    method: GET    
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
@@ -43,7 +44,8 @@
 
 - name: Delete enrollment keys in netmaker
   uri:
-    url: https://api.{{ netmaker_base_domain }}api/v1/enrollment-keys/{{ item.key }}
+    url: https://api.{{ netmaker_base_domain }}/api/v1/enrollment-keys/{{ item.key }}
+    method: GET    
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
