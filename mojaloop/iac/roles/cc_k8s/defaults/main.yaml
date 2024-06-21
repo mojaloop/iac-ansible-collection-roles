@@ -85,4 +85,4 @@ argocd_cli_version: "2.11.3"
 argocd_application_gitrepo_tag: "vexp-cck8s19"
 argocd_gitrepo_owner: mojaloop
 argocd_gitrepo_repo: iac-modules
-argocd_gitrepo_path: /gitops/argocd
+argocd_gitrepo_path: gitops/argocd
