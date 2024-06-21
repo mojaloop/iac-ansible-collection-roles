@@ -72,7 +72,7 @@
     status_code: [200, 400]
   vars:
     keytag: "{{ item.0.network_name }}-{{ item.1 }}"
-  when: "keytag not in key_response.content"
+  when: "key_response.content | selectattr('tags', 'equalto', ( keytag | list )) | list | count == 0"
   loop: "{{ new_netmaker_networks | subelements('node_keys') }}"
 
 - name: Get keys again
