@@ -18,6 +18,12 @@
     mode: "u+rwx"
     remote_src: yes
 
+- name: download argocd cli
+  get_url:
+    url: https://github.com/argoproj/argo-cd/releases/download/v{{ argocd_cli_version }}/argocd-linux-amd64
+    dest: /usr/local/bin/argocd
+    mode: 0700
+
 - name: download helmfile
   ansible.builtin.unarchive:
     src: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64.tar.gz
@@ -87,49 +93,62 @@
   with_filetree: "{{role_path}}/templates/"
   when: item.state == 'file'
 
-- name: Install utils
+- name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
-    kubectl apply -f /tmp/utils-deploy.yaml
-    while true;do
-      kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.succeeded}'=1 job/cert-manager-startupapicheck && break
-      sleep 5 
-    done
-    while true;do
-      kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane && break
-      sleep 5 
-    done
-    while true;do
-      kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod && break
-      sleep 5 
-    done
-    while true;do
-      kubectl wait -n {{ rook_ceph_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
-      sleep 5 
-    done
-    kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
-    kubectl apply -f /tmp/utils-crs-deploy.yaml
+    helm repo add argo https://argoproj.github.io/argo-helm
+    helm repo update
+    helm upgrade --install {{ argo_release_name }} argo/argo-cd --create-namespace --namespace=argocd --version {{ argo_release_version }} \
+      --set fullnameOverride=argocd \
+      --set applicationSet.enabled=false \
+      --set notifications.enabled=false \
+      --set dex.enabled=false \
+      --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
+      --set configs.cm."timeout\.reconciliation"="10s"
 
-- name: Wait for blockpool
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
-  register: blockpool
-  until: blockpool is not failed
-  retries: 50
-  delay: 10
+# - name: Install utils
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
+#     kubectl apply -f /tmp/utils-deploy.yaml
+#     while true;do
+#       kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.succeeded}'=1 job/cert-manager-startupapicheck && break
+#       sleep 5
+#     done
+#     while true;do
+#       kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane && break
+#       sleep 5
+#     done
+#     while true;do
+#       kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod && break
+#       sleep 5
+#     done
+#     while true;do
+#       kubectl wait -n {{ rook_ceph_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
+#       sleep 5
+#     done
+#     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
+#     kubectl apply -f /tmp/utils-crs-deploy.yaml
 
-- name: Install zitadel
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kustomize build --enable-helm {{ cctmpvalues.path }}/zitadel > /tmp/zitadel-deploy.yaml
-    kubectl apply -f /tmp/zitadel-deploy.yaml
+# - name: Wait for blockpool
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
+#   register: blockpool
+#   until: blockpool is not failed
+#   retries: 50
+#   delay: 10
 
-- name: Wait for zitadel key
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
-  register: adminkey
-  until: adminkey is not failed
-  retries: 50
-  delay: 10
+# - name: Install zitadel
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kustomize build --enable-helm {{ cctmpvalues.path }}/zitadel > /tmp/zitadel-deploy.yaml
+#     kubectl apply -f /tmp/zitadel-deploy.yaml
+
+# - name: Wait for zitadel key
+#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
+#   register: adminkey
+#   until: adminkey is not failed
+#   retries: 50
+#   delay: 10
 # - name: Use zitadel TF module to perform zitadel init
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
