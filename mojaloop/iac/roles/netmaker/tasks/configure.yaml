@@ -34,7 +34,7 @@
 - name: Compose the new network list
   set_fact:
     new_netmaker_networks: '{{ ( new_netmaker_networks | list ) + ( [ {"network_name": item.network_name, "node_keys": item.node_keys, "network_cidr": item.network_cidr }] | list )}}'
-  when: item.network_name not in existing_netmaker_networks.content
+  when: existing_netmaker_networks.content | selectattr('netid', 'equalto', item.network_name) | list | count === 0 
   with_items: "{{ netmaker_networks }}"    
 
 - name: Create new networks in netmaker
