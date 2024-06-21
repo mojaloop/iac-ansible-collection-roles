@@ -35,7 +35,7 @@
 - name: Delete networks in netmaker
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/networks/{{ item.network_name }}
-    method: GET    
+    method: DELETE    
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
@@ -45,7 +45,7 @@
 - name: Delete enrollment keys in netmaker
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/v1/enrollment-keys/{{ item.key }}
-    method: GET    
+    method: DELETE    
     headers:
       Content-Type: application/json
       Authorization: Bearer {{ netmaker_master_key }}
