@@ -108,13 +108,15 @@
       --set configs.cm."timeout\.reconciliation"="10s"
     kubectl -n argocd rollout status deployment/argocd-server
     export ARGOCD_APPLICATION_URL="https://raw.githubusercontent.com/{{ argocd_gitrepo_owner }}/{{ argocd_gitrepo_repo }}/{{ argocd_application_gitrepo_tag }}/{{ argocd_gitrepo_path }}/argocd-app.yaml"
-    export DNS_PRIVATE_SUBDOMAIN={{ dns_private_subdomain }}
-    export ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-    until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
-    curl $ARGOCD_APPLICATION_URL | sed "s|\${argocd_subdomain}|$DNS_PRIVATE_SUBDOMAIN|g" | sed "s|\${argocd_appname}|$ARGO_APP_NAME|g" | kubectl apply -f -
-    kubectl config set-context --current --namespace=argocd
-    until argocd app sync $ARGO_APP_NAME; do echo "awaiting argocd to sync..." && sleep 10; done
-    kubectl -n argocd rollout status deployment/argocd-repo-server
+    # export DNS_PRIVATE_SUBDOMAIN={{ dns_private_subdomain }}
+    # export ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+    # until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
+    # curl $ARGOCD_APPLICATION_URL | sed "s|\${argocd_subdomain}|$DNS_PRIVATE_SUBDOMAIN|g" | sed "s|\${argocd_appname}|$ARGO_APP_NAME|g" | kubectl apply -f -
+    # kubectl config set-context --current --namespace=argocd
+    # until argocd app sync $ARGO_APP_NAME; do echo "awaiting argocd to sync..." && sleep 10; done
+    # kubectl -n argocd rollout status deployment/argocd-repo-server
+    echo $ARGOCD_APPLICATION_URL
+    curl $ARGOCD_APPLICATION_URL | sed "s|\${argocd_subdomain}|$DNS_PRIVATE_SUBDOMAIN|g" | sed "s|\${argocd_appname}|$ARGO_APP_NAME|g"
 
 # - name: Install utils
 #   shell: |
