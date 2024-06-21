@@ -1,0 +1,51 @@
+- name: Get existing networks 
+  uri:
+    url: https://api.{{ netmaker_base_domain }}/api/networks
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200]
+    return_content: true
+  register: existing_netmaker_networks  
+
+- name: Find the networks to be deleted
+  set_fact:
+     networks_to_delete: '{{ ( networks_to_delete | list ) + ( [ {"network_name": item.netid}] | list )}}'
+  when: item.netid not in netmaker_networks
+  with_items: "{{ existing_netmaker_networks.content }}"
+
+- name: Get exisitng enrollment keys
+  uri:
+    url: https://api.{{ netmaker_base_domain }}/api/v1/enrollment-keys
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200]
+    return_content: true
+  register: existing_entrollment_keys
+
+- name: Find the enrollment keys to be deleted
+  set_fact:
+     keys_to_delete: "{{ ( keys_to_delete | list ) + ( [ {'network_name': (item.networks | join(',')) , 'key': ( item.tags | join(',')) }] | list )}}"
+  when: ( item.networks | join(',') ) not in netmaker_networks
+  with_items: "{{ existing_entrollment_keys.content }}"
+
+- name: Delete networks in netmaker
+  uri:
+    url: https://api.{{ netmaker_base_domain }}/api/networks/{{ item.network_name }}
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200]
+  loop: "{{ networks_to_delete }}"
+
+- name: Delete enrollment keys in netmaker
+  uri:
+    url: https://api.{{ netmaker_base_domain }}api/v1/enrollment-keys/{{ item.key }}
+    headers:
+      Content-Type: application/json
+      Authorization: Bearer {{ netmaker_master_key }}
+    status_code: [200]
+  loop: "{{ keys_to_delete }}" 
