@@ -28,7 +28,7 @@
 
 - name: Find the enrollment keys to be deleted
   set_fact:
-     keys_to_delete: "{{ ( keys_to_delete | list ) + ( [ {'network_name': (item.networks | join(',')) , 'key': ( item.tags | join(',')) }] | list )}}"
+     keys_to_delete: "{{ ( keys_to_delete | list ) + ( [ {'key': item.token}] | list )}}"
   when: netmaker_networks | selectattr('network_name','in' , ( item.networks | join(',') )) | list | count == 0 
   with_items: "{{ existing_entrollment_keys.content }}"
 
