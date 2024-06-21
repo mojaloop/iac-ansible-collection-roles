@@ -13,7 +13,7 @@
   set_fact:
      networks_to_delete: '{{ ( networks_to_delete | list ) + ( [ {"network_name": item.netid}] | list )}}'
   when: netmaker_networks | selectattr('network_name','equalto',item.netid) | list | count == 0
-  with_items: "{{ existing_netmaker_networks.content }}"
+  with_items: "{{ existing_netmaker_networks.content | list }}"
 
 - name: Get exisitng enrollment keys
   uri:
