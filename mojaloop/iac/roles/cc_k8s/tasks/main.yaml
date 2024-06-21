@@ -117,6 +117,7 @@
     # kubectl -n argocd rollout status deployment/argocd-repo-server
     echo $ARGOCD_APPLICATION_URL
     curl $ARGOCD_APPLICATION_URL | sed "s|\${argocd_subdomain}|$DNS_PRIVATE_SUBDOMAIN|g" | sed "s|\${argocd_appname}|$ARGO_APP_NAME|g"
+    exit 1
 
 # - name: Install utils
 #   shell: |
