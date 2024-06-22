@@ -106,9 +106,16 @@
       --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
       --set configs.cm."timeout\.reconciliation"="10s"
     kubectl -n {{ argocd_namespace }} rollout status deployment/argocd-server
+
+- name: Get ArgoCD app yaml
+  get_url:
+    url: "{{ argocd_gitrepo_base_url }}/{{ argocd_gitrepo_owner }}/{{ argocd_gitrepo_repo }}/{{ argocd_application_gitrepo_tag }}/{{ argocd_gitrepo_path }}/argocd-helm.yaml"
+    dest: "{{ cctmpvalues.path }}/argocd/argoapp.yaml"
+
+- name: Subst env vars
+  shell: |
     source {{ cctmpvalues.path }}/argocd/argocd-env.sh
-    curl -L $argocd_application_url > {{ cctmpvalues.path }}/argocd/argoupdate.yaml
-    cat {{ cctmpvalues.path }}/argocd/argoupdate.yaml | envsubst > {{ cctmpvalues.path }}/argocd/argoupdatesubst.yaml
+    cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst > {{ cctmpvalues.path }}/argocd/argoupdatesubst.yaml
 
 - name: Install argocd autosync
   shell: |
