@@ -115,6 +115,8 @@
 - name: Subst env vars
   shell: |
     source {{ cctmpvalues.path }}/argocd/argocd-env.sh
+    set
+    exit 1
     cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst > {{ cctmpvalues.path }}/argocd/argoupdatesubst.yaml
 
 - name: Install argocd autosync
