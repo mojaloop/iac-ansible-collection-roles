@@ -107,12 +107,13 @@
       --set configs.cm."timeout\.reconciliation"="10s"
     kubectl -n {{ argocd_namespace }} rollout status deployment/argocd-server
     source {{ cctmpvalues.path }}/argocd/argocd-env.sh
-    curl $argocd_application_url | envsubst > {{ cctmpvalues.path }}/argocd/argoupdate.yaml
+    curl -L $argocd_application_url > {{ cctmpvalues.path }}/argocd/argoupdate.yaml
+    cat {{ cctmpvalues.path }}/argocd/argoupdate.yaml | envsubst > {{ cctmpvalues.path }}/argocd/argoupdatesubst.yaml
 
 - name: Install argocd autosync
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    cat {{ cctmpvalues.path }}/argocd/argocd-env.sh | kubectl apply -f -
+    cat {{ cctmpvalues.path }}/argocd/argoupdatesubst.yaml | kubectl apply -f -
     export ARGOCD_PWD=$(kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
     until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
     kubectl config set-context --current --namespace={{ argocd_namespace }}
