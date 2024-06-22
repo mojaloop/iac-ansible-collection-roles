@@ -2,3 +2,4 @@ export argocd_appname={{ argocd_appname }}
 export argocd_namespace={{ argocd_namespace }}
 export argocd_release_version={{ argocd_release_version }}
 export argocd_subdomain={{ dns_public_subdomain }}
+export argocd_application_url="{{ argocd_gitrepo_base_url }}/{{ argocd_gitrepo_owner }}/{{ argocd_gitrepo_repo }}/{{ argocd_application_gitrepo_tag }}/{{ argocd_gitrepo_path }}/argocd-helm.yaml"
