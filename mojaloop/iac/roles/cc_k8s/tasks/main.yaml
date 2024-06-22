@@ -117,7 +117,7 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     source {{ cctmpvalues.path }}/argocd/argocd-env.sh
     printf -v argovars "$(cat {{ cctmpvalues.path }}/argocd/argocd-env.txt)"
-    cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst < "$(printf "\'$argovars\'")" | kubectl apply -f -
+    cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst "$(printf "\'$argovars\'")" | kubectl apply -f -
     export ARGOCD_PWD=$(kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
     until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
     kubectl config set-context --current --namespace={{ argocd_namespace }}
