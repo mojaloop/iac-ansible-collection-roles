@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: utils-app
+  namespace: argocd
+
+  # Add this finalizer ONLY if you want these to cascade delete (A cascade delete, deletes both the app and its resources, rather than only the app.)
+  # finalizers:
+  #   - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+
+    automated:
+      prune: true
+      selfHeal: true
+
+  source:
+    repoURL: {{ argocd_gitrepo_base_url }}/{{ argocd_gitrepo_owner }}//{{ argocd_gitrepo_repo }}.git
+    targetRevision: 
+    path: gitops/applications/utils
+    plugin:
+      name: envsubst
+      env:
+        - name: argocd_gitrepo_path
+          value: "{{ argocd_gitrepo_path }}"
+
+        - name: argocd_gitrepo_owner
+          value: "{{ argocd_gitrepo_owner }}"
+
+        - name: argocd_gitrepo_repo
+          value: "{{ argocd_gitrepo_repo }}"
+
+        - name: argocd_application_gitrepo_tag
+          value: "{{ argocd_application_gitrepo_tag }}"
+
+        - name: argo_release_name
+          value: "{{ argocd_appname }}"
+          
+        - name: argo_release_version
+          value: "{{ argocd_release_version }}"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: default
+

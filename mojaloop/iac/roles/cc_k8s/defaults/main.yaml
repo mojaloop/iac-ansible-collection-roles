@@ -79,10 +79,12 @@ crossplane_debug: "debug"
 kubernetes_secret_generator_helm_version: "3.4.0"
 
 #argo
-argo_release_name: "argocd"
-argo_release_version: "7.1.5"
+argocd_appname: "argocd"
+argocd_namespace: "argocd"
+argocd_release_version: "7.1.5"
 argocd_cli_version: "2.11.3"
 argocd_application_gitrepo_tag: "vexp-cck8s19"
 argocd_gitrepo_owner: mojaloop
 argocd_gitrepo_repo: iac-modules
-argocd_gitrepo_path: gitops/argocd
+argocd_gitrepo_path: gitops/base/argo-apps
+argocd_gitrepo_base_url: "https://raw.githubusercontent.com"

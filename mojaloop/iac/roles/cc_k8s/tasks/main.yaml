@@ -78,43 +78,42 @@
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
 
-# - name: Upload cc template dirs
-#   file:
-#     path: "{{ cctmpvalues.path }}/{{ item.path }}"
-#     state: directory
-#     mode: "{{ item.mode }}"
-#   with_filetree: "{{role_path}}/templates/"
-#   when: item.state == 'directory'
+- name: Upload cc template dirs
+  file:
+    path: "{{ cctmpvalues.path }}/{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_filetree: "{{role_path}}/templates/"
+  when: item.state == 'directory'
 
-# - name: Upload cc template files
-#   template:
-#     src: "{{ item.src }}"
-#     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
-#   with_filetree: "{{role_path}}/templates/"
-#   when: item.state == 'file'
+- name: Upload cc template files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/"
+  when: item.state == 'file'
 
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    export ARGO_APP_NAME="argocd-helm"
     helm repo add argo https://argoproj.github.io/argo-helm
     helm repo update
-    helm upgrade --install $ARGO_APP_NAME argo/argo-cd --create-namespace --namespace=argocd --version {{ argo_release_version }} \
-      --set fullnameOverride=argocd \
+    helm upgrade --install {{ argocd_appname }} argo/argo-cd --create-namespace --namespace {{ argocd_namespace }} --version {{ argocd_release_version }} \
+      --set fullnameOverride={{ argocd_appname }} \
       --set applicationSet.enabled=false \
       --set notifications.enabled=false \
       --set dex.enabled=false \
       --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
       --set configs.cm."timeout\.reconciliation"="10s"
-    kubectl -n argocd rollout status deployment/argocd-server
-    export ARGOCD_APPLICATION_URL="https://raw.githubusercontent.com/{{ argocd_gitrepo_owner }}/{{ argocd_gitrepo_repo }}/{{ argocd_application_gitrepo_tag }}/{{ argocd_gitrepo_path }}/argocd-app.yaml"
-    export DNS_PRIVATE_SUBDOMAIN={{ dns_private_subdomain }}
-    export ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+    kubectl -n {{ argocd_namespace }} rollout status deployment/argocd-server
+    export ARGOCD_APPLICATION_URL="{{ argocd_gitrepo_base_url }}/{{ argocd_gitrepo_owner }}/{{ argocd_gitrepo_repo }}/{{ argocd_application_gitrepo_tag }}/{{ argocd_gitrepo_path }}/argocd-helm.yaml"
+    export ARGOCD_PWD=$(kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
     until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
-    curl $ARGOCD_APPLICATION_URL | sed "s|\${argocd_subdomain}|$DNS_PRIVATE_SUBDOMAIN|g" | sed "s|\${argocd_appname}|$ARGO_APP_NAME|g" | kubectl apply -f -
-    kubectl config set-context --current --namespace=argocd
-    until argocd app sync $ARGO_APP_NAME; do echo "awaiting argocd to sync..." && sleep 10; done
-    kubectl -n argocd rollout status deployment/argocd-repo-server
+    source {{ cctmpvalues.path }}/argocd/argocd-env.sh
+    curl $ARGOCD_APPLICATION_URL | envsubst | kubectl apply -f -
+    kubectl config set-context --current --namespace={{ argocd_namespace }}
+    until argocd app sync {{ argocd_appname }}; do echo "awaiting argocd to sync..." && sleep 10; done
+    kubectl -n {{ argocd_namespace }} rollout status deployment/argocd-repo-server
 
 # - name: Install utils
 #   shell: |
