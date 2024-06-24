@@ -74,7 +74,7 @@
 
 - name: merge argo dictionaries
   set_fact:
-    fact_argo_merged_config: "{{ argocd_override | ansible.builtin.combine(argocd_default, recursive=true) }}"
+    fact_argo_merged_config: "{{ argocd_default | ansible.builtin.combine(argocd_override, recursive=true) }}"
 
 - name: debug merged config
   ansible.builtin.debug:
