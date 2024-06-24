@@ -28,9 +28,9 @@ spec:
       env:
 {% for item in fact_argo_merged_config.apps | dict2items %}
 {% for subapp in item.value['sub_apps'] | dict2items %}
-{% for subappvalue in subapp.value | dict2items -%}
+{% for subappvalue in subapp.value | dict2items %}
         - name: "{{ item.key }}_{{subapp.key}}_{{subappvalue.key}}"
-          value: "{{ subappvalue.value | to_yaml }}"
+          value: {{ subappvalue.value | to_yaml(default_style='\"') }}
 {% endfor %}
 {% endfor %}
 {% endfor %}
