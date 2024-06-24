@@ -72,9 +72,12 @@
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
 
-- name: set argo facts
+- name: merge argo dictionaries
   set_fact:
     fact_argo_merged_config: "{{ argocd_override | ansible.builtin.combine(argocd_default, recursive=true) }}"
+
+- name: set argo facts
+  set_fact:
     fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].namespace }}"
     fact_argocd_helm_release: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].app_name }}"
     fact_argocd_helm_version: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
