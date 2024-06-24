@@ -20,7 +20,7 @@ spec:
       selfHeal: true
 
   source:
-    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}//{{ fact_argo_merged_config.gitrepo_repo }}.git
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
     targetRevision: {{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].application_gitrepo_tag }}
     path: {{ fact_argo_merged_config.root_app_gitrepo_path }}
     plugin:
