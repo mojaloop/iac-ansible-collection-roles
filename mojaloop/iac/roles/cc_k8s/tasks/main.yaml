@@ -109,7 +109,7 @@
 
 - name: Get ArgoCD app yaml
   get_url:
-    url: "{{ argocd.gitrepo_raw_host_fqdn }}/{{ argocd.gitrepo_owner }}/{{ argocd.gitrepo_repo }}/{{ argocd.apps['argocd'].application_gitrepo_tag }}/{{argocd.apps['argocd'].gitrepo_path }}/argocd-helm.yaml"
+    url: "{{ argocd.gitrepo_raw_host_fqdn }}/{{ argocd.gitrepo_owner }}/{{ argocd.gitrepo_repo }}/{{ argocd.apps['argocd'].application_gitrepo_tag }}/{{ argocd.initial_argo_gitrepo_path }}/argocd-helm.yaml"
     dest: "{{ cctmpvalues.path }}/argocd/argoapp.yaml"
 
 - name: Install argocd autosync
