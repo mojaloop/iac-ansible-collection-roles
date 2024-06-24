@@ -87,23 +87,25 @@
   with_filetree: "{{role_path}}/templates/"
   when: item.state == 'file'
 
+- name: set argo facts
+  set_fact:
+    fact_argocd_helm_namespace: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
+
 - name: Install argocd
-  vars:
-    v_argocd_helm_namespace: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].namespace }}"
-    v_argocd_helm_release: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].app_name }}"
-    v_argocd_helm_version: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add argo https://argoproj.github.io/argo-helm
     helm repo update
-    helm upgrade --install {{ v_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ v_argocd_helm_namespace }} --version {{ v_argocd_helm_version }} \
-      --set fullnameOverride={{ v_argocd_helm_release }} \
+    helm upgrade --install {{ fact_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ fact_argocd_helm_namespace }} --version {{ fact_argocd_helm_version }} \
+      --set fullnameOverride={{ fact_argocd_helm_release }} \
       --set applicationSet.enabled=false \
       --set notifications.enabled=false \
       --set dex.enabled=false \
       --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
       --set configs.cm."timeout\.reconciliation"="10s"
-    kubectl -n {{ v_argocd_helm_namespace }} rollout status deployment/argocd-server
+    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
 
 - name: Get ArgoCD app yaml
   get_url:
@@ -111,20 +113,16 @@
     dest: "{{ cctmpvalues.path }}/argocd/argoapp.yaml"
 
 - name: Install argocd autosync
-  vars:
-    v_argocd_helm_namespace: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].namespace }}"
-    v_argocd_helm_release: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].app_name }}"
-    v_argocd_helm_version: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     source {{ cctmpvalues.path }}/argocd/argocd-env.sh
     printf -v argovars "$(cat {{ cctmpvalues.path }}/argocd/argocd-env.txt)"
     cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst "$(printf "\'$argovars\'")" | kubectl apply -f -
-    export ARGOCD_PWD=$(kubectl -n {{ v_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+    export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
     until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
-    kubectl config set-context --current --namespace={{ v_argocd_helm_namespace }}
+    kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
     until argocd app sync {{ argocd.argocd_appname }}; do echo "awaiting argocd to sync..." && sleep 10; done
-    kubectl -n {{ v_argocd_helm_namespace }} rollout status deployment/argocd-repo-server
+    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
   args:
     executable: /bin/bash
 - name: Install root app
