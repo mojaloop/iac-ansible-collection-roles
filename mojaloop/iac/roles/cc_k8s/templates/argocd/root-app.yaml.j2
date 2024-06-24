@@ -2,11 +2,11 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: root-app
-  namespace: {{ argocd.apps[argocd.argocd_appname].app_namespace }}
+  namespace: {{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].app_namespace }}
 
   # Add this finalizer ONLY if you want these to cascade delete (A cascade delete, deletes both the app and its resources, rather than only the app.)
   # finalizers:
-  #   - resources-finalizer.argocd.argoproj.io
+  #   - resources-finalizer.fact_argo_merged_config.argoproj.io
 
 spec:
   project: default
@@ -20,13 +20,13 @@ spec:
       selfHeal: true
 
   source:
-    repoURL: {{ argocd.gitrepo_host_fqdn }}/{{ argocd.gitrepo_owner }}//{{ argocd.gitrepo_repo }}.git
-    targetRevision: {{ argocd.apps[argocd.argocd_appname].application_gitrepo_tag }}
-    path: {{ argocd.root_app_gitrepo_path }}
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}//{{ fact_argo_merged_config.gitrepo_repo }}.git
+    targetRevision: {{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].application_gitrepo_tag }}
+    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}
     plugin:
       name: envsubst
       env:
-{% for item in argocd.apps | dict2items %}
+{% for item in fact_argo_merged_config.apps | dict2items %}
 {% for subapp in item.value['sub_apps'] | dict2items %}
 {% for subappvalue in subapp.value | dict2items%}
         key: {{ item.key }}_{{subapp.key}}_{{subappvalue.key}}
@@ -36,5 +36,5 @@ spec:
 {% endfor %}
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: {{ argocd.apps[argocd.argocd_appname].app_namespace }}
+    namespace: {{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].app_namespace }}
 

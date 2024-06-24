@@ -6,7 +6,8 @@ cluster_name: envname
 kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
 #argo
-argocd:
+argocd_override:
+argocd_default:
   argocd_appname: argocd
   gitrepo_owner: mojaloop
   gitrepo_repo: iac-modules
