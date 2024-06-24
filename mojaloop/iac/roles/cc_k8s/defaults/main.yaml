@@ -18,6 +18,7 @@ argocd_default:
   initial_application_gitrepo_tag: "vexp-cck8s19"
   apps:
     argocd:
+      # needs to match sub_apps.argocd_helm.app_name, due to chart issue.
       argocd_app_name: "argocd"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
@@ -25,7 +26,7 @@ argocd_default:
       app_enabled: true
       sub_apps:
         argocd_helm:
-          app_name: "argocd-helm"
+          app_name: "argocd"
           namespace: "argocd"
           helm_version: "7.1.5"
           public_ingress_access_domain: false
