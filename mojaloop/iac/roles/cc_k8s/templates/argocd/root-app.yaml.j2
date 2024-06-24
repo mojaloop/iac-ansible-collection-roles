@@ -20,7 +20,7 @@ spec:
       selfHeal: true
 
   source:
-    repoURL: {{ argocd.gitrepo_base_url }}/{{ argocd.gitrepo_owner }}//{{ argocd.gitrepo_repo }}.git
+    repoURL: {{ argocd.gitrepo_host_fqdn }}/{{ argocd.gitrepo_owner }}//{{ argocd.gitrepo_repo }}.git
     targetRevision: {{ argocd.apps[argocd.argocd_appname].application_gitrepo_tag }}
     path: {{ argocd.root_app_gitrepo_path }}
     plugin:
