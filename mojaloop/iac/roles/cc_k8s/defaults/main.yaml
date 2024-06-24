@@ -5,21 +5,6 @@ argocd_cli_version: "2.11.3"
 cluster_name: envname
 kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
-dns_public_subdomain: &dns_public_subdomain "x.y.z"
-dns_private_subdomain: &dns_private_subdomain "x.y.internal"
-external_ingress_https_port: &external_ingress_https_port 32443
-external_ingress_http_port: &external_ingress_http_port 32080
-external_ingress_health_port: &external_ingress_health_port 32081
-internal_ingress_https_port: &internal_ingress_https_port 31443
-internal_ingress_http_port: &internal_ingress_http_port 31080
-internal_ingress_health_port: &internal_ingress_health_port 31081
-istio_internal_gateway_name: &istio_internal_gateway_name "istio-internal-ingress-gw"
-istio_external_gateway_name: &istio_external_gateway_name "istio-external-ingress-gw"
-istio_internal_wildcard_gateway_name: &istio_internal_wildcard_gateway_name "internal-wildcard-gateway"
-istio_external_wildcard_gateway_name: &istio_external_wildcard_gateway_name "external-wildcard-gateway"
-istio_external_gateway_namespace: &istio_external_gateway_namespace "istio-ingress-ext"
-istio_internal_gateway_namespace: &istio_internal_gateway_namespace "istio-ingress-int"
-default_application_gitrepo_tag: &default_application_gitrepo_tag "vexp-cck8s19"
 #argo
 argocd:
   argocd_appname: argocd
@@ -29,11 +14,12 @@ argocd:
   root_app_gitrepo_path: gitops/overlays/local/argo-apps
   gitrepo_host_fqdn: "https://github.com/"
   gitrepo_raw_host_fqdn: "https://raw.githubusercontent.com"
+  initial_application_gitrepo_tag: "vexp-cck8s19"
   apps:
     argocd:
       argocd_app_name: "argocd"
       app_namespace: "argocd"
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-11"
       app_enabled: true
       sub_apps:
@@ -42,13 +28,13 @@ argocd:
           namespace: "argocd"
           helm_version: "7.1.5"
           public_ingress_access_domain: false
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
           sub_app_enabled: true
     utils:
       argocd_app_name: "utils"
       namespace: "utils"
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-10"
       app_enabled: true
       sub_apps:
@@ -56,7 +42,6 @@ argocd:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           helm_version: "1.14.5"
-          application_gitrepo_tag: *default_application_gitrepo_tag
           rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
           sub_app_enabled: true
         reflector:
@@ -86,8 +71,8 @@ argocd:
           namespace: "cert-manager"
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
           sub_app_enabled: true
         ext_dns:
           app_name: "ext-dns"
@@ -97,12 +82,12 @@ argocd:
           dns_cloud_api_client_id: "none"
           dns_cloud_api_region: "none"
           sub_app_enabled: true
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
     vault:
       argocd_app_name: "vault"
       app_enabled: true
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-9"
       sub_apps:
         vault:
@@ -116,8 +101,8 @@ argocd:
           vault_terraform_modules_tag: "vexp-cck8s19"
           vault_log_level: "info"
           vault_rbac_admin_group: "techops-admin"
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
         consul:
           app_name: "consul"
           sub_app_enabled: true
@@ -129,7 +114,7 @@ argocd:
     istio:
       argocd_app_name: "istio"
       app_enabled: true
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-7"
       sub_apps:
         istio:
@@ -138,27 +123,25 @@ argocd:
           proxy_log_level: "info"
           namespace: "istio-system"
           helm_version: "1.22.1"
-          internal_gateway_name: *istio_internal_gateway_name
-          external_gateway_name: *istio_external_gateway_name
-          internal_wildcard_gateway_name: *istio_internal_wildcard_gateway_name
-          external_wildcard_gateway_name: *istio_external_wildcard_gateway_name
-          external_gateway_namespace: *istio_external_gateway_namespace
-          internal_gateway_namespace: *istio_internal_gateway_namespace
-          default_external_ssl_certificate: "ext-ingress-letsencrypt"
-          default_internal_ssl_certificate: "int-ingress-letsencrypt"
-          external_ingress_https_port: *external_ingress_https_port
-          external_ingress_http_port: *external_ingress_http_port
-          external_ingress_health_port: *external_ingress_health_port
-          internal_ingress_https_port: *internal_ingress_https_port
-          internal_ingress_http_port: *internal_ingress_http_port
-          internal_ingress_health_port: *internal_ingress_health_port
+          external_ingress_https_port: 32443
+          external_ingress_http_port: 32080
+          external_ingress_health_port: 32081
+          internal_ingress_https_port: 31443
+          internal_ingress_http_port: 31080
+          internal_ingress_health_port: 31081
+          istio_internal_gateway_name: "istio-internal-ingress-gw"
+          istio_external_gateway_name: "istio-external-ingress-gw"
+          istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
+          istio_external_wildcard_gateway_name: "external-wildcard-gateway"
+          istio_external_gateway_namespace: "istio-ingress-ext"
+          istio_internal_gateway_namespace: "istio-ingress-int"
           internal_load_balancer_dns: "dns.name"
           external_load_balancer_dns: "dns.name"
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
     zitadel:
       argocd_app_name: "zitadel"
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-6"
       app_enabled: true
       sub_apps:
@@ -173,8 +156,8 @@ argocd:
           vault_rbac_admin_group: "techops-admin"
           zitadel_grant_prefix: "zitadel:grants"
           public_ingress_access_domain: true
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
         cockroach_db:
           app_name: "cockroach-db"
           sub_app_enabled: true
@@ -182,7 +165,7 @@ argocd:
           helm_version: "11.2.1"
     netbird:
       argocd_app_name: "netbird"
-      application_gitrepo_tag: *default_application_gitrepo_tag
+      application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-5"
       app_enabled: true
       sub_apps:
@@ -201,5 +184,5 @@ argocd:
           stunner_auth_secret: stunner-auth-secret
           terraform_modules_tag: "vexp-cck8s19"
           public_ingress_access_domain: true
-          dns_private_subdomain: *dns_private_subdomain
-          dns_public_subdomain: *dns_public_subdomain
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
