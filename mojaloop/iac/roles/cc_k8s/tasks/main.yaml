@@ -76,6 +76,10 @@
   set_fact:
     fact_argo_merged_config: "{{ argocd_override | ansible.builtin.combine(argocd_default, recursive=true) }}"
 
+- name: debug merged config
+  ansible.builtin.debug:
+    var: fact_argo_merged_config
+
 - name: set argo facts
   set_fact:
     fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].namespace }}"
