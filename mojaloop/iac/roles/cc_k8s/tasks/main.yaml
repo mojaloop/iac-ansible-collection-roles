@@ -86,11 +86,12 @@
     dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
   with_filetree: "{{role_path}}/templates/"
   when: item.state == 'file'
+
 - name: set argo facts
   set_fact:
-    fact_argocd_helm_namespace: argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].namespace
-    fact_argocd_helm_release: argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].app_name
-    fact_argocd_helm_version: argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].helm_version
+    fact_argocd_helm_namespace: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ argocd.apps[argocd.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
 
 - name: Install argocd
   shell: |
