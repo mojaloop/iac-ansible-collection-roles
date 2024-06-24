@@ -1,90 +1,205 @@
-argocd_version: "2.8.2"
-rook_ceph_version: "1.14.5"
-rook_ceph_namespace: "rook-ceph"
-external_secrets_version: "0.9.0"
-external_secrets_namespace: "external-secrets"
 kubeconfig_location: "/root/.kube"
-cluster_name: envname
-kubeconfig_local_location: "/tmp"
-zitadel_local_location: "/tmp"
 kustomize_version: "5.4.2"
 kubectl_version: "1.24.6"
-rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
-rook_gitrepo_location: "/tmp/rook"
-zitadel_namespace: "zitadel"
-cockroachdb_helm_version: "11.2.1"
-zitadel_helm_version: "7.15.0"
-rook_ceph_storage_class: "rook-ceph-block"
-netbird_chart_version: "1.0.2"
-netbird_dashboard_chart_version: "1.0.0"
-netbird_image_version: "0.28.0"
-netbird_namespace: "netbird"
-netbird_preconfig_secret: "netbird-management"
-netbird_management_turn_secret: "netbird-turn"
-certmanager_helm_version: "1.15.0"
-certmanager_namespace: "cert-manager"
-external_dns_helm_version: "7.5.5"
-external_dns_namespace: "ext-dns"
-external_dns_credentials_secret: "ext-dns-secret"
-letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
-letsencrypt_email: "none@example.com"
-dns_cloud_api_client_secret: "none"
-dns_cloud_api_client_id: "none"
-dns_cloud_api_region: "none"
-dns_public_subdomain: "x.y.z"
-dns_private_subdomain: "x.y.internal"
-istio_proxy_log_level: "info"
-istio_namespace: "istio-system"
-istio_helm_version: "1.22.1"
-istio_internal_gateway_name: "istio-internal-ingress-gw"
-istio_external_gateway_name: "istio-external-ingress-gw"
-istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
-istio_external_wildcard_gateway_name: "external-wildcard-gateway"
-istio_external_gateway_namespace: "istio-ingress-ext"
-istio_internal_gateway_namespace: "istio-ingress-int"
-default_external_ssl_certificate: "ext-ingress-letsencrypt"
-default_internal_ssl_certificate: "int-ingress-letsencrypt"
-external_ingress_https_port: 32443
-external_ingress_http_port: 32080
-external_ingress_health_port: 32081
-internal_ingress_https_port: 31443
-internal_ingress_http_port: 31080
-internal_ingress_health_port: 31081
-internal_load_balancer_dns: "dns.name"
-external_load_balancer_dns: "dns.name"
-reflector_helm_version: "7.1.262"
-crossplane_helm_version: "1.16.0"
-crossplane_namespace: "crossplane-system"
-zitadel_tf_provider_version: "~> 1.2"
-zitadel_terraform_modules_tag: "vexp-cck8s19"
-helmfile_version: "0.165.0"
-stunner_system_namespace: "stunner-system"
-stunner_nodeport_port: 31821
-stunner_impl_namespace: stunner-impl
-stunner_auth_secret: stunner-auth-secret
-consul_replicas: 1
-consult_storage_size: 3Gi
-consul_namespace: consul
-vault_namespace: vault
-consul_helm_version: "1.4.0"
-vault_helm_version: "0.24.1"
-vault_keys_secret: "vault-keys"
-vault_tf_provider_version: "~> 3.16"
-vault_terraform_modules_tag: "vexp-cck8s19"
-netbird_terraform_modules_tag: "vexp-cck8s19"
-vault_rbac_admin_group: "techops-admin"
-zitadel_grant_prefix: "zitadel:grants"
-vault_log_level: "info"
-crossplane_debug: "debug"
-kubernetes_secret_generator_helm_version: "3.4.0"
-
-#argo
-argocd_appname: "argocd"
-argocd_namespace: "argocd"
-argocd_release_version: "7.1.5"
 argocd_cli_version: "2.11.3"
-argocd_application_gitrepo_tag: "vexp-cck8s19"
-argocd_gitrepo_owner: mojaloop
-argocd_gitrepo_repo: iac-modules
-argocd_gitrepo_path: gitops/base/argo-apps
-argocd_gitrepo_base_url: "https://raw.githubusercontent.com"
+cluster_name: envname
+kubeconfig_local_location: "/tmp"
+helmfile_version: "0.165.0"
+dns_public_subdomain: &dns_public_subdomain "x.y.z"
+dns_private_subdomain: &dns_private_subdomain "x.y.internal"
+external_ingress_https_port: &external_ingress_https_port 32443
+external_ingress_http_port: &external_ingress_http_port 32080
+external_ingress_health_port: &external_ingress_health_port 32081
+internal_ingress_https_port: &internal_ingress_https_port 31443
+internal_ingress_http_port: &internal_ingress_http_port 31080
+internal_ingress_health_port: &internal_ingress_health_port 31081
+istio_internal_gateway_name: &istio_internal_gateway_name "istio-internal-ingress-gw"
+istio_external_gateway_name: &istio_external_gateway_name "istio-external-ingress-gw"
+istio_internal_wildcard_gateway_name: &istio_internal_wildcard_gateway_name "internal-wildcard-gateway"
+istio_external_wildcard_gateway_name: &istio_external_wildcard_gateway_name "external-wildcard-gateway"
+istio_external_gateway_namespace: &istio_external_gateway_namespace "istio-ingress-ext"
+istio_internal_gateway_namespace: &istio_internal_gateway_namespace "istio-ingress-int"
+default_application_gitrepo_tag: &default_application_gitrepo_tag "vexp-cck8s19"
+#argo
+argocd:
+  argocd_appname: argocd
+  gitrepo_owner: mojaloop
+  gitrepo_repo: iac-modules
+  initial_argo_gitrepo_path: gitops/base/argo-apps
+  root_app_gitrepo_path: gitops/overlays/local/argo-apps
+  gitrepo_host_fqdn: "https://github.com/"
+  gitrepo_raw_host_fqdn: "https://raw.githubusercontent.com"
+  apps:
+    argocd:
+      argocd_app_name: "argocd"
+      app_namespace: "argocd"
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-11"
+      app_enabled: true
+      sub_apps:
+        argocd_helm:
+          app_name: "argocd-helm"
+          namespace: "argocd"
+          helm_version: "7.1.5"
+          public_ingress_access_domain: false
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+          sub_app_enabled: true
+    utils:
+      argocd_app_name: "utils"
+      namespace: "utils"
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-10"
+      app_enabled: true
+      sub_apps:
+        rook_ceph:
+          app_name: "rook-ceph"
+          namespace: "rook-ceph"
+          helm_version: "1.14.5"
+          application_gitrepo_tag: *default_application_gitrepo_tag
+          rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
+          sub_app_enabled: true
+        reflector:
+          app_name: "reflector"
+          helm_version: "7.1.262"
+          namespace: "default"
+          sub_app_enabled: true
+        crossplane:
+          app_name: "crossplane"
+          helm_version: "1.16.0"
+          namespace: "crossplane-system"
+          debug: "debug"
+          sub_app_enabled: true
+        kubernetes_secret_generator:
+          app_name: "kubernetes-secret-generator"
+          helm_version: "3.4.0"
+          namespace: "default"
+          sub_app_enabled: true
+        external_secrets:
+          app_name: "external-secrets"
+          helm_version: "0.9.0"
+          namespace: "external-secrets"
+          sub_app_enabled: true
+        cert_manager:
+          app_name: "cert-manager"
+          helm_version: "1.15.0"
+          namespace: "cert-manager"
+          letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
+          letsencrypt_email: "none@example.com"
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+          sub_app_enabled: true
+        ext_dns:
+          app_name: "ext-dns"
+          helm_version: "7.5.5"
+          namespace: "ext-dns"
+          dns_cloud_api_client_secret: "none"
+          dns_cloud_api_client_id: "none"
+          dns_cloud_api_region: "none"
+          sub_app_enabled: true
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+    vault:
+      argocd_app_name: "vault"
+      app_enabled: true
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-9"
+      sub_apps:
+        vault:
+          app_name: "vault"
+          sub_app_enabled: true
+          namespace: "vault"
+          helm_version: "0.24.1"
+          public_ingress_access_domain: false
+          vault_keys_secret: "vault-keys"
+          vault_tf_provider_version: "~> 3.16"
+          vault_terraform_modules_tag: "vexp-cck8s19"
+          vault_log_level: "info"
+          vault_rbac_admin_group: "techops-admin"
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+        consul:
+          app_name: "consul"
+          sub_app_enabled: true
+          namespace: "consul"
+          helm_version: "1.4.0"
+          public_ingress_access_domain: false
+          replicas: 1
+          storage_size: 3Gi
+    istio:
+      argocd_app_name: "istio"
+      app_enabled: true
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-7"
+      sub_apps:
+        istio:
+          app_name: istio
+          sub_app_enabled: true
+          proxy_log_level: "info"
+          namespace: "istio-system"
+          helm_version: "1.22.1"
+          internal_gateway_name: *istio_internal_gateway_name
+          external_gateway_name: *istio_external_gateway_name
+          internal_wildcard_gateway_name: *istio_internal_wildcard_gateway_name
+          external_wildcard_gateway_name: *istio_external_wildcard_gateway_name
+          external_gateway_namespace: *istio_external_gateway_namespace
+          internal_gateway_namespace: *istio_internal_gateway_namespace
+          default_external_ssl_certificate: "ext-ingress-letsencrypt"
+          default_internal_ssl_certificate: "int-ingress-letsencrypt"
+          external_ingress_https_port: *external_ingress_https_port
+          external_ingress_http_port: *external_ingress_http_port
+          external_ingress_health_port: *external_ingress_health_port
+          internal_ingress_https_port: *internal_ingress_https_port
+          internal_ingress_http_port: *internal_ingress_http_port
+          internal_ingress_health_port: *internal_ingress_health_port
+          internal_load_balancer_dns: "dns.name"
+          external_load_balancer_dns: "dns.name"
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+    zitadel:
+      argocd_app_name: "zitadel"
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-6"
+      app_enabled: true
+      sub_apps:
+        zitadel:
+          app_name: "zitadel"
+          sub_app_enabled: true
+          namespace: "zitadel"
+          cockroachdb_helm_version: "11.2.1"
+          helm_version: "7.15.0"
+          tf_provider_version: "~> 1.2"
+          terraform_modules_tag: "vexp-cck8s19"
+          vault_rbac_admin_group: "techops-admin"
+          zitadel_grant_prefix: "zitadel:grants"
+          public_ingress_access_domain: true
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
+        cockroach_db:
+          app_name: "cockroach-db"
+          sub_app_enabled: true
+          namespace: "zitadel"
+          helm_version: "11.2.1"
+    netbird:
+      argocd_app_name: "netbird"
+      application_gitrepo_tag: *default_application_gitrepo_tag
+      sync_wave: "-5"
+      app_enabled: true
+      sub_apps:
+        netbird:
+          app_name: "netbird"
+          sub_app_enabled: true
+          helm_version: "1.0.2"
+          dashboard_chart_version: "1.0.0"
+          image_version: "0.28.0"
+          namespace: "netbird"
+          preconfig_secret: "netbird-management"
+          management_turn_secret: "netbird-turn"
+          stunner_system_namespace: "stunner-system"
+          stunner_nodeport_port: 31821
+          stunner_impl_namespace: stunner-impl
+          stunner_auth_secret: stunner-auth-secret
+          terraform_modules_tag: "vexp-cck8s19"
+          public_ingress_access_domain: true
+          dns_private_subdomain: *dns_private_subdomain
+          dns_public_subdomain: *dns_public_subdomain
