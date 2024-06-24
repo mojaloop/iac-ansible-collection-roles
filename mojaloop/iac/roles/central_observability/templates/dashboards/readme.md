@@ -12,3 +12,8 @@
 
 ## mojaloop
 - All dashboards sourced from [github.com/mojaloop/helm](https://github.com/mojaloop/helm/tree/main/monitoring/dashboards/mojaloop)
+
+## datastores
+- mysql-exporter-quickstart: grafanaID: 14057, revision: 1
+- redis: grafanaID: 14091, revision: 1
+- mongo: grafanaID: 2583, revision: 2
