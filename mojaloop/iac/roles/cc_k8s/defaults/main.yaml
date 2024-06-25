@@ -67,25 +67,6 @@ argocd_default:
           helm_version: "0.9.0"
           namespace: "external-secrets"
           sub_app_enabled: true
-        cert_manager:
-          app_name: "cert-manager"
-          helm_version: "1.15.0"
-          namespace: "cert-manager"
-          letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
-          letsencrypt_email: "none@example.com"
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"
-          sub_app_enabled: true
-        ext_dns:
-          app_name: "ext-dns"
-          helm_version: "7.5.5"
-          namespace: "ext-dns"
-          dns_cloud_api_client_secret: "none"
-          dns_cloud_api_client_id: "none"
-          dns_cloud_api_region: "none"
-          sub_app_enabled: true
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"
     vault:
       argocd_app_name: "vault"
       app_enabled: true
@@ -105,6 +86,7 @@ argocd_default:
           vault_rbac_admin_group: "techops-admin"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
+          sync_wave: "-8"
         consul:
           app_name: "consul"
           sub_app_enabled: true
@@ -113,11 +95,36 @@ argocd_default:
           public_ingress_access_domain: false
           replicas: 1
           storage_size: 3Gi
+    dns_utils:
+      argocd_app_name: "dns-utils"
+      app_enabled: true
+      application_gitrepo_tag: "vexp-cck8s19"
+      sync_wave: "-7"
+      sub_apps:
+        cert_manager:
+          app_name: "cert-manager"
+          helm_version: "1.15.0"
+          namespace: "cert-manager"
+          letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
+          letsencrypt_email: "none@example.com"
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
+          sub_app_enabled: true
+        ext_dns:
+          app_name: "ext-dns"
+          helm_version: "7.5.5"
+          namespace: "ext-dns"
+          dns_cloud_api_client_secret: "none"
+          dns_cloud_api_client_id: "none"
+          dns_cloud_api_region: "none"
+          sub_app_enabled: true
+          dns_public_subdomain: "x.y.z"
+          dns_private_subdomain: "x.y.internal"
     istio:
       argocd_app_name: "istio"
       app_enabled: true
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-7"
+      sync_wave: "-6"
       sub_apps:
         istio:
           app_name: istio
@@ -144,7 +151,7 @@ argocd_default:
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-6"
+      sync_wave: "-5"
       app_enabled: true
       sub_apps:
         zitadel:
@@ -168,7 +175,7 @@ argocd_default:
     netbird:
       argocd_app_name: "netbird"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-5"
+      sync_wave: "-4"
       app_enabled: true
       sub_apps:
         netbird:
