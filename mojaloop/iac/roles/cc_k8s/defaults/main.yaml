@@ -135,12 +135,12 @@ argocd_default:
           proxy_log_level: "info"
           namespace: "istio-system"
           helm_version: "1.22.1"
-          external_ingress_https_port: 32443
-          external_ingress_http_port: 32080
-          external_ingress_health_port: 32081
-          internal_ingress_https_port: 31443
-          internal_ingress_http_port: 31080
-          internal_ingress_health_port: 31081
+          external_ingress_https_port: "32443"
+          external_ingress_http_port: "32080"
+          external_ingress_health_port: "32081"
+          internal_ingress_https_port: "31443"
+          internal_ingress_http_port: "31080"
+          internal_ingress_health_port: "31081"
           istio_internal_gateway_name: "istio-internal-ingress-gw"
           istio_external_gateway_name: "istio-external-ingress-gw"
           istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
