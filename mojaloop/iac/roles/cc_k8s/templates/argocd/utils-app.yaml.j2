@@ -1,12 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ fact_argo_merged_config.apps['utils'].app_namespace }}
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ fact_argo_merged_config.apps['utils'].argocd_app_name }}
   namespace: {{ fact_argo_merged_config.apps['utils'].app_namespace }}
 
-  # Add this finalizer ONLY if you want these to cascade delete (A cascade delete, deletes both the app and its resources, rather than only the app.)
-  # finalizers:
-  #   - resources-finalizer.fact_argo_merged_config.argoproj.io
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 
 spec:
   project: default
