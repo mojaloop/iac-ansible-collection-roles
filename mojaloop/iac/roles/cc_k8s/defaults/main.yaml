@@ -23,7 +23,7 @@ argocd_default:
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-11"
-      app_enabled: true
+      app_enabled: "true"
       sub_apps:
         argocd_helm:
           app_name: "argocd"
@@ -32,51 +32,51 @@ argocd_default:
           public_ingress_access_domain: false
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
     utils:
       argocd_app_name: "utils"
       app_namespace: "utils"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-10"
-      app_enabled: true
+      app_enabled: "true"
       sub_apps:
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           helm_version: "1.14.5"
           rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
           helm_version: "7.1.262"
           namespace: "default"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
         crossplane:
           app_name: "crossplane"
           helm_version: "1.16.0"
           namespace: "crossplane-system"
           debug: "debug"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
         kubernetes_secret_generator:
           app_name: "kubernetes-secret-generator"
           helm_version: "3.4.0"
           namespace: "default"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
         external_secrets:
           app_name: "external-secrets"
           helm_version: "0.9.0"
           namespace: "external-secrets"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
     vault:
       argocd_app_name: "vault"
       app_namespace: "vault"
-      app_enabled: true
+      app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-9"
       sub_apps:
         vault:
           app_name: "vault"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           namespace: "vault"
           helm_version: "0.24.1"
           public_ingress_access_domain: false
@@ -90,7 +90,7 @@ argocd_default:
           sync_wave: "-8"
         consul:
           app_name: "consul"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           namespace: "consul"
           helm_version: "1.4.0"
           public_ingress_access_domain: false
@@ -99,7 +99,7 @@ argocd_default:
     dns_utils:
       argocd_app_name: "dns-utils"
       app_namespace: "dns-utils"
-      app_enabled: true
+      app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-7"
       sub_apps:
@@ -111,7 +111,7 @@ argocd_default:
           letsencrypt_email: "none@example.com"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
         ext_dns:
           app_name: "ext-dns"
           helm_version: "7.5.5"
@@ -119,19 +119,19 @@ argocd_default:
           dns_cloud_api_client_secret: "none"
           dns_cloud_api_client_id: "none"
           dns_cloud_api_region: "none"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
     istio:
       argocd_app_name: "istio"
       app_namespace: "istio"
-      app_enabled: true
+      app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-6"
       sub_apps:
         istio:
           app_name: istio
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           proxy_log_level: "info"
           namespace: "istio-system"
           helm_version: "1.22.1"
@@ -156,11 +156,11 @@ argocd_default:
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "zitadel"
       sync_wave: "-5"
-      app_enabled: true
+      app_enabled: "true"
       sub_apps:
         zitadel:
           app_name: "zitadel"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           namespace: "zitadel"
           cockroachdb_helm_version: "11.2.1"
           helm_version: "7.15.0"
@@ -168,12 +168,12 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8s19"
           vault_rbac_admin_group: "techops-admin"
           zitadel_grant_prefix: "zitadel:grants"
-          public_ingress_access_domain: true
+          public_ingress_access_domain: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
         cockroach_db:
           app_name: "cockroach-db"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           namespace: "zitadel"
           helm_version: "11.2.1"
     netbird:
@@ -181,11 +181,11 @@ argocd_default:
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "netbird"
       sync_wave: "-4"
-      app_enabled: true
+      app_enabled: "true"
       sub_apps:
         netbird:
           app_name: "netbird"
-          sub_app_enabled: true
+          sub_app_enabled: "true"
           helm_version: "1.0.2"
           dashboard_chart_version: "1.0.0"
           image_version: "0.28.0"
@@ -197,6 +197,6 @@ argocd_default:
           stunner_impl_namespace: stunner-impl
           stunner_auth_secret: stunner-auth-secret
           terraform_modules_tag: "vexp-cck8s19"
-          public_ingress_access_domain: true
+          public_ingress_access_domain: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
