@@ -30,6 +30,8 @@ spec:
     plugin:
       name: envsubst
       env:
+        - name: argocd_repo_url
+          value: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
 {% for item in fact_argo_merged_config.apps['vault'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
         - name: "vault_{{item.key}}"
           value: {{ item.value | to_yaml(default_style='\"') }}
