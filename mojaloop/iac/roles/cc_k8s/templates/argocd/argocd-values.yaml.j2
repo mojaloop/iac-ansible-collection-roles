@@ -128,3 +128,53 @@ configs:
             ]
         discover:
           fileName: "kustomization.*"
+repoServer:
+  # resources:
+  #   limits:
+  #     cpu: 500m
+  #     memory: 1.5Gi
+  #   requests:
+  #     cpu: 250m
+  #     memory: 512Mi
+
+  volumes:
+    - name: custom-tools
+      emptyDir: {}
+    - name: cmp-plugin
+      configMap:
+        name: argocd-cmp-cm
+
+  initContainers:
+    - name: download-tools
+      image: golang:1.22.4-alpine3.20
+      command: [sh, -c]
+      args:
+        - apk add git && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+
+  extraContainers:
+    - name: envsubst
+      command: [/var/run/argocd/argocd-cmp-server]
+      image: quay.io/argoproj/argocd:v2.10.2
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /tmp
+          name: tmp
+
+        # Register plugins into sidecar
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: envsubst.yaml
+          name: cmp-plugin
+
+        # Important: Mount tools into $PATH
+        - name: custom-tools
+          subPath: envsubst
+          mountPath: /usr/local/bin/envsubst
