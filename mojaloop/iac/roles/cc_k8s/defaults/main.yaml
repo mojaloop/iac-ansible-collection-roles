@@ -35,7 +35,7 @@ argocd_default:
           sub_app_enabled: "true"
     utils:
       argocd_app_name: "utils"
-      app_namespace: "utils"
+      app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-10"
       app_enabled: "true"
@@ -69,7 +69,7 @@ argocd_default:
           sub_app_enabled: "true"
     vault:
       argocd_app_name: "vault"
-      app_namespace: "vault"
+      app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-9"
@@ -98,7 +98,7 @@ argocd_default:
           storage_size: 3Gi
     dns_utils:
       argocd_app_name: "dns-utils"
-      app_namespace: "dns-utils"
+      app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-7"
@@ -124,7 +124,7 @@ argocd_default:
           dns_private_subdomain: "x.y.internal"
     istio:
       argocd_app_name: "istio"
-      app_namespace: "istio"
+      app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "-6"
@@ -154,7 +154,7 @@ argocd_default:
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
-      app_namespace: "zitadel"
+      app_namespace: "argocd"
       sync_wave: "-5"
       app_enabled: "true"
       sub_apps:
@@ -179,7 +179,7 @@ argocd_default:
     netbird:
       argocd_app_name: "netbird"
       application_gitrepo_tag: "vexp-cck8s19"
-      app_namespace: "netbird"
+      app_namespace: "argocd"
       sync_wave: "-4"
       app_enabled: "true"
       sub_apps:
