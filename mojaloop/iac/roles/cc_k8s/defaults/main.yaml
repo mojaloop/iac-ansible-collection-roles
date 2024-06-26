@@ -16,13 +16,13 @@ argocd_default:
   gitrepo_host_fqdn: "https://github.com/"
   gitrepo_raw_host_fqdn: "https://raw.githubusercontent.com"
   initial_application_gitrepo_tag: "vexp-cck8s19"
+  namespace: "argocd"
   apps:
-    argocd:
-      # needs to match sub_apps.argocd_helm.app_name, due to chart issue.
-      argocd_app_name: "argocd"
+    utils:
+      argocd_app_name: "utils"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-11'"
+      sync_wave: "'-10'"
       app_enabled: "true"
       sub_apps:
         argocd_helm:
@@ -33,13 +33,6 @@ argocd_default:
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
           sub_app_enabled: "true"
-    utils:
-      argocd_app_name: "utils"
-      app_namespace: "argocd"
-      application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-10'"
-      app_enabled: "true"
-      sub_apps:
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"

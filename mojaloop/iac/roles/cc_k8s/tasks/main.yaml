@@ -78,9 +78,9 @@
 
 - name: set argo facts
   set_fact:
-    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].namespace }}"
-    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].app_name }}"
-    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps[fact_argo_merged_config.argocd_appname].sub_apps['argocd_helm'].helm_version }}"
+    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
 
 - name: Upload cc template dirs
   file:
@@ -98,7 +98,7 @@
   when: item.state == 'file'
 
 - name: Find argocd app install status
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ fact_argocd_helm_namespace }} wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=1m application/{{ fact_argo_merged_config.argocd_appname }}
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ fact_argocd_helm_namespace }} wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=1m application/{{ fact_argocd_helm_release }}
   register: argocdappexists
 
 - name: Install argocd
@@ -116,29 +116,26 @@
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
   when: argocdappexists is failed
 
-- name: Get ArgoCD app yaml
-  get_url:
-    url: "{{ fact_argo_merged_config.gitrepo_raw_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}/{{ fact_argo_merged_config.apps['argocd'].application_gitrepo_tag }}/{{ fact_argo_merged_config.initial_argo_gitrepo_path }}/argocd-helm.yaml"
-    dest: "{{ cctmpvalues.path }}/argocd/argoapp.yaml"
+# - name: Get ArgoCD app yaml
+#   get_url:
+#     url: "{{ fact_argo_merged_config.gitrepo_raw_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}/{{ fact_argo_merged_config.apps['argocd'].application_gitrepo_tag }}/{{ fact_argo_merged_config.initial_argo_gitrepo_path }}/argocd-helm.yaml"
+#     dest: "{{ cctmpvalues.path }}/argocd/argoapp.yaml"
 
-- name: Install argocd autosync
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    source {{ cctmpvalues.path }}/argocd/argocd-env.sh
-    printf -v argovars "$(cat {{ cctmpvalues.path }}/argocd/argocd-env.txt)"
-    cat {{ cctmpvalues.path }}/argocd/argoapp.yaml | envsubst "$(printf "\'$argovars\'")" | kubectl apply -f -
-    export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-    until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
-    kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
-    until argocd app sync {{ fact_argo_merged_config.argocd_appname }}; do echo "awaiting argocd to sync..." && sleep 10; done
-    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
-  args:
-    executable: /bin/bash
-- name: Install root app
+- name: Install util app
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/utils-app.yaml
 
+- name: Install argocd autosync
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+    until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
+    kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
+    until argocd app sync {{ fact_argocd_helm_release }}; do echo "awaiting argocd to sync..." && sleep 10; done
+    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
+  args:
+    executable: /bin/bash
 # - name: Install utils
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
