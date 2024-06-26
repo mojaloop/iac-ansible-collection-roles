@@ -1,0 +1,132 @@
+global:
+  domain: argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
+  logging:
+    format: json
+configs:
+  secret:
+    createSecret: false
+  cm:
+    url: http://argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
+    exec.enabled: "true"
+    kustomize.buildOptions: "--enable-helm --load-restrictor LoadRestrictionsNone"
+
+    # DO NOT USE in production, this is only used to improve reconciliation in testing env.
+    timeout.reconciliation: "10s"
+    resource.customizations: |
+      argoproj.io/Application:
+        health.lua: |
+          hs = {}
+          hs.status = "Progressing"
+          hs.message = ""
+          if obj.status ~= nil then
+            if obj.status.health ~= nil then
+              hs.status = obj.status.health.status
+              if obj.status.health.message ~= nil then
+                hs.message = obj.status.health.message
+              end
+            end
+          end
+          return hs
+      cert-manager.io/Certificate:
+        health.lua: |
+          hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Ready" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "Ready" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+
+          hs.status = "Progressing"
+          hs.message = "Waiting for certificate"
+          return hs
+      redhatcop.redhat.io/VaultSecret:
+        health.lua: |
+          hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "ReconcileSuccessful" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "ReconcileSuccessful" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+
+          hs.status = "Progressing"
+          hs.message = "Waiting for VaultSecret"
+          return hs
+
+      ceph.rook.io/CephBlockPool:
+        health.lua: |
+          hs = {}
+          if obj.status ~= nil then
+            if obj.status.phase == "Ready" then
+              hs.status = "Healthy"
+              hs.message = "CephBlockPool Ready"
+              return hs
+            end
+          end
+          hs.status = "Progressing"
+          hs.message = "Waiting for CephBlockPool"
+          return hs
+    # dex.config: |
+    #   connectors:
+    #     - id: google
+    #       name: Google
+    #       type: oidc
+    #       config:
+    #         issuer: https://accounts.google.com
+    #         clientID: $dex.client.id # read from argo-secrets
+    #         clientSecret: $dex.client.secret # read from argo-secrets
+    # extension.config: |-
+    #   extensions:
+    #     - name: metrics
+    #       backend:
+    #         services:
+    #         - url: http://argocd-metrics-server.argocd.svc.cluster.local:9003
+
+  params:
+    server.insecure: true
+    # Mandatory for extensions to work
+    server.enable.proxy.extension: "true"
+  rbac:
+    policy.default: role:readonly
+    policy.csv: |-
+      p, role:readonly, extensions, invoke, metrics, allow
+      p, role:admin, extensions, invoke, metrics, allow
+  cmp:
+    create: true
+    plugins:
+      envsubst:
+        init:
+          command: ["sh", "-c"]
+          args:
+            [
+              "kustomize build . --enable-helm --load-restrictor LoadRestrictionsNone -o raw-kustomization.yaml",
+            ]
+        generate:
+          command: ["sh", "-c"]
+          args:
+            [
+              "envsubst < raw-kustomization.yaml > processed-kustomization.yaml && cp processed-kustomization.yaml /dev/stdout",
+            ]
+        discover:
+          fileName: "kustomization.*"

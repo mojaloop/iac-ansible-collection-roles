@@ -113,7 +113,7 @@
       --set notifications.enabled=false \
       --set dex.enabled=false \
       --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
-      --set configs.cm."timeout\.reconciliation"="10s"
+      --set configs.cm."timeout\.reconciliation"="10s" --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
   when: argocdappexists is failed
 
