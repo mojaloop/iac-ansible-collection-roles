@@ -132,7 +132,7 @@
 - name: Install root app
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-  #  kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/utils-app.yaml
 
 # - name: Install utils
 #   shell: |
