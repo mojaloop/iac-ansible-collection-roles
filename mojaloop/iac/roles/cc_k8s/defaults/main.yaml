@@ -22,7 +22,7 @@ argocd_default:
       argocd_app_name: "argocd"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-11"
+      sync_wave: "'-11'"
       app_enabled: "true"
       sub_apps:
         argocd_helm:
@@ -37,7 +37,7 @@ argocd_default:
       argocd_app_name: "utils"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-10"
+      sync_wave: "'-10'"
       app_enabled: "true"
       sub_apps:
         rook_ceph:
@@ -72,7 +72,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-9"
+      sync_wave: "'-9'"
       sub_apps:
         vault:
           app_name: "vault"
@@ -87,7 +87,7 @@ argocd_default:
           vault_rbac_admin_group: "techops-admin"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-          sync_wave: "-8"
+          sync_wave: "'-8'"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
@@ -101,7 +101,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-7"
+      sync_wave: "'-7'"
       sub_apps:
         cert_manager:
           app_name: "cert-manager"
@@ -127,7 +127,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "-6"
+      sync_wave: "'-6'"
       sub_apps:
         istio:
           app_name: istio
@@ -135,12 +135,12 @@ argocd_default:
           proxy_log_level: "info"
           namespace: "istio-system"
           helm_version: "1.22.1"
-          external_ingress_https_port: "32443"
-          external_ingress_http_port: "32080"
-          external_ingress_health_port: "32081"
-          internal_ingress_https_port: "31443"
-          internal_ingress_http_port: "31080"
-          internal_ingress_health_port: "31081"
+          external_ingress_https_port: "'32443'"
+          external_ingress_http_port: "'32080'"
+          external_ingress_health_port: "'32081'"
+          internal_ingress_https_port: "'31443'"
+          internal_ingress_http_port: "'31080'"
+          internal_ingress_health_port: "'31081'"
           istio_internal_gateway_name: "istio-internal-ingress-gw"
           istio_external_gateway_name: "istio-external-ingress-gw"
           istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
@@ -155,7 +155,7 @@ argocd_default:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "argocd"
-      sync_wave: "-5"
+      sync_wave: "'-5'"
       app_enabled: "true"
       sub_apps:
         zitadel:
@@ -180,7 +180,7 @@ argocd_default:
       argocd_app_name: "netbird"
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "argocd"
-      sync_wave: "-4"
+      sync_wave: "'-4'"
       app_enabled: "true"
       sub_apps:
         netbird:
@@ -193,7 +193,7 @@ argocd_default:
           preconfig_secret: "netbird-management"
           management_turn_secret: "netbird-turn"
           stunner_system_namespace: "stunner-system"
-          stunner_nodeport_port: 31821
+          stunner_nodeport_port: "'31821'"
           stunner_impl_namespace: stunner-impl
           stunner_auth_secret: stunner-auth-secret
           terraform_modules_tag: "vexp-cck8s19"
