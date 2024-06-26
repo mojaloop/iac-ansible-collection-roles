@@ -3,8 +3,6 @@ global:
   logging:
     format: json
 configs:
-  secret:
-    createSecret: false
   cm:
     url: http://argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
     exec.enabled: "true"
