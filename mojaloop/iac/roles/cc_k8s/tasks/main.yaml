@@ -97,6 +97,10 @@
   with_filetree: "{{role_path}}/templates/"
   when: item.state == 'file'
 
+- name: Find argocd app install status
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ fact_argocd_helm_namespace }} wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=1m application/{{ fact_argo_merged_config.argocd_appname }}
+  register: argocdappexists
+
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -110,6 +114,7 @@
       --set configs.cm."kustomize\.buildOptions"="--load-restrictor LoadRestrictionsNone" \
       --set configs.cm."timeout\.reconciliation"="10s"
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
+  when: argocdappexists is failed
 
 - name: Get ArgoCD app yaml
   get_url:
