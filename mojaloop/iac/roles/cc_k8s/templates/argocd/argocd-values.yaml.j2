@@ -135,8 +135,9 @@ configs:
           command: ["sh", "-c"]
           args:
             [
-              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize build  . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
+              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize_5_3_0 build . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
             ]
+
 repoServer:
   # resources:
   #   limits:
@@ -158,7 +159,7 @@ repoServer:
       image: golang:1.22.4-alpine3.20
       command: [sh, -c]
       args:
-        - apk add git && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/
+        - apk add git "kustomize=~5.3" && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/ && mv /usr/bin/kustomize /custom-tools/kustomize_5_3_0
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
@@ -187,6 +188,11 @@ repoServer:
         - name: custom-tools
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
+
+        - name: custom-tools
+          subPath: kustomize_5_3_0
+          mountPath: /usr/local/bin/kustomize_5_3_0
+
     - name: envsubst
       command: [/var/run/argocd/argocd-cmp-server]
       image: quay.io/argoproj/argocd:v2.10.2
