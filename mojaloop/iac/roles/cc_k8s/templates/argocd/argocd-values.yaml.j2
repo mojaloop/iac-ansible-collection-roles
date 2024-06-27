@@ -6,7 +6,7 @@ configs:
   cm:
     url: http://argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
     exec.enabled: "true"
-    kustomize.buildOptions: "--enable-helm --load-restrictor LoadRestrictionsNone"
+    kustomize.buildOptions: "--enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone"
 
     # DO NOT USE in production, this is only used to improve reconciliation in testing env.
     timeout.reconciliation: "10s"
@@ -135,7 +135,7 @@ configs:
           command: ["sh", "-c"]
           args:
             [
-              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize build  . --enable-helm --load-restrictor LoadRestrictionsNone > /dev/stdout",
+              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize build  . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
             ]
 repoServer:
   # resources:

@@ -28,7 +28,7 @@ argocd_default:
         argocd_helm:
           app_name: "argocd"
           namespace: "argocd"
-          helm_version: "7.1.5"
+          helm_version: "7.3.2"
           public_ingress_access_domain: "false"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
