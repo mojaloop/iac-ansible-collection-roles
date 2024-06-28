@@ -135,7 +135,7 @@ configs:
           command: ["sh", "-c"]
           args:
             [
-              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize_5_3_0 build . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
+              "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize build . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
             ]
 
 repoServer:
@@ -154,25 +154,40 @@ repoServer:
       configMap:
         name: argocd-cmp-cm
 
+
   initContainers:
     - name: download-tools
       image: golang:1.22.4-alpine3.20
       command: [sh, -c]
       args:
-        - apk add git "kustomize=~5.3" && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/ && mv /usr/bin/kustomize /custom-tools/kustomize_5_3_0 && chmod +x /custom-tools/kustomize_5_3_0
+        - apk add git && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
 
   extraContainers:
     - name: debug-tools
-      image: golang:1.22.4-alpine3.20
+      image: quay.io/argoproj/argocd
       command: [sh, -c]
       args:
         - while true; do echo "running"; sleep 300; done
       volumeMounts:
-        - mountPath: /custom-tools
-          name: custom-tools
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /tmp
+          name: tmp
+
+        # Register plugins into sidecar
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: envsubsthelm.yaml
+          name: cmp-plugin
+
+        # Important: Mount tools into $PATH
+        - name: custom-tools
+          subPath: envsubst
+          mountPath: /usr/local/bin/envsubst
 
     - name: envsubsthelm
       command: [/var/run/argocd/argocd-cmp-server]
@@ -199,13 +214,10 @@ repoServer:
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
 
-        - name: custom-tools
-          subPath: kustomize_5_3_0
-          mountPath: /usr/local/bin/kustomize_5_3_0
-
     - name: envsubst
       command: [/var/run/argocd/argocd-cmp-server]
       image: quay.io/argoproj/argocd
+      args: [--loglevel, debug]
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
