@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dns-utils
+  namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
+
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
+  source:
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+    targetRevision: {{ fact_argo_merged_config.apps['vault'].application_gitrepo_tag }}
+    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/dns-utils
+    plugin:
+      name: envsubst
+      env:
+        - name: argocd_repo_url
+          value: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+{% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+        - name: "vault_{{item.key}}"
+          value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['dns_utils']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+        - name: "vault_{{ subapp.key }}_{{subappvalue.key}}"
+          value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
+

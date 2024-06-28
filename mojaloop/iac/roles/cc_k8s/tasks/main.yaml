@@ -126,7 +126,7 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/utils-app.yaml
 
-- name: Install argocd autosync
+- name: Install utils and wait for argocd autosync
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
@@ -134,6 +134,14 @@
     kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
     until argocd app sync {{ fact_argocd_helm_release }}; do echo "awaiting argocd to sync..." && sleep 10; done
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
+  args:
+    executable: /bin/bash
+
+- name: Install vault main app
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
+
   args:
     executable: /bin/bash
 # - name: Install utils
