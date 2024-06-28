@@ -159,7 +159,7 @@ repoServer:
       image: golang:1.22.4-alpine3.20
       command: [sh, -c]
       args:
-        - apk add git "kustomize=~5.3" && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/ && mv /usr/bin/kustomize /custom-tools/kustomize_5_3_0
+        - apk add git "kustomize=~5.3" && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/ && mv /usr/bin/kustomize /custom-tools/kustomize_5_3_0 && chmod +x /custom-tools/kustomize_5_3_0
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
@@ -167,7 +167,8 @@ repoServer:
   extraContainers:
     - name: envsubsthelm
       command: [/var/run/argocd/argocd-cmp-server]
-      image: quay.io/argoproj/argocd:v2.10.2
+      image: quay.io/argoproj/argocd
+      args: [--loglevel, debug]
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -195,7 +196,7 @@ repoServer:
 
     - name: envsubst
       command: [/var/run/argocd/argocd-cmp-server]
-      image: quay.io/argoproj/argocd:v2.10.2
+      image: quay.io/argoproj/argocd
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
