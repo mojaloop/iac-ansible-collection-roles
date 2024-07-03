@@ -5,6 +5,7 @@ argocd_cli_version: "2.11.3"
 cluster_name: envname
 kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
+cluster_cloud_provider: "aws"
 #argo
 argocd_override:
 argocd_default:
@@ -60,6 +61,22 @@ argocd_default:
           helm_version: "0.9.0"
           namespace: "external-secrets"
           sub_app_enabled: "true"
+        istio:
+          app_name: istio
+          sub_app_enabled: "true"
+          proxy_log_level: "info"
+          namespace: "istio-system"
+          helm_version: "1.22.1"
+          external_ingress_https_port: "'32443'"
+          external_ingress_http_port: "'32080'"
+          external_ingress_health_port: "'32081'"
+          internal_ingress_https_port: "'31443'"
+          internal_ingress_http_port: "'31080'"
+          internal_ingress_health_port: "'31081'"
+          external_gateway_namespace: "istio-ingress-ext"
+          internal_gateway_namespace: "istio-ingress-int"
+          internal_gateway_name: "istio-internal-ingress-gw"
+          external_gateway_name: "istio-external-ingress-gw"
     vault:
       argocd_app_name: "vault"
       app_namespace: "argocd"
@@ -80,7 +97,8 @@ argocd_default:
           vault_rbac_admin_group: "techops-admin"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-          sync_wave: "'-8'"
+          cloud_platform_api_client_id: "id"
+          cloud_platform_api_client_secret: "secret"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
@@ -89,6 +107,12 @@ argocd_default:
           public_ingress_access_domain: "false"
           replicas: 1
           storage_size: 3Gi
+        vault_config_operator:
+          app_name: "vault-config-operator"
+          sub_app_enabled: "true"
+          namespace: "vault-config"
+          helm_version: "0.8.28"
+          public_ingress_access_domain: "false"
     dns_utils:
       argocd_app_name: "dns-utils"
       app_namespace: "argocd"
@@ -115,25 +139,12 @@ argocd_default:
           sub_app_enabled: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-    istio:
-      argocd_app_name: "istio"
-      app_namespace: "argocd"
-      app_enabled: "true"
-      application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-6'"
-      sub_apps:
-        istio:
-          app_name: istio
+        istio-gw:
+          app_name: "istio-gw"
           sub_app_enabled: "true"
           proxy_log_level: "info"
           namespace: "istio-system"
           helm_version: "1.22.1"
-          external_ingress_https_port: "'32443'"
-          external_ingress_http_port: "'32080'"
-          external_ingress_health_port: "'32081'"
-          internal_ingress_https_port: "'31443'"
-          internal_ingress_http_port: "'31080'"
-          internal_ingress_health_port: "'31081'"
           istio_internal_gateway_name: "istio-internal-ingress-gw"
           istio_external_gateway_name: "istio-external-ingress-gw"
           istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
@@ -144,6 +155,7 @@ argocd_default:
           external_load_balancer_dns: "dns.name"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
+
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
