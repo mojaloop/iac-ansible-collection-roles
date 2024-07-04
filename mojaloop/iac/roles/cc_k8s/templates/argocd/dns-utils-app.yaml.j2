@@ -30,6 +30,8 @@ spec:
     plugin:
       name: envsubst
       env:
+        - name: cluster_name
+          value: {{ cluster_name }}
         - name: cloud_provider
           value: {{ cluster_cloud_provider }}
         - name: argocd_repo_url

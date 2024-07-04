@@ -77,12 +77,17 @@ argocd_default:
           internal_gateway_namespace: "istio-ingress-int"
           internal_gateway_name: "istio-internal-ingress-gw"
           external_gateway_name: "istio-external-ingress-gw"
+        post_config:
+          app_name: "post-config"
+          sync_wave: "'-9'"
+          vault_crossplane_modules_version: "1.0.0"
+          terraform_crossplane_modules_version: "0.16.0"
     vault:
       argocd_app_name: "vault"
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-9'"
+      sync_wave: "'-8'"
       sub_apps:
         vault:
           app_name: "vault"
@@ -99,12 +104,12 @@ argocd_default:
           dns_private_subdomain: "x.y.internal"
           cloud_platform_api_client_id: "id"
           cloud_platform_api_client_secret: "secret"
+          vault_kv_secret: "secret"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
           namespace: "consul"
           helm_version: "1.4.0"
-          public_ingress_access_domain: "false"
           replicas: 1
           storage_size: 3Gi
         vault_config_operator:
@@ -112,13 +117,19 @@ argocd_default:
           sub_app_enabled: "true"
           namespace: "vault-config"
           helm_version: "0.8.28"
-          public_ingress_access_domain: "false"
+        post_config:
+          app_name: "post-config"
+          sync_wave: "'-7'"
+          vault_read_all_kv_secrets_policy_name: "read-all-kv"
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"
+
     dns_utils:
       argocd_app_name: "dns-utils"
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-7'"
+      sync_wave: "'-6'"
       sub_apps:
         cert_manager:
           app_name: "cert-manager"
@@ -139,12 +150,10 @@ argocd_default:
           sub_app_enabled: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-        istio-gw:
-          app_name: "istio-gw"
+        post-config:
+          app_name: "post-config"
           sub_app_enabled: "true"
-          proxy_log_level: "info"
-          namespace: "istio-system"
-          helm_version: "1.22.1"
+          sync_wave: "'-5'"
           istio_internal_gateway_name: "istio-internal-ingress-gw"
           istio_external_gateway_name: "istio-external-ingress-gw"
           istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
@@ -155,6 +164,7 @@ argocd_default:
           external_load_balancer_dns: "dns.name"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
+          ext_dns_cloud_policy: "arn:blah"
 
     zitadel:
       argocd_app_name: "zitadel"
