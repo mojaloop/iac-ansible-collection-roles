@@ -77,6 +77,11 @@ argocd_default:
           internal_gateway_namespace: "istio-ingress-int"
           internal_gateway_name: "istio-internal-ingress-gw"
           external_gateway_name: "istio-external-ingress-gw"
+        cert_manager:
+          app_name: "cert-manager"
+          helm_version: "1.15.0"
+          namespace: "cert-manager"
+          sub_app_enabled: "true"
         post_config:
           app_name: "post-config"
           sync_wave: "'-9'"
@@ -131,15 +136,6 @@ argocd_default:
       application_gitrepo_tag: "vexp-cck8s19"
       sync_wave: "'-6'"
       sub_apps:
-        cert_manager:
-          app_name: "cert-manager"
-          helm_version: "1.15.0"
-          namespace: "cert-manager"
-          letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
-          letsencrypt_email: "none@example.com"
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"
-          sub_app_enabled: "true"
         ext_dns:
           app_name: "ext-dns"
           helm_version: "7.5.5"
@@ -150,10 +146,9 @@ argocd_default:
           sub_app_enabled: "true"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-        post-config:
-          app_name: "post-config"
+        cr_config:
+          app_name: "cr-config"
           sub_app_enabled: "true"
-          sync_wave: "'-5'"
           istio_internal_gateway_name: "istio-internal-ingress-gw"
           istio_external_gateway_name: "istio-external-ingress-gw"
           istio_internal_wildcard_gateway_name: "internal-wildcard-gateway"
@@ -165,7 +160,9 @@ argocd_default:
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
           ext_dns_cloud_policy: "arn:blah"
-
+          letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
+          letsencrypt_email: "none@example.com"
+          cert_manager_namespace: "cert-manager"
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
