@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vault-main
+  name: {{ fact_argo_merged_config.apps['vault'].argocd_app_name }}-deployer
   namespace: {{ fact_argo_merged_config.apps['vault'].app_namespace }}
 
   finalizers:

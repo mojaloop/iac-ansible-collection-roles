@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dns-utils
+  name: {{ fact_argo_merged_config.apps['dns_utils'].argocd_app_name }}-deployer
   namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
 
   finalizers:
