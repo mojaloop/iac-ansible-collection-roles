@@ -106,8 +106,6 @@ argocd_default:
           vault_terraform_modules_tag: "vexp-cck8s19"
           vault_log_level: "info"
           vault_rbac_admin_group: "techops-admin"
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"
           cloud_platform_api_client_id: "id"
           cloud_platform_api_client_secret: "secret"
           vault_kv_secret: "secret"
@@ -164,6 +162,10 @@ argocd_default:
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
           cert_manager_namespace: "cert-manager"
+        post_config:
+          app_name: "post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-5'"
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"

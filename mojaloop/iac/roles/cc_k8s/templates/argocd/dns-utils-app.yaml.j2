@@ -38,13 +38,44 @@ spec:
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
         - name: "vault_namespace"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].namespace }}"
+        - name: "argocd_namespace"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].namespace }}"
         - name: "vault_read_all_kv_secrets_policy_name"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_read_all_kv_secrets_policy_name }}"
         - name: "vault_k8s_admin_role_name"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_role_name }}"
         - name: "vault_k8s_admin_auth_path"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
-
+{% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | boolean %}
+        - name: "vault_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
+        - name: "vault_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_gateway_namespace }}"
+        - name: "vault_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_wildcard_gateway_name }}"
+{% else %}
+        - name: "vault_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
+        - name: "vault_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_gateway_namespace }}"
+        - name: "vault_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | boolean %}
+        - name: "argocd_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
+        - name: "argocd_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_gateway_namespace }}"
+        - name: "vargocd_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_wildcard_gateway_name }}"
+{% else %}
+        - name: "argocd_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
+        - name: "argocd_stio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_gateway_namespace }}"
+        - name: "argocd_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
+{% endif %}
 {% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
         - name: "dns_utils_{{item.key}}"
           value: {{ item.value | to_yaml(default_style='\"') }}
