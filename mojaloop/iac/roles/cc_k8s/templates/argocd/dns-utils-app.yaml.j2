@@ -40,6 +40,10 @@ spec:
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].namespace }}"
         - name: "vault_read_all_kv_secrets_policy_name"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_read_all_kv_secrets_policy_name }}"
+        - name: "vault_k8s_admin_role_name"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_role_name }}"
+        - name: "vault_k8s_admin_auth_path"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
 
 {% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
         - name: "dns_utils_{{item.key}}"
