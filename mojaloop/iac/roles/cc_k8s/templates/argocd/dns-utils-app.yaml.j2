@@ -46,7 +46,7 @@ spec:
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_role_name }}"
         - name: "vault_k8s_admin_auth_path"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
-{% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | boolean %}
+{% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | bool %}
         - name: "vault_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
         - name: "vault_istio_gateway_namespace"
@@ -61,7 +61,7 @@ spec:
         - name: "vault_istio_wildcard_gateway_name"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
 {% endif %}
-{% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | boolean %}
+{% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | bool %}
         - name: "argocd_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
         - name: "argocd_istio_gateway_namespace"
