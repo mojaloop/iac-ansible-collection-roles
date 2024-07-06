@@ -28,7 +28,7 @@ spec:
     targetRevision: {{ fact_argo_merged_config.apps['vault'].application_gitrepo_tag }}
     path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/vault
     plugin:
-      name: envsubst
+      name: envsubstappofapp
       env:
         - name: cluster_name
           value: {{ cluster_name }}
