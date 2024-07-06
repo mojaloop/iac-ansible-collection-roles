@@ -71,7 +71,7 @@ spec:
 {% else %}
         - name: "argocd_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
-        - name: "argocd_stio_gateway_namespace"
+        - name: "argocd_istio_gateway_namespace"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_gateway_namespace }}"
         - name: "argocd_istio_wildcard_gateway_name"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
