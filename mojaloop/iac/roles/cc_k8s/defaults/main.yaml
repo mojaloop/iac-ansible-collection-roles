@@ -164,6 +164,7 @@ argocd_default:
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
           cert_manager_namespace: "cert-manager"
+          vault_read_all_kv_secrets_policy_name: "read-all-kv"
     zitadel:
       argocd_app_name: "zitadel"
       application_gitrepo_tag: "vexp-cck8s19"
