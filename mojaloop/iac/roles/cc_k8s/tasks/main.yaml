@@ -137,11 +137,11 @@
   args:
     executable: /bin/bash
 
-- name: Install vault main app
+- name: Install deploy argo apps
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
-
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml
   args:
     executable: /bin/bash
 # - name: Install utils
