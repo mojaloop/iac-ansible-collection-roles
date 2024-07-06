@@ -114,21 +114,6 @@ configs:
     create: true
     plugins:
       envsubst:
-        init:
-          command: ["sh", "-c"]
-          args:
-            [
-              "kustomize build . --load-restrictor LoadRestrictionsNone -o raw-kustomization.yaml",
-            ]
-        generate:
-          command: ["sh", "-c"]
-          args:
-            [
-              "envsubst < raw-kustomization.yaml > processed-kustomization.yaml && cp processed-kustomization.yaml /dev/stdout",
-            ]
-        discover:
-          fileName: "kustomization.*"
-      envsubsthelm:
         discover:
           fileName: "kustomization.*"
         generate:
@@ -138,6 +123,7 @@ configs:
               "for f in *.yaml ; do cat $f | envsubst > $f.sub && mv $f.sub $f ; done && kustomize build . --enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone > /dev/stdout",
             ]
 
+## RepoServer ##
 repoServer:
   # resources:
   #   limits:
@@ -154,13 +140,12 @@ repoServer:
       configMap:
         name: argocd-cmp-cm
 
-
   initContainers:
     - name: download-tools
       image: golang:1.22.4-alpine3.20
       command: [sh, -c]
       args:
-        - apk add git && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/
+        - apk add git && go install github.com/drone/envsubst/cmd/envsubst@v1.0.3 && mv $GOPATH/bin/envsubst /custom-tools/ && wget -qO yq https://github.com/mikefarah/yq/releases/download/v4.44.2/yq_linux_amd64 && chmod +x yq && mv yq  /custom-tools/
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
@@ -180,39 +165,15 @@ repoServer:
           name: tmp
 
         # Register plugins into sidecar
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: envsubsthelm.yaml
-          name: cmp-plugin
 
         # Important: Mount tools into $PATH
         - name: custom-tools
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
 
-    - name: envsubsthelm
-      command: [/var/run/argocd/argocd-cmp-server]
-      image: quay.io/argoproj/argocd
-      args: [--loglevel, debug]
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /tmp
-          name: tmp
-
-        # Register plugins into sidecar
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: envsubsthelm.yaml
-          name: cmp-plugin
-
-        # Important: Mount tools into $PATH
         - name: custom-tools
-          subPath: envsubst
-          mountPath: /usr/local/bin/envsubst
+          subPath: yq
+          mountPath: /usr/local/bin/yq
 
     - name: envsubst
       command: [/var/run/argocd/argocd-cmp-server]
@@ -238,3 +199,7 @@ repoServer:
         - name: custom-tools
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
+
+        - name: custom-tools
+          subPath: yq
+          mountPath: /usr/local/bin/yq
