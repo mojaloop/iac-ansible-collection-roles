@@ -111,7 +111,7 @@ argocd_default:
           vault_keys_secret: "vault-keys"
           vault_tf_provider_version: "~> 3.16"
           vault_terraform_modules_tag: "vexp-cck8s19"
-          vault_log_level: "info"
+          vault_log_level: "trace"
           vault_rbac_admin_group: "techops-admin"
           cloud_platform_api_client_id: "id"
           cloud_platform_api_client_secret: "secret"
