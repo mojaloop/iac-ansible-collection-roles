@@ -45,6 +45,11 @@ argocd_default:
           helm_version: "7.1.262"
           namespace: "default"
           sub_app_enabled: "true"
+        reloader:
+          app_name: "reloader"
+          helm_version: "1.0.67"
+          namespace: "default"
+          sub_app_enabled: "true"
         crossplane:
           app_name: "crossplane"
           helm_version: "1.16.0"
