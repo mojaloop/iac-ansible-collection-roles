@@ -70,7 +70,7 @@ argocd_default:
         istio:
           app_name: istio
           sub_app_enabled: "true"
-          proxy_log_level: "info"
+          proxy_log_level: "debug"
           namespace: "istio-system"
           helm_version: "1.22.1"
           external_ingress_https_port: "'32443'"
