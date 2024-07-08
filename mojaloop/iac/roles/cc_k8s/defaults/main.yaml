@@ -88,6 +88,7 @@ argocd_default:
           helm_version: "1.15.0"
           namespace: "cert-manager"
           sub_app_enabled: "true"
+          credentials_secret: "cert-manager-dns"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"

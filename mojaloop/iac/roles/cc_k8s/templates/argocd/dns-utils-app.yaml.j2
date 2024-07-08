@@ -46,6 +46,9 @@ spec:
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_role_name }}"
         - name: "vault_k8s_admin_auth_path"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
+        - name: "certmanager_credentials_secret"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["cert_manager"].credentials_secret }}"
+
 {% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | bool %}
         - name: "vault_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
