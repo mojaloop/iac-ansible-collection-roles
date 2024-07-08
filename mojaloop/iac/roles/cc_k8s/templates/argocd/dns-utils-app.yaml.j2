@@ -48,6 +48,8 @@ spec:
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
         - name: "cert_manager_credentials_secret"
           value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["cert_manager"].credentials_secret }}"
+        - name: "istio_namespace"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["istio"].namespace }}"
 
 {% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | bool %}
         - name: "vault_dns_subdomain"
