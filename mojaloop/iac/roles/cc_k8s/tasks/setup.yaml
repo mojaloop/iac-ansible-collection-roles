@@ -1,0 +1,98 @@
+#Create a temporary directory for storing values files or other config
+- name: install kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0700
+
+- name: download kustomize
+  ansible.builtin.unarchive:
+    src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: copy kustomize bin
+  copy:
+    src: "/tmp/kustomize"
+    dest: "/usr/local/bin/kustomize"
+    mode: "u+rwx"
+    remote_src: yes
+
+- name: download argocd cli
+  get_url:
+    url: https://github.com/argoproj/argo-cd/releases/download/v{{ argocd_cli_version }}/argocd-linux-amd64
+    dest: /usr/local/bin/argocd
+    mode: 0700
+
+- name: download helmfile
+  ansible.builtin.unarchive:
+    src: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: copy helmfile bin
+  copy:
+    src: "/tmp/helmfile"
+    dest: "/usr/local/bin/helmfile"
+    mode: "u+rwx"
+    remote_src: yes
+
+- name: install helm util
+  shell: |
+    helm plugin install https://github.com/aslafy-z/helm-git --version 0.16.0 || true
+    helm plugin install https://github.com/databus23/helm-diff --version 3.9.8 || true
+
+- name: Create temporary directory for cc boot
+  tempfile:
+    state: directory
+    suffix: values
+  register: cctmpvalues
+
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: directory
+    recurse: yes
+
+- name: copy kubeconfig
+  copy:
+    src: "{{ kubeconfig_local_location }}/kubeconfig"
+    dest: "{{ kubeconfig_location }}/kubeconfig"
+    mode: "0600"
+
+- name: apply node labels
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels, wantlist=True) %} {{ labels.key }}={{ labels.value }}{% endfor %}
+  loop: "{{ node_pool_labels }}"
+  when: node_pool_labels is defined
+
+- name: apply node taints
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
+  loop: "{{ node_pool_taints }}"
+  when: node_pool_taints is defined
+
+- name: merge argo dictionaries
+  set_fact:
+    fact_argo_merged_config: "{{ argocd_default | ansible.builtin.combine(argocd_override, recursive=true) }}"
+
+- name: set argo facts
+  set_fact:
+    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
+
+- name: Upload cc template dirs
+  file:
+    path: "{{ cctmpvalues.path }}/{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_filetree: "{{role_path}}/templates/"
+  when: item.state == 'directory'
+
+- name: Upload cc template files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/"
+  when: item.state == 'file'

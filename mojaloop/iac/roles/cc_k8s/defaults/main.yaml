@@ -1,3 +1,4 @@
+teardown: false
 kubeconfig_location: "/root/.kube"
 kustomize_version: "5.4.2"
 kubectl_version: "1.24.6"
