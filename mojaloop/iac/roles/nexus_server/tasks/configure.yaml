@@ -1,6 +1,6 @@
 - name: Wait nexus to respond
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/status
+    url: http://{{ nexus_server }}/service/rest/v1/status
     method: GET
   register: _result
   until: _result.status == 200
@@ -9,7 +9,7 @@
 
 - name: Get docker proxy repo if exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
     method: GET
     user: "admin"
     password: "{{ admin_password }}"
@@ -22,7 +22,7 @@
 
 - name: Add docker proxy if not exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
     method: POST
     user: "admin"
     password: "{{ admin_password }}"
@@ -38,7 +38,7 @@
 
 - name: Get helm proxy repo if exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.name }}
     method: GET
     user: "admin"
     password: "{{ admin_password }}"
@@ -50,7 +50,7 @@
 
 - name: Add helm proxy if not exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy
     method: POST
     user: "admin"
     password: "{{ admin_password }}"
@@ -66,7 +66,7 @@
 
 - name: Get docker group repo if exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
     method: GET
     user: "admin"
     password: "{{ admin_password }}"
@@ -77,7 +77,7 @@
 
 - name: Add docker group repo if not exists
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/group
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group
     method: POST
     user: "admin"
     password: "{{ admin_password }}"
@@ -92,7 +92,7 @@
 
 - name: Set active realms
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/security/realms/active
+    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
     method: PUT
     user: "admin"
     password: "{{ admin_password }}"
@@ -105,7 +105,7 @@
 
 - name: Set anonymous access
   uri:
-    url: https://{{ nexus_server }}/service/rest/v1/security/anonymous
+    url: http://{{ nexus_server }}/service/rest/v1/security/anonymous
     method: PUT
     user: "admin"
     password: "{{ admin_password }}"
