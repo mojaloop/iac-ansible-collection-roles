@@ -27,7 +27,7 @@ spec:
   source:
     repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
     targetRevision: {{ fact_argo_merged_config.apps['security'].application_gitrepo_tag }}
-    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/dns-utils
+    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/security
     plugin:
       name: envsubstappofapp
       env:
@@ -67,18 +67,18 @@ spec:
         - name: "zitadel_istio_wildcard_gateway_name"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
 {% endif %}
-{% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
-        - name: "dns_utils_{{item.key}}"
+{% for item in fact_argo_merged_config.apps['security'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+        - name: "security_{{item.key}}"
           value: {{ item.value | to_yaml(default_style='\"') }}
 {% endfor %}
-{% for subapp in fact_argo_merged_config.apps['dns_utils']['sub_apps'] | dict2items %}
+{% for subapp in fact_argo_merged_config.apps['security']['sub_apps'] | dict2items %}
 {% for subappvalue in subapp.value | dict2items %}
-        - name: "dns_utils_{{ subapp.key }}_{{subappvalue.key}}"
+        - name: "security_{{ subapp.key }}_{{subappvalue.key}}"
           value: {{ subappvalue.value | to_yaml(default_style='\"') }}
 {% endfor %}
 {% endfor %}
 
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
+    namespace: {{ fact_argo_merged_config.apps['security'].app_namespace }}
 
