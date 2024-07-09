@@ -3,7 +3,8 @@ kind: Application
 metadata:
   name: {{ fact_argo_merged_config.apps['dns_utils'].argocd_app_name }}-deployer
   namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
-
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ fact_argo_merged_config.apps['dns_utils'].sync_wave }}
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 
