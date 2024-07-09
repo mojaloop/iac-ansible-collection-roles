@@ -140,7 +140,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-6'"
+      sync_wave: "'-5'"
       sub_apps:
         ext_dns:
           app_name: "ext-dns"
@@ -172,39 +172,34 @@ argocd_default:
         post_config:
           app_name: "post-config"
           sub_app_enabled: "true"
-          sync_wave: "'-5'"
-    zitadel:
-      argocd_app_name: "zitadel"
+          sync_wave: "'-4'"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-6'"
+    security:
+      argocd_app_name: "security"
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "argocd"
-      sync_wave: "'-5'"
+      sync_wave: "'-4'"
       app_enabled: "true"
       sub_apps:
         zitadel:
           app_name: "zitadel"
           sub_app_enabled: "true"
           namespace: "zitadel"
-          cockroachdb_helm_version: "11.2.1"
           helm_version: "7.15.0"
           tf_provider_version: "~> 1.2"
           terraform_modules_tag: "vexp-cck8s19"
           vault_rbac_admin_group: "techops-admin"
           zitadel_grant_prefix: "zitadel:grants"
           public_ingress_access_domain: "true"
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"
-        cockroach_db:
+          zitadel_post_config_output_secret: "post-config-output"
+        cockroachdb:
           app_name: "cockroach-db"
           sub_app_enabled: "true"
-          namespace: "zitadel"
           helm_version: "11.2.1"
-    netbird:
-      argocd_app_name: "netbird"
-      application_gitrepo_tag: "vexp-cck8s19"
-      app_namespace: "argocd"
-      sync_wave: "'-4'"
-      app_enabled: "true"
-      sub_apps:
+          cockroachdb_pvc_size: "5Gi"
         netbird:
           app_name: "netbird"
           sub_app_enabled: "true"
@@ -220,5 +215,3 @@ argocd_default:
           stunner_auth_secret: stunner-auth-secret
           terraform_modules_tag: "vexp-cck8s19"
           public_ingress_access_domain: "true"
-          dns_public_subdomain: "x.y.z"
-          dns_private_subdomain: "x.y.internal"

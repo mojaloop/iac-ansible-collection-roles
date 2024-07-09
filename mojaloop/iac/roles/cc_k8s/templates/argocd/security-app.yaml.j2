@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ fact_argo_merged_config.apps['security'].argocd_app_name }}-deployer
+  namespace: {{ fact_argo_merged_config.apps['security'].app_namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ fact_argo_merged_config.apps['security'].sync_wave }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 20
+      backoff:
+        duration: 10s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+  source:
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+    targetRevision: {{ fact_argo_merged_config.apps['security'].application_gitrepo_tag }}
+    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/dns-utils
+    plugin:
+      name: envsubstappofapp
+      env:
+        - name: "cluster_name"
+          value: "{{ cluster_name }}"
+        - name: "cloud_provider"
+          value: "{{ cluster_cloud_provider }}"
+        - name: "argocd_repo_url"
+          value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+        - name: "vault_namespace"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].namespace }}"
+        - name: "argocd_namespace"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].namespace }}"
+        - name: "vault_read_all_kv_secrets_policy_name"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_read_all_kv_secrets_policy_name }}"
+        - name: "vault_k8s_admin_role_name"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_role_name }}"
+        - name: "vault_k8s_admin_auth_path"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["post_config"].vault_k8s_admin_auth_path }}"
+        - name: "cert_manager_credentials_secret"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["cert_manager"].credentials_secret }}"
+        - name: "istio_namespace"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["istio"].namespace }}"
+
+{% if fact_argo_merged_config.apps['security'].sub_apps["zitadel"].public_ingress_access_domain | bool %}
+        - name: "zitadel_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
+        - name: "zitadel_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_gateway_namespace }}"
+        - name: "zitadel_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_wildcard_gateway_name }}"
+{% else %}
+        - name: "zitadel_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
+        - name: "zitadel_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_gateway_namespace }}"
+        - name: "zitadel_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+        - name: "dns_utils_{{item.key}}"
+          value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['dns_utils']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+        - name: "dns_utils_{{ subapp.key }}_{{subappvalue.key}}"
+          value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.apps['dns_utils'].app_namespace }}
+
