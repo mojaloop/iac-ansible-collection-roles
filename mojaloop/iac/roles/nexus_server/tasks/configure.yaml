@@ -7,16 +7,16 @@
   retries: 30
   delay: 10
 
-# - name: Get docker proxy repo if exists
-#   uri:
-#     url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
-#     method: GET
-#     user: "admin"
-#     password: "{{ admin_password }}"
-#     force_basic_auth: yes
-#     status_code: [200, 404]
-#   register: docker_proxy_repos_exists
-#   with_items: "{{ docker_proxy_repos }}"
+- name: Get docker proxy repo if exists
+  uri:
+    url: https://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
+    method: GET
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: [200, 404, 405]
+  register: docker_proxy_repos_exists
+  with_items: "{{ docker_proxy_repos }}"
 
 - name: Add docker proxy if not exists
   uri:
