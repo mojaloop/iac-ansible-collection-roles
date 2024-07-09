@@ -2,7 +2,7 @@ admin_password: oEPpOxBv_y_h5yB8uMdz
 proxy_repo_name: base-docker
 group_repo_name: docker-group
 nexus_docker_repo_listening_port: 8083
-nexus_server: nexus-app-nexus3.nexus.svc.cluster.local
+nexus_server: nexus-app-nexus3.nexus.svc.cluster.local:8081
 docker_group_member_list:
   ["base-docker", "ghcr.io-proxy", "quay.io-proxy", "k8s.gcr.io"]
 docker_proxy_repos:
