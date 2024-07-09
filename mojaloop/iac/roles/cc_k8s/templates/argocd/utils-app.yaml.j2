@@ -36,6 +36,13 @@ spec:
           value: {{ cluster_cloud_provider }}
         - name: "argocd_repo_url"
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+{% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | bool %}
+        - name: "argocd_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
+{% else %}
+        - name: "argocd_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
+{% endif %}
 {% for item in fact_argo_merged_config.apps['utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
         - name: "utils_{{item.key}}"
           value: {{ item.value | to_yaml(default_style='\"') }}
