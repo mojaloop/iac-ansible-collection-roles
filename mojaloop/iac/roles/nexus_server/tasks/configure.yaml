@@ -17,6 +17,8 @@
     status_code: [200, 404, 405]
   register: docker_proxy_repos_exists
   with_items: "{{ docker_proxy_repos }}"
+  ignore_errors: true
+
 
 - name: Add docker proxy if not exists
   uri:
