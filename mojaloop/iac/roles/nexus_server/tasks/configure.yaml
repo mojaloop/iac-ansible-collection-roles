@@ -14,10 +14,10 @@
     user: "admin"
     password: "{{ admin_password }}"
     force_basic_auth: yes
-    status_code: [200, 404, 405]
+    status_code: [200, 404]
+    timeout: 60
   register: docker_proxy_repos_exists
   with_items: "{{ docker_proxy_repos }}"
-  ignore_errors: true
 
 
 - name: Add docker proxy if not exists
@@ -32,6 +32,7 @@
     body: "{{ lookup('template', 'createdockerproxyrepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 60
   when: item.status == 404
   with_items: "{{ docker_proxy_repos_exists.results }}"
 
@@ -43,6 +44,7 @@
     password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
+    timeout: 60
   register: helm_proxy_repos_exists
   with_items: "{{ helm_proxy_repos }}"
 
@@ -58,6 +60,7 @@
     body: "{{ lookup('template', 'createhelmproxyrepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 60    
   when: item.status == 404
   with_items: "{{ helm_proxy_repos_exists.results }}"
 
@@ -69,6 +72,7 @@
     password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
+    timeout: 60    
   register: group_repo_exists
 
 - name: Add docker group repo if not exists
@@ -83,6 +87,7 @@
     body: "{{ lookup('template', 'createdockergrouprepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 60    
   when: group_repo_exists.status == 404
 
 - name: Set active realms
@@ -96,6 +101,7 @@
       Content-Type: application/json
     src: putrealmbody.json
     status_code: 204
+    timeout: 60    
 
 - name: Set anonymous access
   uri:
@@ -108,3 +114,4 @@
       Content-Type: application/json
     src: anonymousaccess.json
     status_code: 200
+    timeout: 60    
