@@ -198,6 +198,7 @@ argocd_default:
           zitadel_grant_prefix: "zitadel:grants"
           public_ingress_access_domain: "true"
           zitadel_post_config_output_secret: "post-config-output"
+          post_config_sync_wave: "-1"
         cockroachdb:
           app_name: "cockroach-db"
           sub_app_enabled: "true"
@@ -206,7 +207,7 @@ argocd_default:
         netbird:
           app_name: "netbird"
           sub_app_enabled: "true"
-          sync_wave: "'-1'"
+          sync_wave: "'0'"
           helm_version: "1.0.2"
           dashboard_chart_version: "1.0.0"
           image_version: "0.28.0"
