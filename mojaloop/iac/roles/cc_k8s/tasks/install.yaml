@@ -38,67 +38,10 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
     kubectl apply -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/security.yaml
     kubectl apply -f {{ cctmpvalues.path }}/argocd/nexus-app.yaml
   args:
     executable: /bin/bash
-# - name: Install utils
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     kustomize build --enable-helm {{ cctmpvalues.path }}/utils > /tmp/utils-deploy.yaml
-#     kubectl apply -f /tmp/utils-deploy.yaml
-#     while true;do
-#       kubectl wait -n {{ certmanager_namespace }} --for=jsonpath='{.status.succeeded}'=1 job/cert-manager-startupapicheck && break
-#       sleep 5
-#     done
-#     while true;do
-#       kubectl wait -n {{ crossplane_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/crossplane && break
-#       sleep 5
-#     done
-#     while true;do
-#       kubectl wait -n {{ istio_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/istiod && break
-#       sleep 5
-#     done
-#     while true;do
-#       kubectl wait -n {{ rook_ceph_namespace }} --for=jsonpath='{.status.readyReplicas}'=1 deployment/rook-ceph-operator && break
-#       sleep 5
-#     done
-#     kustomize build --enable-helm {{ cctmpvalues.path }}/utils/crs > /tmp/utils-crs-deploy.yaml
-#     kubectl apply -f /tmp/utils-crs-deploy.yaml
-
-# - name: Wait for blockpool
-#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ rook_ceph_namespace }} wait --for=jsonpath='{.status.phase}'=Ready --timeout=10m CephBlockPool/ceph-blockpool
-#   register: blockpool
-#   until: blockpool is not failed
-#   retries: 50
-#   delay: 10
-
-# - name: Install zitadel
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     kustomize build --enable-helm {{ cctmpvalues.path }}/zitadel > /tmp/zitadel-deploy.yaml
-#     kubectl apply -f /tmp/zitadel-deploy.yaml
-
-# - name: Wait for zitadel key
-#   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get secret -n {{ zitadel_namespace }} zitadel-admin-sa -o jsonpath='{.data.zitadel-admin-sa\.json}' | base64 -d
-#   register: adminkey
-#   until: adminkey is not failed
-#   retries: 50
-#   delay: 10
-# - name: Use zitadel TF module to perform zitadel init
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     kubectl -n {{ zitadel_namespace }} apply -f {{ cctmpvalues.path }}/zitadel-xplane-terraform.yaml
-
-# - name: Install vault
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     helm repo add hashicorp https://helm.releases.hashicorp.com
-#     kubectl apply -f {{ cctmpvalues.path }}/vault-crs.yaml
-#     helm upgrade --install consul hashicorp/consul --version {{ consul_helm_version }} -n {{ consul_namespace }} --create-namespace --values {{ cctmpvalues.path }}/consul-values.yaml
-#
-#     helm upgrade --install vault hashicorp/vault --version {{ vault_helm_version }} -n {{ vault_namespace }} --values {{ cctmpvalues.path }}/vault-values.yaml
-#     kubectl apply -f {{ cctmpvalues.path }}/vault-xplane-terraform.yaml
-
 # - name: Use TF module to perform zitadel netbird config
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
