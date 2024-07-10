@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ fact_argo_merged_config.apps['nexus'].argocd_app_name }}-deployer
+  namespace: {{ fact_argo_merged_config.apps['nexus'].app_namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ fact_argo_merged_config.apps['nexus'].sync_wave }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 20
+      backoff:
+        duration: 10s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+  source:
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+    targetRevision: {{ fact_argo_merged_config.apps['nexus'].application_gitrepo_tag }}
+    path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/nexus
+    plugin:
+      name: envsubstappofapp
+      env:
+        - name: "argocd_repo_url"
+          value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+{% for item in fact_argo_merged_config.apps['nexus'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+        - name: "nexus_{{item.key}}"
+          value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['nexus']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+        - name: "nexus_{{ subapp.key }}_{{subappvalue.key}}"
+          value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.apps['nexus'].app_namespace }}
+
