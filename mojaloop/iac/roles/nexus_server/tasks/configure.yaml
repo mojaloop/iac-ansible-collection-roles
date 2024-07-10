@@ -1,138 +1,117 @@
 - name: Wait nexus to respond
   uri:
-    url: http://localhost:8081/service/rest/v1/status
+    url: http://{{ nexus_server }}/service/rest/v1/status
     method: GET
   register: _result
   until: _result.status == 200
   retries: 30
   delay: 10
 
-- name: check if adminpass file exists
-  stat: 
-    path: /var/lib/docker/volumes/{{ volume_name }}/_data/admin.password
-  register: old_admin_exists
-    
-
-- name: Find admin pw
-  shell: "cat /var/lib/docker/volumes/{{ volume_name }}/_data/admin.password"
-  register: old_admin_pw
-  when: old_admin_exists.stat.exists == true
-  
-- name: output old_admin_pw
-  debug:
-    msg: "{{ old_admin_pw.stdout_lines[0] }}"
-  when: old_admin_exists.stat.exists == true
-
-- name: Change admin pw if needed
-  uri:
-    url: http://localhost:8081/service/rest/v1/security/users/admin/change-password
-    method: PUT
-    user: "admin"
-    password: "{{ old_admin_pw.stdout_lines[0] }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: text/plain
-    body: "{{ new_admin_pw }}"
-    body_format: raw
-    status_code: 204
-  when: old_admin_exists.stat.exists == true
-
 - name: Get docker proxy repo if exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/docker/proxy/{{ item.name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
     method: GET
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
+    timeout: 300
   register: docker_proxy_repos_exists
   with_items: "{{ docker_proxy_repos }}"
 
+
 - name: Add docker proxy if not exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/docker/proxy
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
     method: POST
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
     body: "{{ lookup('template', 'createdockerproxyrepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 300
   when: item.status == 404
   with_items: "{{ docker_proxy_repos_exists.results }}"
 
 - name: Get helm proxy repo if exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/helm/proxy/{{ item.name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.name }}
     method: GET
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
+    timeout: 300
   register: helm_proxy_repos_exists
   with_items: "{{ helm_proxy_repos }}"
 
 - name: Add helm proxy if not exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/helm/proxy
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy
     method: POST
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
     body: "{{ lookup('template', 'createhelmproxyrepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 300    
   when: item.status == 404
   with_items: "{{ helm_proxy_repos_exists.results }}"
 
 - name: Get docker group repo if exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
     method: GET
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
+    timeout: 300    
   register: group_repo_exists
 
 - name: Add docker group repo if not exists
   uri:
-    url: http://localhost:8081/service/rest/v1/repositories/docker/group
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group
     method: POST
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
     body: "{{ lookup('template', 'createdockergrouprepo.json.j2') }}"
     body_format: json
     status_code: 201
+    timeout: 300    
   when: group_repo_exists.status == 404
 
 - name: Set active realms
   uri:
-    url: http://localhost:8081/service/rest/v1/security/realms/active
+    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
     method: PUT
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
     src: putrealmbody.json
     status_code: 204
+    timeout: 300    
 
 - name: Set anonymous access
   uri:
-    url: http://localhost:8081/service/rest/v1/security/anonymous
+    url: http://{{ nexus_server }}/service/rest/v1/security/anonymous
     method: PUT
     user: "admin"
-    password: "{{ new_admin_pw }}"
+    password: "{{ admin_password }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
     src: anonymousaccess.json
     status_code: 200
+    timeout: 300    
