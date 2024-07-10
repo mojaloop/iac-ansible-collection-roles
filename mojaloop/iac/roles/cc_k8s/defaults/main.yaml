@@ -125,6 +125,7 @@ argocd_default:
           cloud_platform_api_client_id: "id"
           cloud_platform_api_client_secret: "secret"
           vault_kv_secret: "secret"
+          vault_tf_post_config_output_secret: "vault-tf-post-config"
         vault_config_operator:
           app_name: "vault-config-operator"
           sub_app_enabled: "true"
@@ -226,9 +227,9 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "cto-102-nexus-01"
-      sync_wave: "'-7'"    
+      sync_wave: "'-7'"
       sub_apps:
         nexus:
           app_name: "nexus"
           helm_version: "4.44.0"
-          namespace: "nexus"      
+          namespace: "nexus"

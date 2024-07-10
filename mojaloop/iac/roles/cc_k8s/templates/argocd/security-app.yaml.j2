@@ -39,6 +39,8 @@ spec:
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
         - name: "vault_namespace"
           value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].namespace }}"
+        - name: "vault_tf_post_config_output_secret"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].vault_tf_post_config_output_secret }}"
         - name: "argocd_namespace"
           value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].namespace }}"
         - name: "vault_read_all_kv_secrets_policy_name"
