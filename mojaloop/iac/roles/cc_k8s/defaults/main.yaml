@@ -181,12 +181,13 @@ argocd_default:
       argocd_app_name: "security"
       application_gitrepo_tag: "vexp-cck8s19"
       app_namespace: "argocd"
-      sync_wave: "'-4'"
+      sync_wave: "'-3'"
       app_enabled: "true"
       sub_apps:
         zitadel:
           app_name: "zitadel"
           sub_app_enabled: "true"
+          sync_wave: "'-2'"
           namespace: "zitadel"
           helm_version: "7.15.0"
           tf_provider_version: "~> 1.2"
@@ -203,6 +204,7 @@ argocd_default:
         netbird:
           app_name: "netbird"
           sub_app_enabled: "true"
+          sync_wave: "'-1'"
           helm_version: "1.0.2"
           dashboard_chart_version: "1.0.0"
           image_version: "0.28.0"
