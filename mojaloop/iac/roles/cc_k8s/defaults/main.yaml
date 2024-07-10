@@ -201,7 +201,7 @@ argocd_default:
         cockroachdb:
           app_name: "cockroach-db"
           sub_app_enabled: "true"
-          helm_version: "11.2.1"
+          helm_version: "13.0.2"
           pvc_size: "5Gi"
         netbird:
           app_name: "netbird"
