@@ -219,3 +219,15 @@ argocd_default:
           stunner_auth_secret: stunner-auth-secret
           terraform_modules_tag: "vexp-cck8s19"
           public_ingress_access_domain: "true"
+
+    nexus:
+      argocd_app_name: "nexus"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "cto-102-nexus-01"
+      sync_wave: "'-7'"    
+      sub_apps:
+        nexus:
+          app_name: "nexus"
+          helm_version: "4.44.0"
+          namespace: "nexus"      
