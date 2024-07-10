@@ -38,6 +38,7 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
     kubectl apply -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/nexus-app.yaml
   args:
     executable: /bin/bash
 # - name: Install utils
