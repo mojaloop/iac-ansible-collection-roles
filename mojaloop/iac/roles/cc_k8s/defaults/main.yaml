@@ -97,11 +97,13 @@ argocd_default:
           helm_version: "1.4.0"
           replicas: 1
           storage_size: 3Gi
+          sync_wave: "'-9'"
         post_config:
           app_name: "post-config"
           sync_wave: "'-9'"
           vault_crossplane_modules_version: "1.0.0"
           terraform_crossplane_modules_version: "0.16.0"
+          ansible_crossplane_modules_version: "0.6.0"
     vault:
       argocd_app_name: "vault"
       app_namespace: "argocd"
