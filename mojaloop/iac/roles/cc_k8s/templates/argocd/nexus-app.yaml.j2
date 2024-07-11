@@ -33,6 +33,8 @@ spec:
       env:
         - name: "argocd_repo_url"
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+        - name: "vault_namespace"
+          value: "{{ fact_argo_merged_config.apps['vault'].sub_apps["vault"].namespace }}"          
 {% if fact_argo_merged_config.apps['nexus'].sub_apps["nexus"].public_ingress_access_domain | bool %}
         - name: "nexus_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
