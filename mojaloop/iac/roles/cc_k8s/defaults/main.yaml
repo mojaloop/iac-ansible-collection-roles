@@ -241,6 +241,6 @@ argocd_default:
           vault_k8s_admin_auth_path: "admin-k8s"
           vault_k8s_admin_role_name: "admin-role"      
         post_config:                
-          app_name: "nexus_post_config"
+          app_name: "nexus-post-config"
           sub_app_enabled: "true"
           sync_wave: "'-5'"           
