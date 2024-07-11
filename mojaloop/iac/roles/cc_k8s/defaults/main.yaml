@@ -225,10 +225,16 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "cto-102-nexus-01"
-      sync_wave: "'-7'"    
+      sync_wave: "'-6'"    
       sub_apps:
         nexus:
           app_name: "nexus"
           helm_version: "4.44.0"
           namespace: "nexus"
-          public_ingress_access_domain: "false"    
+          public_ingress_access_domain: "false"
+        pre:    
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-7'"      
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"                      
