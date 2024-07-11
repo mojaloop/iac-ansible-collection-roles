@@ -37,6 +37,13 @@ spec:
           value: {{ cluster_cloud_provider }}
         - name: "argocd_repo_url"
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+        - name: "argocd_oidc_client_id_string"
+          value: "${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_id_key }}"
+        - name: "argocd_oidc_client_secret_string"
+          value: "${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_secret_key }}"
+        - name: "zitadel_grant_prefix"
+          value: "${{ fact_argo_merged_config.apps['security'].sub_apps["zitadel"].zitadel_grant_prefix }}"
+        
 {% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | bool %}
         - name: "argocd_dns_subdomain"
           value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"

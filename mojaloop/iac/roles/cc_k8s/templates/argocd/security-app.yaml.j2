@@ -57,6 +57,12 @@ spec:
           value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["cert_manager"].credentials_secret }}"
         - name: "istio_namespace"
           value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["istio"].namespace }}"
+        - name: "argocd_oidc_secret"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}"
+        - name: "argocd_admin_rbac_group"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].admin_rbac_group }}"
+        - name: "argocd_user_rbac_group"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].user_rbac_group }}"
 
 {% if fact_argo_merged_config.apps['security'].sub_apps["zitadel"].public_ingress_access_domain | bool %}
         - name: "zitadel_dns_subdomain"

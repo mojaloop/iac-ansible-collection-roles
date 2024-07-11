@@ -35,6 +35,11 @@ argocd_default:
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
           sub_app_enabled: "true"
+          oidc_secret: "argo-oidc-secret"
+          oidc_secret_secret_key: "oidc_client_secret"
+          oidc_secret_id_key: "oidc_client_id"
+          user_rbac_group: "argocd_users"
+          admin_rbac_group: "argocd_administrators"
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
@@ -227,16 +232,16 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "cto-102-nexus-01"
-      sync_wave: "'-6'"    
+      sync_wave: "'-6'"
       sub_apps:
         nexus:
           app_name: "nexus"
           helm_version: "4.44.0"
           namespace: "nexus"
           public_ingress_access_domain: "false"
-        pre:    
+        pre:
           app_name: "pre"
           sub_app_enabled: "true"
-          sync_wave: "'-7'"      
+          sync_wave: "'-7'"
           vault_k8s_admin_auth_path: "admin-k8s"
-          vault_k8s_admin_role_name: "admin-role"                      
+          vault_k8s_admin_role_name: "admin-role"
