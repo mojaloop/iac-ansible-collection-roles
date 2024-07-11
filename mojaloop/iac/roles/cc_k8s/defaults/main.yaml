@@ -19,6 +19,8 @@ argocd_default:
   gitrepo_raw_host_fqdn: "https://raw.githubusercontent.com"
   initial_application_gitrepo_tag: "vexp-cck8s19"
   namespace: "argocd"
+  ansible_gitrepo: iac-ansible-collection-roles
+  ansible_collections_path: mojaloop/iac
   apps:
     utils:
       argocd_app_name: "utils"
@@ -237,4 +239,8 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'-7'"      
           vault_k8s_admin_auth_path: "admin-k8s"
-          vault_k8s_admin_role_name: "admin-role"                      
+          vault_k8s_admin_role_name: "admin-role"      
+        post_config:                
+          app_name: "nexus_post_config"
+          sub_app_enabled: "true"
+          sync_wave: "'-5'"           
