@@ -60,6 +60,8 @@ spec:
           value: {{ subappvalue.value | to_yaml(default_style='\"') }}
 {% endfor %}
 {% endfor %}
+        - name: "ansible_gitrepo_url"
+          value: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collections_path }}
 
   destination:
     server: "https://kubernetes.default.svc"
