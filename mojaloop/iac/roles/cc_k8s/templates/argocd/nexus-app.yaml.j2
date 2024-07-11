@@ -33,6 +33,21 @@ spec:
       env:
         - name: "argocd_repo_url"
           value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+{% if fact_argo_merged_config.apps['nexus'].sub_apps["nexus"].public_ingress_access_domain | bool %}
+        - name: "nexus_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_public_subdomain }}"
+        - name: "nexus_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_gateway_namespace }}"
+        - name: "nexus_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_external_wildcard_gateway_name }}"
+{% else %}
+        - name: "nexus_dns_subdomain"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].dns_private_subdomain }}"
+        - name: "nexus_istio_gateway_namespace"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_gateway_namespace }}"
+        - name: "nexus_istio_wildcard_gateway_name"
+          value: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps["cr_config"].istio_internal_wildcard_gateway_name }}"
+{% endif %}           
 {% for item in fact_argo_merged_config.apps['nexus'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
         - name: "nexus_{{item.key}}"
           value: {{ item.value | to_yaml(default_style='\"') }}
