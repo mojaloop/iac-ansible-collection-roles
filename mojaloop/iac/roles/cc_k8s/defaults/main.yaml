@@ -240,7 +240,7 @@ argocd_default:
           app_name: "nexus"
           helm_version: "4.44.0"
           namespace: "nexus"
-          public_ingress_access_domain: "false"
+          public_ingress_access_domain: "true"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
