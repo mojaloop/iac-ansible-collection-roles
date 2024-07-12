@@ -71,7 +71,7 @@ argocd_default:
           sub_app_enabled: "true"
         external_secrets:
           app_name: "external-secrets"
-          helm_version: "0.9.0"
+          helm_version: "0.9.20"
           namespace: "external-secrets"
           sub_app_enabled: "true"
         istio:
@@ -234,7 +234,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "cto-102-nexus-01"
-      sync_wave: "'-6'"
+      sync_wave: "'-3'"
       sub_apps:
         nexus:
           app_name: "nexus"
@@ -244,10 +244,10 @@ argocd_default:
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
-          sync_wave: "'-7'"
+          sync_wave: "'-4'"
           vault_k8s_admin_auth_path: "admin-k8s"
           vault_k8s_admin_role_name: "admin-role"
         post_config:
           app_name: "nexus-post-config"
           sub_app_enabled: "true"
-          sync_wave: "'-5'"
+          sync_wave: "'-2'"
