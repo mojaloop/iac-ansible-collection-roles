@@ -102,7 +102,7 @@ argocd_default:
           sub_app_enabled: "true"
           namespace: "consul"
           helm_version: "1.4.0"
-          replicas: "'-1'"
+          replicas: "'1'"
           storage_size: 3Gi
           sync_wave: "'-9'"
         post_config:
