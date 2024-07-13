@@ -51,8 +51,8 @@ spec:
 {% for subappvalue in subapp.value | dict2items%}
           - name: "{{ item.key }}_{{ subapp.key }}_{{ subappvalue.key }}"
             value: {{ subappvalue.value | to_yaml(default_style='\"') }}
-{% endfor %}
-{% if subapp.public_ingress_access_domain |default(false) | bool %}
+{% if subappvalue.key  == 'public_ingress_access_domain' %}
+{% if subappvalue.value |default(false) | bool %}
           - name: "{{ item.key }}_{{ subapp.key }}_dns_subdomain"
             value: "{{ fact_dns_public_subdomain }}"
           - name: "{{ item.key }}_{{ subapp.key }}_istio_gateway_namespace"
@@ -67,6 +67,8 @@ spec:
           - name: "{{ item.key }}_{{ subapp.key }}_istio_wildcard_gateway_name"
             value: "{{ fact_istio_internal_wildcard_gateway_name }}"
 {% endif %}
+{% endif %}
+{% endfor %}
 {% endfor %}
 {% endfor %}
           
