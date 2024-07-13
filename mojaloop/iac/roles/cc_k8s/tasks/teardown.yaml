@@ -1,5 +1,6 @@
 - name: Delete argo apps
   shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -f {{ cctmpvalues.path }}/argocd/root-app.yaml --wait=false
   args:
     executable: /bin/bash
