@@ -1,14 +1,13 @@
 - name: Delete argo apps
   shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    export WORKSPACE_RESOURCES=$(kubectl get workspaces --no-headers -o custom-columns=":metadata.name")
-    for n in $WORKSPACE_RESOURCES; kubectl patch workspace $n --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' ; done
     kubectl delete -f {{ cctmpvalues.path }}/argocd/root-app.yaml --wait=false
   args:
     executable: /bin/bash
 
 - name: Wait for vault to be gone
   shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch workspace vault-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get application -n {{ fact_argo_merged_config.namespace }} vault
   register: outputapp
   until: outputapp is failed
