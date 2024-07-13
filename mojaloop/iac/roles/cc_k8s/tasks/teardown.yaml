@@ -9,6 +9,6 @@
 - name: Wait for vault to be gone
   shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get application -n {{ fact_argo_merged_config.namespace }} vault
   register: outputapp
-  until: outputsecret is failed
+  until: outputapp is failed
   retries: 100
   delay: 30
