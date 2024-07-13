@@ -1,8 +1,14 @@
 - name: Delete argo apps
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml --wait=true
-    kubectl delete -f {{ cctmpvalues.path }}/argocd/vault-app.yaml --timeout=60s
-    kubectl delete -f {{ cctmpvalues.path }}/argocd/utils-app.yaml --wait=false
+    kubectl delete -f {{ cctmpvalues.path }}/argocd/root-app.yaml --wait=false
+
   args:
     executable: /bin/bash
+
+- name: Wait for vault to be gone
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get application -n {{ fact_argo_merged_config.namespace }} vault
+  register: outputapp
+  until: outputsecret is failed
+  retries: 100
+  delay: 30
