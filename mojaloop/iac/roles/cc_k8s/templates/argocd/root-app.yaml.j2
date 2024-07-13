@@ -43,6 +43,10 @@ spec:
             value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collections_path }}" 
 
 {% for item in fact_argo_merged_config.apps | dict2items %}
+{% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "{{ item.key }}_{{ attr.key }}"
+            value: {{ attr.value | to_yaml(default_style='\"') }}
+{% endfor %}
 {% for subapp in item.value['sub_apps'] | dict2items %}
 {% for subappvalue in subapp.value | dict2items%}
           - name: "{{ item.key }}_{{ subapp.key }}_{{ subappvalue.key }}"
