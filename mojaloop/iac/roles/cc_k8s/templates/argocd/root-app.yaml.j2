@@ -1,0 +1,164 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-deployer
+  namespace: {{ fact_argo_merged_config.namespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 20
+      backoff:
+        duration: 10s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+  sources:
+    - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+      targetRevision: {{ fact_argo_merged_config.apps['utils'].application_gitrepo_tag }}
+      path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/root
+      plugin:
+        name: envsubstappofapp
+        env:
+          - name: cluster_name
+            value: {{ cluster_name }}
+          - name: cloud_provider
+            value: {{ cluster_cloud_provider }}
+          - name: "argocd_repo_url"
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+          - name: "argocd_oidc_client_id_string"
+            value: "$${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_id_key }}"
+          - name: "argocd_oidc_client_secret_string"
+            value: "$${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_secret_key }}"
+          - name: "ansible_gitrepo_url"
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collections_path }}"
+
+{% if fact_argo_merged_config.apps['vault'].sub_apps["vault"].public_ingress_access_domain | bool %}
+          - name: "vault_dns_subdomain"
+            value: "{{ fact_dns_public_subdomain }}"
+          - name: "vault_istio_gateway_namespace"
+            value: "{{ fact_istio_external_gateway_namespace }}"
+          - name: "vault_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+          - name: "vault_dns_subdomain"
+            value: "{{ fact_dns_private_subdomain }}"
+          - name: "vault_istio_gateway_namespace"
+            value: "{{ fact_istio_internal_gateway_namespace }}"
+          - name: "vault_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% if fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].public_ingress_access_domain | bool %}
+          - name: "argocd_dns_subdomain"
+            value: "{{ fact_dns_public_subdomain }}"
+          - name: "argocd_istio_gateway_namespace"
+            value: "{{ fact_istio_external_gateway_namespace }}"
+          - name: "argocd_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+          - name: "argocd_dns_subdomain"
+            value: "{{ fact_dns_private_subdomain }}"
+          - name: "argocd_istio_gateway_namespace"
+            value: "{{ fact_istio_internal_gateway_namespace }}"
+          - name: "argocd_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% if fact_argo_merged_config.apps['security'].sub_apps["zitadel"].public_ingress_access_domain | bool %}
+          - name: "zitadel_dns_subdomain"
+            value: "{{ fact_dns_public_subdomain }}"
+          - name: "zitadel_istio_gateway_namespace"
+            value: "{{ fact_istio_external_gateway_namespace }}"
+          - name: "zitadel_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+          - name: "zitadel_dns_subdomain"
+            value: "{{ fact_dns_private_subdomain }}"
+          - name: "zitadel_istio_gateway_namespace"
+            value: "{{ fact_istio_internal_gateway_namespace }}"
+          - name: "zitadel_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% if fact_argo_merged_config.apps['nexus'].sub_apps["nexus"].public_ingress_access_domain | bool %}
+          - name: "nexus_dns_subdomain"
+            value: "{{ fact_dns_public_subdomain }}"
+          - name: "nexus_istio_gateway_namespace"
+            value: "{{ fact_istio_external_gateway_namespace }}"
+          - name: "nexus_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+          - name: "nexus_dns_subdomain"
+            value: "{{ fact_dns_private_subdomain }}"
+          - name: "nexus_istio_gateway_namespace"
+            value: "{{ fact_istio_internal_gateway_namespace }}"
+          - name: "nexus_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}  
+
+{% for item in fact_argo_merged_config.apps['utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "utils_{{item.key}}"
+            value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['utils']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+          - name: "utils_{{ subapp.key }}_{{subappvalue.key}}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+
+{% for item in fact_argo_merged_config.apps['vault'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "vault_{{item.key}}"
+            value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['vault']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+          - name: "vault_{{ subapp.key }}_{{subappvalue.key}}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+{% for item in fact_argo_merged_config.apps['dns_utils'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "dns_utils_{{item.key}}"
+            value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['dns_utils']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+          - name: "dns_utils_{{ subapp.key }}_{{subappvalue.key}}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+
+{% for item in fact_argo_merged_config.apps['security'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "security_{{item.key}}"
+            value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['security']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+          - name: "security_{{ subapp.key }}_{{subappvalue.key}}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+    
+{% for item in fact_argo_merged_config.apps['nexus'] | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "nexus_{{item.key}}"
+            value: {{ item.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in fact_argo_merged_config.apps['nexus']['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items %}
+          - name: "nexus_{{ subapp.key }}_{{subappvalue.key}}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% endfor %}
+          
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.namespace }}
+

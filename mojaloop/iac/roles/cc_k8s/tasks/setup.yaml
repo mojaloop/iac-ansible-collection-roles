@@ -81,6 +81,12 @@
     fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
     fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
     fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
+    fact_dns_public_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}"
+    fact_dns_private_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}"
+    fact_istio_external_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_gateway_namespace }}"
+    fact_istio_external_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_wildcard_gateway_name }}"
+    fact_istio_internal_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_gateway_namespace }}"
+    fact_istio_internal_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_wildcard_gateway_name }}"
 
 - name: Upload cc template dirs
   file:

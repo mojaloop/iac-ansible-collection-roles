@@ -17,10 +17,10 @@
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
   when: argocdappexists is failed
 
-- name: Install util app
+- name: Install root app
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/utils-app.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
@@ -32,16 +32,15 @@
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
   args:
     executable: /bin/bash
-
-- name: Install deploy argo apps
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/security-app.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/nexus-app.yaml
-  args:
-    executable: /bin/bash
+# - name: Install deploy argo apps
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/vault-app.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/dns-utils-app.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/security-app.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/nexus-app.yaml
+#   args:
+#     executable: /bin/bash
 # - name: Use TF module to perform zitadel netbird config
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
