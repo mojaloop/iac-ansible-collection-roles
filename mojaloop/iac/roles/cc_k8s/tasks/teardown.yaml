@@ -8,12 +8,12 @@
 - name: Wait for vault to be gone
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl patch workspace zitadel-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
-    kubectl patch workspace zitadel-argocd-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
-    kubectl patch workspace zitadel-vault-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
-    export zitadel_pvcs=$(kubectl get pvcs -n zitadel --no-headers -o custom-columns=":metadata.name")
-    for n in $zitadel_pvcs; kubectl patch -n zitadel pvc $n --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' ; done
-    kubectl patch workspace vault-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
+    kubectl patch workspace zitadel-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
+    kubectl patch workspace zitadel-argocd-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
+    kubectl patch workspace zitadel-vault-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'  || true
+    export zitadel_pvcs=$(kubectl get pvcs -n zitadel --no-headers -o custom-columns=":metadata.name") || true
+    for n in $zitadel_pvcs; do kubectl patch -n zitadel pvc $n --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' ; done || true
+    kubectl patch workspace vault-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get application -n {{ fact_argo_merged_config.namespace }} vault
   register: outputapp
   until: outputapp is failed
