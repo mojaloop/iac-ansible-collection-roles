@@ -35,12 +35,8 @@ spec:
             value: {{ cluster_cloud_provider }}
           - name: "argocd_repo_url"
             value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
-          - name: "argocd_oidc_client_id_string"
-            value: "$${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_id_key }}"
-          - name: "argocd_oidc_client_secret_string"
-            value: "$${{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret }}:{{ fact_argo_merged_config.apps['utils'].sub_apps["argocd_helm"].oidc_secret_secret_key }}"
           - name: "ansible_gitrepo_url"
-            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collections_path }}" 
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collection_path }}" 
 
 {% for item in fact_argo_merged_config.apps | dict2items %}
 {% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}

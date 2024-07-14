@@ -11,6 +11,8 @@
     kubectl patch workspace zitadel-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
     kubectl patch workspace zitadel-argocd-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
     kubectl patch workspace zitadel-vault-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
+    export zitadel_pvcs=$(kubectl get pvcs -n zitadel --no-headers -o custom-columns=":metadata.name")
+    for n in $zitadel_pvcs; kubectl patch -n zitadel pvc $n --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' ; done
     kubectl patch workspace vault-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get application -n {{ fact_argo_merged_config.namespace }} vault
   register: outputapp
