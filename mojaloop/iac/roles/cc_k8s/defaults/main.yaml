@@ -213,7 +213,6 @@ argocd_default:
           image_version: "0.28.0"
           namespace: "netbird"
           preconfig_output_secret: "netbird-management"
-          management_turn_secret: "netbird-turn"
           stunner_system_namespace: "stunner-system"
           stunner_gateway_operator_helm_version: "0.19.0"
           stunner_nodeport_port: "'31821'"
