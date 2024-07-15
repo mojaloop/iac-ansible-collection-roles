@@ -67,3 +67,5 @@
       vars:
         helm_version: "v3.14.0"
     - role: mojaloop.iac.cc_k8s
+      vars:
+        helm_version: "3.14.0"
