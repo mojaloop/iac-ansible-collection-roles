@@ -188,7 +188,7 @@ repoServer:
 
   initContainers:
     - name: helm-plugins
-      image: alpine/helm:{{ helm_version }}}
+      image: alpine/helm:{{ helm_version }}
       volumeMounts:
         - name: helm-working-dir
           mountPath: /helm-working-dir
