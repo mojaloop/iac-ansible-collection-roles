@@ -1,10 +1,10 @@
 global:
-  domain: argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
+  domain: argocd.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}
   logging:
     format: json
 configs:
   cm:
-    url: http://argo.{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].dns_public_subdomain }}
+    url: http://argocd.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}
     exec.enabled: "true"
     kustomize.buildOptions: "--enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone"
 

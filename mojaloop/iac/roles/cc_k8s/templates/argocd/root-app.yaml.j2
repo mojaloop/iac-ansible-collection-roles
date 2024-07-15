@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-deployer
+  namespace: {{ fact_argo_merged_config.namespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 20
+      backoff:
+        duration: 10s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+  sources:
+    - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+      targetRevision: {{ fact_argo_merged_config.apps['utils'].application_gitrepo_tag }}
+      path: {{ fact_argo_merged_config.root_app_gitrepo_path }}/root
+      plugin:
+        name: envsubstappofapp
+        env:
+          - name: cluster_name
+            value: {{ cluster_name }}
+          - name: cloud_provider
+            value: {{ cluster_cloud_provider }}
+          - name: "argocd_repo_url"
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+          - name: "ansible_gitrepo_url"
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collection_path }}" 
+
+{% for item in fact_argo_merged_config.apps | dict2items %}
+{% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+          - name: "{{ item.key }}_{{ attr.key }}"
+            value: {{ attr.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in item.value['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items%}
+          - name: "{{ item.key }}_{{ subapp.key }}_{{ subappvalue.key }}"
+            value: {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% if subappvalue.key  == 'public_ingress_access_domain' %}
+{% if subappvalue.value |default(false) | bool %}
+          - name: "{{ item.key }}_{{ subapp.key }}_dns_subdomain"
+            value: "{{ fact_dns_public_subdomain }}"
+          - name: "{{ item.key }}_{{ subapp.key }}_istio_gateway_namespace"
+            value: "{{ fact_istio_external_gateway_namespace }}"
+          - name: "{{ item.key }}_{{ subapp.key }}_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+          - name: "{{ item.key }}_{{ subapp.key }}_dns_subdomain"
+            value: "{{ fact_dns_private_subdomain }}"
+          - name: "{{ item.key }}_{{ subapp.key }}_istio_gateway_namespace"
+            value: "{{ fact_istio_internal_gateway_namespace }}"
+          - name: "{{ item.key }}_{{ subapp.key }}_istio_wildcard_gateway_name"
+            value: "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+          
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.namespace }}
+
