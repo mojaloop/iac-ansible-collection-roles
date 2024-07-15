@@ -209,7 +209,7 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'1'"
           helm_version: "1.0.2"
-          dashboard_chart_version: "1.0.0"
+          dashboard_helm_version: "1.0.0"
           image_version: "0.28.0"
           namespace: "netbird"
           preconfig_output_secret: "netbird-management"
