@@ -36,7 +36,11 @@ spec:
           - name: "argocd_repo_url"
             value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
           - name: "ansible_gitrepo_url"
-            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collection_path }}" 
+            value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collection_path }}"
+          - name: helm_version
+            value: {{ helm_version }}
+          - name: helmfile_version
+            value: {{ helmfile_version }}  
 
 {% for item in fact_argo_merged_config.apps | dict2items %}
 {% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
