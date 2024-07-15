@@ -243,3 +243,27 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'-2'"
           ansible_collection_tag: "vexp-cck8s19"
+
+    gitlab:
+      argocd_app_name: "gitlab"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "cto-102-gitlab-01"
+      sync_wave: "'-3'"
+      sub_apps:
+        gitlab:
+          app_name: "gitlab"
+          helm_version: "8.1.2"
+          namespace: "gitlab"
+          public_ingress_access_domain: "true"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-4'"
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"
+        post_config:
+          app_name: "gitlab-post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-2'"
+          ansible_collection_tag: "vexp-cck8s19"          
