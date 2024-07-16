@@ -59,11 +59,16 @@ argocd_default:
           debug: "debug"
           sub_app_enabled: "true"
         percona:
-          app_name: "percona-postgresql"
+          app_name: "percona-postgresql-operator"
           helm_version: "2.3.4"
           namespace: "percona"
           debug: "debug"
-          sub_app_enabled: "true"                 
+          sub_app_enabled: "true"
+        redis:
+          app_name: "redis-operator"
+          helm_version: "0.16.4"
+          namespace: "redis"
+          debug: "debug"
         kubernetes_secret_generator:
           app_name: "kubernetes-secret-generator"
           helm_version: "3.4.0"
