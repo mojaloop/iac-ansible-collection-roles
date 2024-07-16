@@ -1,0 +1,9 @@
+headscale_fqdn: a.b.c
+headscale_root_dir: /root/headscale-compose
+headscale_image_version: 0.18.6
+headscale_caddy_image_version: 2.6.2
+headscale_acme_email: cicd.automation@modusbox.com
+enable_oauth: false
+headscale_oidc_issuer: https://gitlab.com
+headscale_oidc_client_id: clientid
+headscale_oidc_client_secret: crazysecret

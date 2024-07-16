@@ -1,0 +1,38 @@
+- name: Update apt cache
+  shell: apt update
+
+- name: Install dependencies
+  package:
+    name:
+      - wireguard
+
+- name: "create directory for project"
+  file:
+    path: "{{ headscale_root_dir }}/conf"
+    state: directory
+    recurse: yes
+
+- name: "deploy systemd service"
+  template:
+    src: "../templates/headscale.service.j2"
+    dest: "/etc/systemd/system/headscale.service"
+  notify: Restart Headscale
+
+- name: "deploy headscale compose file"
+  template:
+    src: "../templates/headscale.docker-compose.yaml.j2"
+    dest: "{{ headscale_root_dir}}/headscale-docker-compose.yaml"
+  notify: Restart Headscale
+
+- name: "deploy headscale config file"
+  template:
+    src: "../templates/headscale.config.yaml.j2"
+    dest: "{{ headscale_root_dir}}/conf/config.yaml"
+  notify: Restart Headscale
+
+- name: "set headscale to auto restart"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "headscale"
+    state: started
