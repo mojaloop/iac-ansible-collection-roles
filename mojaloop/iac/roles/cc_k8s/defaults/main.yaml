@@ -273,9 +273,9 @@ argocd_default:
           app_name: "pre"
           sub_app_enabled: "true"
           sync_wave: "'-1'"
-          redis_cluster_size: "3"
-          postgres_replicas: "1"
-          postgres_proxy_replicas: "1"
+          redis_cluster_size: "'3'"
+          postgres_replicas: "'1'"
+          postgres_proxy_replicas: "'1'"
           postgres_storage_size: "10Gi"
         post_config:
           app_name: "gitlab-post-config"
