@@ -58,6 +58,12 @@ argocd_default:
           namespace: "crossplane-system"
           debug: "debug"
           sub_app_enabled: "true"
+        percona:
+          app_name: "percona-postgresql"
+          helm_version: "2.3.4"
+          namespace: "percona"
+          debug: "debug"
+          sub_app_enabled: "true"                 
         kubernetes_secret_generator:
           app_name: "kubernetes-secret-generator"
           helm_version: "3.4.0"
