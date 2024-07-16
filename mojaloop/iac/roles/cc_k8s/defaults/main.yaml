@@ -261,7 +261,7 @@ argocd_default:
       argocd_app_name: "gitlab"
       app_namespace: "argocd"
       app_enabled: "true"
-      application_gitrepo_tag: "cto-102-gitlab-01"
+      application_gitrepo_tag: "vexp-cck8sargoroot95"
       sync_wave: "'-1'"
       sub_apps:
         gitlab:
