@@ -262,7 +262,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "cto-102-gitlab-01"
-      sync_wave: "'-3'"
+      sync_wave: "'-1'"
       sub_apps:
         gitlab:
           app_name: "gitlab"
@@ -272,7 +272,7 @@ argocd_default:
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
-          sync_wave: "'-4'"
+          sync_wave: "'-1'"
           redis_cluster_size: "3"
           postgres_replicas: "1"
           postgres_proxy_replicas: "1"
