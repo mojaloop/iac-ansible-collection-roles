@@ -60,7 +60,7 @@ argocd_default:
           sub_app_enabled: "true"
         percona:
           app_name: "percona-postgresql-operator"
-          helm_version: "2.3.4"
+          helm_version: "2.4.0"
           namespace: "percona"
           debug: "debug"
           sub_app_enabled: "true"
@@ -273,8 +273,10 @@ argocd_default:
           app_name: "pre"
           sub_app_enabled: "true"
           sync_wave: "'-4'"
-          vault_k8s_admin_auth_path: "admin-k8s"
-          vault_k8s_admin_role_name: "admin-role"
+          redis_cluster_size: "3"
+          postgres_replicas: "1"
+          postgres_proxy_replicas: "1"
+          postgres_storage_size: "10Gi"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
