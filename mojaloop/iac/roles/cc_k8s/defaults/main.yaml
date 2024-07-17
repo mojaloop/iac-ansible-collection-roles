@@ -277,6 +277,7 @@ argocd_default:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
           postgres_storage_size: "10Gi"
+          pgdb_helm_version: "2.4.0"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
