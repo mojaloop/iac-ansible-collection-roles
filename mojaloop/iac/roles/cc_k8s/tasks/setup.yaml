@@ -1,22 +1,27 @@
 #Create a temporary directory for storing values files or other config
+- name: merge argo dictionaries
+  set_fact:
+    fact_argo_merged_config: "{{ argocd_default | ansible.builtin.combine(argocd_override, recursive=true) }}"
+
+- name: set argo facts
+  set_fact:
+    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
+    fact_dns_public_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}"
+    fact_dns_private_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}"
+    fact_istio_external_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_gateway_namespace }}"
+    fact_istio_external_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_wildcard_gateway_name }}"
+    fact_istio_internal_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_gateway_namespace }}"
+    fact_istio_internal_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_wildcard_gateway_name }}"
+    fact_netbird_version: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].image_version }}"
+    fact_netbird_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"
+
 - name: install kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
     dest: /usr/local/bin/kubectl
     mode: 0700
-
-- name: download kustomize
-  ansible.builtin.unarchive:
-    src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
-    dest: /tmp
-    remote_src: yes
-
-- name: copy kustomize bin
-  copy:
-    src: "/tmp/kustomize"
-    dest: "/usr/local/bin/kustomize"
-    mode: "u+rwx"
-    remote_src: yes
 
 - name: download argocd cli
   get_url:
@@ -24,23 +29,19 @@
     dest: /usr/local/bin/argocd
     mode: 0700
 
-- name: download helmfile
-  ansible.builtin.unarchive:
-    src: https://github.com/helmfile/helmfile/releases/download/v{{ helmfile_version }}/helmfile_{{ helmfile_version }}_linux_amd64.tar.gz
-    dest: /tmp
-    remote_src: yes
-
-- name: copy helmfile bin
-  copy:
-    src: "/tmp/helmfile"
-    dest: "/usr/local/bin/helmfile"
-    mode: "u+rwx"
-    remote_src: yes
-
-- name: install helm util
+- name: setup netbird install
   shell: |
-    helm plugin install https://github.com/aslafy-z/helm-git --version 0.16.0 || true
-    helm plugin install https://github.com/databus23/helm-diff --version 3.9.8 || true
+    curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
+    echo 'deb [signed-by=/usr/share/keyrings/netbird-archive-keyring.gpg] https://pkgs.netbird.io/debian stable main' | tee /etc/apt/sources.list.d/netbird.list
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Netbird CLI
+  package:
+    name:
+      - netbird={{ fact_netbird_version }}
 
 - name: Create temporary directory for cc boot
   tempfile:
@@ -71,22 +72,6 @@
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
-
-- name: merge argo dictionaries
-  set_fact:
-    fact_argo_merged_config: "{{ argocd_default | ansible.builtin.combine(argocd_override, recursive=true) }}"
-
-- name: set argo facts
-  set_fact:
-    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
-    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
-    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
-    fact_dns_public_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}"
-    fact_dns_private_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}"
-    fact_istio_external_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_gateway_namespace }}"
-    fact_istio_external_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_wildcard_gateway_name }}"
-    fact_istio_internal_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_gateway_namespace }}"
-    fact_istio_internal_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_wildcard_gateway_name }}"
 
 - name: Upload cc template dirs
   file:
