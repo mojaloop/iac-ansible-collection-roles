@@ -8,6 +8,7 @@
 - name: Wait for vault to be gone
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch workspace netbird-pre-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
     kubectl patch workspace zitadel-post-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
     kubectl patch workspace zitadel-argocd-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' || true
     kubectl patch workspace zitadel-vault-oidc-config --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'  || true
