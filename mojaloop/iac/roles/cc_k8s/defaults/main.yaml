@@ -262,7 +262,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8sargoroot95"
-      sync_wave: "'-1'"
+      sync_wave: "'2'"
       sub_apps:
         gitlab:
           app_name: "gitlab"
@@ -272,7 +272,7 @@ argocd_default:
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
-          sync_wave: "'-1'"
+          sync_wave: "'1'"
           redis_cluster_size: "'3'"
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
@@ -281,9 +281,9 @@ argocd_default:
           praefect_postgres_replicas: "'1'"
           praefect_postgres_proxy_replicas: "'1'"
           praefect_postgres_storage_size: "10Gi"
-          praefect_pgdb_helm_version: "2.4.0"          
+          praefect_pgdb_helm_version: "2.4.0"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
-          sync_wave: "'-2'"
+          sync_wave: "'3'"
           ansible_collection_tag: "vexp-cck8s19"
