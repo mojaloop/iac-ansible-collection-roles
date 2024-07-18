@@ -37,6 +37,11 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl -n {{ fact_netbird_namespace }} rollout status deployment/netbird-management
+  register: outputnetbird
+  until: outputnetbird is not failed
+  retries: 100
+  delay: 30
+  ignore_errors: true
   args:
     executable: /bin/bash
 # - name: join bastion to netbird
