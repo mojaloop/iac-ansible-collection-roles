@@ -274,6 +274,7 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'1'"
           redis_cluster_size: "'3'"
+          redis_storage_size: "'2Gi'"
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
           postgres_storage_size: "10Gi"
