@@ -224,6 +224,8 @@ argocd_default:
           dashboard_helm_version: "1.0.0"
           dashboard_image_version: "v2.4.0"
           namespace: "netbird"
+          log_level: "debug"
+          rbac_admin_group: "techops-admin"
           preconfig_output_secret: "netbird-management"
           stunner_system_namespace: "stunner-system"
           stunner_gateway_operator_helm_version: "0.19.0"
