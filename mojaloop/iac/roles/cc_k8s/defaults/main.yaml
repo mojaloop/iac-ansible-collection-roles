@@ -220,7 +220,7 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'1'"
           helm_version: "1.0.2"
-          image_version: "latest"
+          image_version: "0.28.0"
           dashboard_helm_version: "1.0.0"
           dashboard_image_version: "v2.4.0"
           namespace: "netbird"
