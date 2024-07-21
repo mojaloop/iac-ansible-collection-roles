@@ -226,6 +226,7 @@ argocd_default:
           namespace: "netbird"
           log_level: "debug"
           rbac_admin_group: "techops-admin"
+          rbac_user_group: "techops-users"
           preconfig_output_secret: "netbird-management"
           stunner_system_namespace: "stunner-system"
           stunner_gateway_operator_helm_version: "0.19.0"
