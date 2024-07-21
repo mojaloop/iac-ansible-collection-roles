@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "peer_login_expiration_enabled": true,
+    "peer_login_expiration": 86400,
+    "regular_users_view_blocked": true,
+    "groups_propagation_enabled": true,
+    "jwt_groups_enabled": true,
+    "jwt_groups_claim_name": "{{ jwt_groups_claim_name }}",
+    "jwt_allow_groups": [
+      "{{ idm_admin_group }}"
+    ],
+    "extra": {
+      "peer_approval_enabled": false
+    }
+  }
+}

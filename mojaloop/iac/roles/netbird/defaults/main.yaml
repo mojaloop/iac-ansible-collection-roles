@@ -1,3 +1,11 @@
-api_token: oEPpOxBv_y_h5yB8uMdz
+api_user_client_id: clientid
+api_user_client_secret: clientsecret
 netbird_url: https://netbird.example.com
+zitadel_url: https://zitadel.example.com
 cluster_network_cidr: 10.0.0.0/16
+cluster_gw_peer_group_name: cluster-gateways
+zitadel_netbird_project_id: 123455
+cluster_external_access_peer_group_name: techops-users
+cluster_admin_access_peer_group_name: techops-admin
+cluster_route_name: cluster-main
+jwt_groups_claim_name: "zitadel:grants"

@@ -1,116 +1,137 @@
+- name: set facts
+  set_fact:
+    fact_admin_groupname: "{{ zitadel_netbird_project_id }}-{{ cluster_admin_access_peer_group_name }}"
+    fact_user_groupname: "{{ zitadel_netbird_project_id }}-{{ cluster_external_access_peer_group_name }}"
+- name: generate bearer token
+  uri:
+    url: "{{ zitadel_url }}/oauth/v2/token"
+    method: GET
+    body_format: form-urlencoded
+    body:
+      client_id: "{{ api_user_client_id }}"
+      client_secret: "{{ api_user_client_secret }}"
+      grant_type: "authorization_code"
+      scope: "openid email profile urn:iam:org:project:roles urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{{ zitadel_netbird_project_id }}:aud"
+    status_code: 200
+  register: token_response
+
+- name: set token fact
+  set_fact:
+    fact_api_token: "{{ token_response.results.json.access_token }}"
+
 - name: Wait netbird to respond
   uri:
-    url: { { netbird_url } }
+    url: "{{ netbird_url }}/api/accounts"
     method: GET
-  register: _result
-  until: _result.status == 200
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+  register: _accounts
+  until: _accounts.status == 200
   retries: 30
   delay: 10
 
-- name: Get docker proxy repo if exists
+- name: Update cluster account settings
   uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: docker_proxy_repos_exists
-  with_items: "{{ docker_proxy_repos }}"
-
-- name: Add docker proxy if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'createdockerproxyrepo.json.j2') }}"
-    body_format: json
-    status_code: 201
-    timeout: 300
-  when: item.status == 404
-  with_items: "{{ docker_proxy_repos_exists.results }}"
-
-- name: Get helm proxy repo if exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.name }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: helm_proxy_repos_exists
-  with_items: "{{ helm_proxy_repos }}"
-
-- name: Add helm proxy if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'createhelmproxyrepo.json.j2') }}"
-    body_format: json
-    status_code: 201
-    timeout: 300
-  when: item.status == 404
-  with_items: "{{ helm_proxy_repos_exists.results }}"
-
-- name: Get docker group repo if exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: group_repo_exists
-
-- name: Add docker group repo if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'createdockergrouprepo.json.j2') }}"
-    body_format: json
-    status_code: 201
-    timeout: 300
-  when: group_repo_exists.status == 404
-
-- name: Set active realms
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
+    url: "{{ netbird_url }}/api/accounts/{{ _accounts.results.json.id }}"
     method: PUT
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
     headers:
-      Content-Type: application/json
-    src: putrealmbody.json
-    status_code: 204
-    timeout: 300
-
-- name: Set anonymous access
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/anonymous
-    method: PUT
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    src: anonymousaccess.json
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updateaccount.json.j2') }}"
+    body_format: json
     status_code: 200
-    timeout: 300
+  vars:
+    idm_admin_group: "{{ fact_admin_groupname }}"
+
+- name: Create GW Peer Group to provide external access to cluster
+  uri:
+    url: "{{ netbird_url }}/api/groups"
+    method: POST
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'createpeergroup.json.j2') }}"
+    body_format: json
+    status_code: [200, 409] #ignores duplicate error
+  vars:
+    peer_group_name: "{{ cluster_gw_peer_group_name }}"
+
+- name: Get Groups
+  uri:
+    url: "{{ netbird_url }}/api/groups"
+    method: GET
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    status_code: 200
+  register: api_groups
+
+- name: set group facts
+  set_fact:
+    fact_cluster_external_access_peer_group_id: "{{ api_groups.results.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
+    fact_cluster_gw_peer_group_id: "{{ api_groups.results.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
+    fact_cluster_admin_user_group_id: "{{ api_groups.results.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
+
+- name: Create route for internal k8s traffic
+  uri:
+    url: "{{ netbird_url }}/api/routes"
+    method: POST
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'createclusterroute.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
+    cluster_external_access_peer_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
+
+- name: Create Setup Key for gateway to join
+  uri:
+    url: "{{ netbird_url }}/api/setup-keys"
+    method: POST
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'createsetupkey.json.j2') }}"
+    body_format: json
+    status_code: 200
+  register: setup_key
+  vars:
+    cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
+
+- name: Get Users
+  uri:
+    url: "{{ netbird_url }}/api/users"
+    method: GET
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    status_code: 200
+  register: api_users
+
+- name: set admin user ids
+  set_fact:
+    fact_admin_user_id_list: "{{ api_users | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) | map(attribute='id') | list }}"
+
+- name: Update admin role for users with admin group
+  uri:
+    url: "{{ netbird_url }}/api/users/{{ item.id }}"
+    method: PUT
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updateadminuser.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    auto_groups: "{{ item.auto_groups }}"
+  with_items: "{{ fact_admin_user_id_list }}"
+
+- name: Debug output setup key
+  ansible.builtin.debug:
+    msg: "{{ setup_key.results.json.key }}"
