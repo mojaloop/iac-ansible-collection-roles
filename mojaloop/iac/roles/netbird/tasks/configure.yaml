@@ -120,7 +120,7 @@
 
 - name: Update admin role for users with admin group
   uri:
-    url: "{{ netbird_url }}/api/users/{{ item.id }}"
+    url: "{{ netbird_url }}/api/users/{{ item }}"
     method: PUT
     headers:
       Accept: application/json
