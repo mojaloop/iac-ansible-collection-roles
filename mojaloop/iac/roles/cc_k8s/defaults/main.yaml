@@ -200,6 +200,7 @@ argocd_default:
           sync_wave: "'-2'"
           namespace: "zitadel"
           helm_version: "7.15.0"
+          log_level: "info"
           zitadel_tf_provider_version: "~> 1.2"
           terraform_modules_tag: "vexp-cck8s19"
           vault_rbac_admin_group: "techops-admin"
