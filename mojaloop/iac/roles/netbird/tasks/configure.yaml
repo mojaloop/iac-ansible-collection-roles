@@ -10,7 +10,7 @@
     body:
       client_id: "{{ api_user_client_id }}"
       client_secret: "{{ api_user_client_secret }}"
-      grant_type: "authorization_code"
+      grant_type: "client_credentials"
       scope: "openid email profile urn:iam:org:project:roles urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{{ zitadel_netbird_project_id }}:aud"
     status_code: 200
   register: token_response
