@@ -84,7 +84,7 @@
       Authorization: Bearer {{ fact_api_token }}
     body: "{{ lookup('template', 'createclusterroute.json.j2') }}"
     body_format: json
-    status_code: 200
+    status_code: [200, 409] #ignore 409 duplicate attempt
   vars:
     cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
     cluster_external_access_peer_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
