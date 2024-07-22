@@ -16,6 +16,8 @@
     fact_istio_internal_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_wildcard_gateway_name }}"
     fact_netbird_version: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].image_version }}"
     fact_netbird_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"
+    fact_netbird_token_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].token_secret_name }}"
+    fact_netbird_token_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].token_secret_key }}"
 
 - name: install kubectl
   get_url:

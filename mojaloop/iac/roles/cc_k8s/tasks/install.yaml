@@ -44,6 +44,8 @@
   ignore_errors: true
   args:
     executable: /bin/bash
-# - name: join bastion to netbird
-#   shell: |
-#     netbird up --setup-key AAAA-BBB-CCC-DDDDDD
+
+- name: join bastion to netbird
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    netbird up --setup-key $(kubectl -n {{ fact_netbird_namespace }} get secret {{ token_secret_name }} -o jsonpath="{.data.{{ token_secret_key }}}" | base64 -d)
