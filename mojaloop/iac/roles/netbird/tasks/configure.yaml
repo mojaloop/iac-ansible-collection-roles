@@ -33,7 +33,7 @@
 
 - name: Update cluster account settings
   uri:
-    url: "{{ netbird_url }}/api/accounts/{{ _accounts.json.id }}"
+    url: "{{ netbird_url }}/api/accounts/{{ _accounts.json | map(attribute='id') | first }}"
     method: PUT
     headers:
       Accept: application/json
