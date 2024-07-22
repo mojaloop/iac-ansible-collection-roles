@@ -33,7 +33,7 @@
 
 - name: Update cluster account settings
   uri:
-    url: "{{ netbird_url }}/api/accounts/{{ _accounts.results.json.id }}"
+    url: "{{ netbird_url }}/api/accounts/{{ _accounts.json.id }}"
     method: PUT
     headers:
       Accept: application/json
@@ -70,9 +70,9 @@
 
 - name: set group facts
   set_fact:
-    fact_cluster_external_access_peer_group_id: "{{ api_groups.results.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
-    fact_cluster_gw_peer_group_id: "{{ api_groups.results.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
-    fact_cluster_admin_user_group_id: "{{ api_groups.results.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
+    fact_cluster_external_access_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
+    fact_cluster_gw_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
+    fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
 
 - name: Create route for internal k8s traffic
   uri:
@@ -134,4 +134,4 @@
 
 - name: Debug output setup key
   ansible.builtin.debug:
-    msg: "{{ setup_key.results.json.key }}"
+    msg: "{{ setup_key.json.key }}"
