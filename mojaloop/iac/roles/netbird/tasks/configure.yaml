@@ -132,6 +132,19 @@
     auto_groups: "{{ item.auto_groups }}"
   with_items: "{{ fact_admin_user_id_list }}"
 
+- name: save setup key
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: "{{ token_secret_name }}"
+        namespace: "{{ token_secret_namespace }}"
+      data:
+        value: "{{ setup_key.json.key | b64encode }}"
+
 - name: Debug output setup key
   ansible.builtin.debug:
     msg: "{{ setup_key.json.key }}"
