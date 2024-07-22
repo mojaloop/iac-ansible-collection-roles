@@ -116,11 +116,11 @@
 
 - name: set admin user ids
   set_fact:
-    fact_admin_user_id_list: "{{ api_users.json | selectattr('role','equalto', 'user') | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) | map(attribute='id') }}"
+    fact_admin_user_id_list: "{{ api_users.json | selectattr('role','equalto', 'user') | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) }}"
 
 - name: Update admin role for users with admin group
   uri:
-    url: "{{ netbird_url }}/api/users/{{ item }}"
+    url: "{{ netbird_url }}/api/users/{{ item.id }}"
     method: PUT
     headers:
       Accept: application/json
