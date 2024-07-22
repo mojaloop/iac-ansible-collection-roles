@@ -135,12 +135,4 @@
 - name: save setup key
   kubernetes.core.k8s:
     state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      type: Opaque
-      metadata:
-        name: "{{ token_secret_name }}"
-        namespace: "{{ token_secret_namespace }}"
-      data:
-        "{{ token_secret_key }}": "{{ setup_key.json.key | b64encode }}"
+    template: "k8secret.yaml.j2"

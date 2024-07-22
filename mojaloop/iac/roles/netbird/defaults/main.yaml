@@ -11,3 +11,4 @@ cluster_route_name: cluster-main
 jwt_groups_claim_name: "zitadel:grants"
 token_secret_namespace: "netbird"
 token_secret_name: "bastion-token-secret"
+token_secret_key: "value"
