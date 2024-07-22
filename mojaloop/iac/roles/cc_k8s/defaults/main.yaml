@@ -236,6 +236,9 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8s19"
           public_ingress_access_domain: "true"
           pre_sync_wave: "'0'"
+          post_sync_wave: "'1'"
+          postconfig_output_secret: "netbird-ansible-output"
+          vpc_cidr: "127.0.0.1/32"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
