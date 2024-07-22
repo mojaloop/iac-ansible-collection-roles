@@ -48,4 +48,4 @@
 - name: join bastion to netbird
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    netbird up --setup-key $(kubectl -n {{ fact_netbird_namespace }} get secret {{ token_secret_name }} -o jsonpath="{.data.{{ token_secret_key }}}" | base64 -d)
+    netbird up --setup-key $(kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_token_secret_name }} -o jsonpath="{.data.{{ fact_netbird_token_secret_key }}}" | base64 -d)
