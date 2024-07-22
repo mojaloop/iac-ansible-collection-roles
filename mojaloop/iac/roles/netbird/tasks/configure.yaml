@@ -5,7 +5,7 @@
 - name: generate bearer token
   uri:
     url: "{{ zitadel_url }}/oauth/v2/token"
-    method: GET
+    method: POST
     body_format: form-urlencoded
     body:
       client_id: "{{ api_user_client_id }}"
