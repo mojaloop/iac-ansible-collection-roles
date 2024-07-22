@@ -135,4 +135,4 @@
 - name: save setup key
   kubernetes.core.k8s:
     state: present
-    template: "k8secret.yaml.j2"
+    template: "k8ssecret.yaml.j2"
