@@ -1,7 +1,7 @@
 - name: set facts
   set_fact:
-    fact_admin_groupname: "{{ zitadel_netbird_project_id }}-{{ cluster_admin_access_peer_group_name }}"
-    fact_user_groupname: "{{ zitadel_netbird_project_id }}-{{ cluster_external_access_peer_group_name }}"
+    fact_admin_groupname: "{{ zitadel_netbird_project_id }}:{{ cluster_admin_access_peer_group_name }}"
+    fact_user_groupname: "{{ zitadel_netbird_project_id }}:{{ cluster_external_access_peer_group_name }}"
 - name: generate bearer token
   uri:
     url: "{{ zitadel_url }}/oauth/v2/token"
