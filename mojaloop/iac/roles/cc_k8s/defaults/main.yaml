@@ -239,6 +239,7 @@ argocd_default:
           post_sync_wave: "'1'"
           postconfig_output_secret: "netbird-ansible-output"
           vpc_cidr: "127.0.0.1/32"
+          ansible_collection_tag: "vexp-cck8s19"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
