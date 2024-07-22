@@ -17,7 +17,7 @@
 
 - name: set token fact
   set_fact:
-    fact_api_token: "{{ token_response.results.json.access_token }}"
+    fact_api_token: "{{ token_response.json.access_token }}"
 
 - name: Wait netbird to respond
   uri:
