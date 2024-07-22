@@ -116,7 +116,7 @@
 
 - name: set admin user ids
   set_fact:
-    fact_admin_user_id_list: "{{ api_users | selectattr('role','equalto', 'admin') | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) | map(attribute='id') }}"
+    fact_admin_user_id_list: "{{ api_users.json | selectattr('role','equalto', 'admin') | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) | map(attribute='id') }}"
 
 - name: Update admin role for users with admin group
   uri:
