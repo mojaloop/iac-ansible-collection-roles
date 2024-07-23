@@ -31,6 +31,7 @@
   until: _accounts.status == 200
   retries: 30
   delay: 10
+  when: not ansible_check_mode
 
 - name: Update cluster account settings
   uri:
@@ -60,6 +61,7 @@
     status_code: [200, 409] #ignores duplicate error
   vars:
     peer_group_name: "{{ cluster_gw_peer_group_name }}"
+  when: not ansible_check_mode
 
 - name: Get Groups
   uri:
@@ -70,12 +72,14 @@
       Authorization: Bearer {{ fact_api_token }}
     status_code: 200
   register: api_groups
+  when: not ansible_check_mode
 
 - name: set group facts
   set_fact:
     fact_cluster_external_access_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
     fact_cluster_gw_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
     fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
+  when: not ansible_check_mode
 
 - name: Create route for internal k8s traffic
   uri:
@@ -91,6 +95,7 @@
   vars:
     cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
     cluster_external_access_peer_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
+  when: not ansible_check_mode
 
 - name: Create Setup Key for gateway to join
   uri:
