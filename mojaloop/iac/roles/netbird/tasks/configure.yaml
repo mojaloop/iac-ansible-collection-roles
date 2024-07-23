@@ -14,6 +14,7 @@
       scope: "openid email profile urn:iam:org:project:roles urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{{ zitadel_netbird_project_id }}:aud"
     status_code: 200
   register: token_response
+  check_mode: no
 
 - name: set token fact
   set_fact:
@@ -116,6 +117,7 @@
       Authorization: Bearer {{ fact_api_token }}
     status_code: 200
   register: api_users
+  check_mode: no
 
 - name: set admin user ids
   set_fact:
