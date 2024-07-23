@@ -9,6 +9,7 @@ cluster_external_access_peer_group_name: techops-users
 cluster_admin_access_peer_group_name: techops-admin
 cluster_route_name: cluster-main
 jwt_groups_claim_name: "zitadel:grants"
-token_secret_namespace: "netbird"
-token_secret_name: "bastion-token-secret"
-token_secret_key: "value"
+setup_key_secret_namespace: "netbird"
+setup_key_secret_name: "setup-key-secret"
+build_setup_key_secret_key: "build-setup-key"
+gw_setup_key_secret_key: "gw-setup-key"

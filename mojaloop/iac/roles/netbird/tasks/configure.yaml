@@ -123,9 +123,33 @@
     body: "{{ lookup('template', 'createsetupkey.json.j2') }}"
     body_format: json
     status_code: 200
-  register: setup_key
+  register: gw_setup_key
   vars:
-    cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
+    auto_group_id: "{{ fact_cluster_gw_peer_group_id }}"
+    setup_key_usage_limit: 0
+    setup_key_type: "reusable"
+    setup_key_name: "CC GW join key"
+    setup_key_ephemeral: false
+  when: not ansible_check_mode
+
+- name: Create Setup Key for gateway to join
+  uri:
+    url: "{{ netbird_url }}/api/setup-keys"
+    method: POST
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'createsetupkey.json.j2') }}"
+    body_format: json
+    status_code: 200
+  register: build_server_setup_key
+  vars:
+    auto_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
+    setup_key_usage_limit: 1
+    setup_key_type: "one-off"
+    setup_key_name: "build host join key"
+    setup_key_ephemeral: true
   when: not ansible_check_mode
 
 - name: Get Users
