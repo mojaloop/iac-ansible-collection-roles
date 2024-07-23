@@ -37,6 +37,7 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl -n {{ fact_netbird_namespace }} rollout status deployment/netbird-management
+    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_token_secret_name }}
   register: outputnetbird
   until: outputnetbird is not failed
   retries: 100
