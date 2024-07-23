@@ -240,7 +240,7 @@ argocd_default:
           post_sync_wave: "'1'"
           token_secret_name: "netbird-ansible-output"
           token_secret_key: value
-          vpc_cidr: "127.0.0.1/32"
+          internal_k8s_cidr: "127.0.0.1/32"
           ansible_collection_tag: "vexp-cck8s19"
     nexus:
       argocd_app_name: "nexus"
@@ -309,7 +309,7 @@ argocd_default:
           gitlab_dep_proxy_max_objects: "1000"
           gitlab_dep_proxy_storage_size: "10Gi"
           gitlab_registry_max_objects: "1000"
-          gitlab_registry_storage_size: "10Gi"          
+          gitlab_registry_storage_size: "10Gi"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
