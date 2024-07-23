@@ -55,5 +55,5 @@
 - name: fetch build server setup key
   fetch:
     src: /tmp/build-server-setup-key
-    dest: /tmp
+    dest: /tmp/
     flat: yes
