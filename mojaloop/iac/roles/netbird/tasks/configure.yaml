@@ -79,6 +79,21 @@
     fact_cluster_external_access_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
     fact_cluster_gw_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
     fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
+    fact_cluster_all_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', 'All') | map(attribute='id') | list | first }}"
+  when: not ansible_check_mode
+
+- name: Update dns settings to turn off dns on all peer group
+  uri:
+    url: "{{ netbird_url }}/api/dns/settings"
+    method: PUT
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updatedns.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    netbird_all_peer_group_id: "{{ fact_cluster_all_peer_group_id }}"
   when: not ansible_check_mode
 
 - name: Create route for internal k8s traffic
