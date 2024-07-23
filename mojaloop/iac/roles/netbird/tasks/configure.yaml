@@ -44,6 +44,7 @@
   vars:
     idm_admin_group: "{{ fact_admin_groupname }}"
     idm_user_group: "{{ fact_user_groupname }}"
+  when: not ansible_check_mode
 
 - name: Create GW Peer Group to provide external access to cluster
   uri:
@@ -104,6 +105,7 @@
   register: setup_key
   vars:
     cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
+  when: not ansible_check_mode
 
 - name: Get Users
   uri:
@@ -132,8 +134,10 @@
   vars:
     auto_groups: "{{ item.auto_groups }}"
   with_items: "{{ fact_admin_user_id_list }}"
+  when: not ansible_check_mode
 
 - name: save setup key
   kubernetes.core.k8s:
     state: present
     template: "k8ssecret.yaml.j2"
+  when: not ansible_check_mode
