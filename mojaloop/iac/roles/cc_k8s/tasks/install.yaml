@@ -60,5 +60,6 @@
 
 - name: join build server to netbird
   shell: |
+    netbird service start || true
     netbird up -m https://netbird.{{ fact_dns_public_subdomain }}:443 -k $(cat /tmp/build-server-setup-key)
   delegate_to: localhost
