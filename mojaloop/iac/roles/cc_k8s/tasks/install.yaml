@@ -15,7 +15,7 @@
       --set dex.enabled=false \
       --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
-  when: argocdappexists is not failed
+  when: argocdappexists is failed
 
 - name: Install root app
   shell: |
