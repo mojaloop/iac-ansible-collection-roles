@@ -8,8 +8,6 @@ configs:
     exec.enabled: "true"
     kustomize.buildOptions: "--enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone"
 
-    resource.ignoreResourceUpdatesEnabled: "true" 
-
     # DO NOT USE in production, this is only used to improve reconciliation in testing env.
     timeout.reconciliation: "10s"
     resource.customizations: |
