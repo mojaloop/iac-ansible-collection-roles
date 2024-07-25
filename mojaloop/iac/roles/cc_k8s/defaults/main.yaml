@@ -279,6 +279,9 @@ argocd_default:
           helm_version: "8.1.2"
           namespace: "gitlab"
           public_ingress_access_domain: "true"
+          oidc_secret: "gitlab-oidc-secret"
+          gitlab_admin_rbac_group: "gitlab_administrators"
+          gitlab_user_rbac_group: "gitlab_users"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
