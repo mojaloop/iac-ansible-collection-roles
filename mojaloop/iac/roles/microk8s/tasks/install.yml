@@ -37,6 +37,21 @@
     src: microk8s-config.yaml.j2
     dest: /var/snap/microk8s/common/.microk8s.yaml
 
+- name: Create config file for mk8s
+  become: true
+  ansible.builtin.template:
+    src: oidc.conf.yaml.j2
+    dest: /var/snap/microk8s/common/.oidc_config.yaml
+  when: kubernetes_oidc_enabled
+
+- name: add oidc config
+  become: true
+  blockinfile:
+    dest: /var/snap/microk8s/current/args/kube-apiserver
+    marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
+    content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
+  when: kubernetes_oidc_enabled
+
 - name: Install microk8s
   become: true
   snap:
