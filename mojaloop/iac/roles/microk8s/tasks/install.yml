@@ -44,6 +44,13 @@
     dest: /var/snap/microk8s/common/.oidc_config.yaml
   when: kubernetes_oidc_enabled
 
+- name: Install microk8s
+  become: true
+  snap:
+    name: microk8s
+    classic: yes
+    channel: "{{ microk8s_version }}"
+
 - name: add oidc config
   become: true
   blockinfile:
@@ -51,13 +58,6 @@
     marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
     content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
   when: kubernetes_oidc_enabled
-
-- name: Install microk8s
-  become: true
-  snap:
-    name: microk8s
-    classic: yes
-    channel: "{{ microk8s_version }}"
 
 - name: Wait for microk8s to be ready
   become: true
