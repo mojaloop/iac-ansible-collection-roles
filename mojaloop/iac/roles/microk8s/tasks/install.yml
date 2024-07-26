@@ -42,7 +42,7 @@
   ansible.builtin.template:
     src: oidc.conf.yaml.j2
     dest: /var/snap/microk8s/common/.oidc_config.yaml
-  when: kubernetes_oidc_enabled
+  when: kubernetes_oidc_enabled | bool
 
 - name: Install microk8s
   become: true
@@ -66,7 +66,7 @@
     dest: /var/snap/microk8s/current/args/kube-apiserver
     marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
     content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
-  when: kubernetes_oidc_enabled
+  when: kubernetes_oidc_enabled | bool
 
 - name: Create kubectl alias
   become: true
