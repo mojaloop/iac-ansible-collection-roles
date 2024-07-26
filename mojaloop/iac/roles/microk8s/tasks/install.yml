@@ -51,14 +51,6 @@
     classic: yes
     channel: "{{ microk8s_version }}"
 
-- name: add oidc config
-  become: true
-  blockinfile:
-    dest: /var/snap/microk8s/current/args/kube-apiserver
-    marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
-    content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
-  when: kubernetes_oidc_enabled
-
 - name: Wait for microk8s to be ready
   become: true
   command: microk8s.status --wait-ready
@@ -67,6 +59,14 @@
   failed_when:
     - "'This MicroK8s deployment is acting as a node in a cluster.' not in mk8sstatusout.stdout_lines"
     - mk8sstatusout.rc > 0
+
+- name: add oidc config
+  become: true
+  blockinfile:
+    dest: /var/snap/microk8s/current/args/kube-apiserver
+    marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
+    content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
+  when: kubernetes_oidc_enabled
 
 - name: Create kubectl alias
   become: true
