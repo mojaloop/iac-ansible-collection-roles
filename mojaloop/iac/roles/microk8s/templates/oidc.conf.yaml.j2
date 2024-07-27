@@ -6,6 +6,9 @@ jwt:
     audiences:
     - {{ kubernetes_oidc_client_id }}
   claimMappings:
+    username:
+      claim: {{ kubernetes_oidc_username_claim }}
+      prefix: {{ kubernetes_oidc_username_prefix }}
     groups:
       claim: {{ kubernetes_oidc_groups_claim }}
       prefix: {{ kubernetes_oidc_groups_prefix }}
