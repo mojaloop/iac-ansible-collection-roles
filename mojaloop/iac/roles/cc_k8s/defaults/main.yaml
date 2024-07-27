@@ -102,13 +102,6 @@ argocd_default:
           namespace: "cert-manager"
           sub_app_enabled: "true"
           credentials_secret: "cert-manager-dns"
-        monitoring_pre:
-          app_name: "monitoring-pre"
-          grafana_crd_version_tag: "5.10.0"
-          prometheus_crd_version: "13.0.2"
-          grafana_operator_version: "4.4.12"
-          namespace: "monitoring"
-          sub_app_enabled: "true"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
@@ -332,3 +325,33 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'3'"
           ansible_collection_tag: "vexp-cck8s19"
+    monitoring:
+      argocd_app_name: "monitoring"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "vexp-cck8sargoroot95"
+      sync_wave: "'-8'"
+      sub_apps:
+        pre:
+          app_name: "monitoring-pre"
+          grafana_crd_version_tag: "5.10.0"
+          prometheus_crd_version: "13.0.2"
+          grafana_operator_version: "4.4.12"
+          namespace: "monitoring"
+          sub_app_enabled: "true"
+          sync_wave: "'-10'"
+        monitoring:
+          app_name: "monitoring"
+          kube_prometheus_helm_version: "9.5.10"
+          grafana_mimir_helm_version: "1.2.10"
+          namespace: "monitoring"
+          oidc_secret: "grafana-oidc-secret"
+          gitlab_admin_rbac_group: "grafana_administrators"
+          gitlab_user_rbac_group: "grafana_users"
+          terraform_modules_tag: "vexp-cck8sargoroot581"
+          sync_wave: "'-9'" #after rook is done
+        post_config:
+          app_name: "monitoring-post-config"
+          helm_version: "8.1.2"
+          namespace: "monitoring"
+          sync_wave: "'-1'" #after zitadel is done for oidc
