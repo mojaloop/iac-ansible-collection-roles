@@ -5,3 +5,10 @@
     dest: /var/snap/microk8s/common/.oidc_config.yaml
     force: yes
   when: kubernetes_oidc_enabled | bool
+
+- name: Create config file for mk8s
+  become: true
+  shell: |
+    snap restart microk8s
+    microk8s.status --wait-ready
+  when: kubernetes_oidc_enabled | bool
