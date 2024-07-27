@@ -6,7 +6,7 @@
     force: yes
   when: kubernetes_oidc_enabled | bool
 
-- name: Create config file for mk8s
+- name: Restart microk8s
   become: true
   shell: |
     snap restart microk8s
