@@ -37,7 +37,7 @@
     src: microk8s-config.yaml.j2
     dest: /var/snap/microk8s/common/.microk8s.yaml
 
-- name: Create config file for mk8s
+- name: Create oidc config file for mk8s
   become: true
   ansible.builtin.copy:
     src: oidc.conf.yaml
