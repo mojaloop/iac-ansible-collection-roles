@@ -102,6 +102,13 @@ argocd_default:
           namespace: "cert-manager"
           sub_app_enabled: "true"
           credentials_secret: "cert-manager-dns"
+        monitoring_pre:
+          app_name: "monitoring-pre"
+          grafana_crd_version_tag: "5.10.0"
+          prometheus_crd_version: "13.0.2"
+          grafana_operator_version: "4.4.12"
+          namespace: "monitoring"
+          sub_app_enabled: "true"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
