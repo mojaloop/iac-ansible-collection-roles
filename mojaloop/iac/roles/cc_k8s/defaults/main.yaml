@@ -210,6 +210,9 @@ argocd_default:
           argocd_oidc_secret: "argo-oidc-secret"
           argocd_user_rbac_group: "argocd_users"
           argocd_admin_rbac_group: "argocd_administrators"
+          k8s_user_rbac_group: "techops-users"
+          k8s_admin_rbac_group: "techops-admin"
+          k8s_oidc_post_config_output_secret: "k8s-oidc-post-config-output"
           post_config_sync_wave: "'-1'"
         cockroachdb:
           app_name: "cockroach-db"

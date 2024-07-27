@@ -19,6 +19,8 @@
     fact_netbird_setup_key_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].setup_key_secret_name }}"
     fact_netbird_gw_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].gw_setup_key_secret_key }}"
     fact_netbird_build_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].build_setup_key_secret_key }}"
+    fact_k8s_oidc_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_oidc_post_config_output_secret }}"
+    fact_k8s_oidc_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"
 
 - name: install kubectl
   get_url:
