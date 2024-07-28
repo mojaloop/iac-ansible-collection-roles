@@ -102,7 +102,7 @@
     method: POST
     body_format: form-urlencoded
     headers:
-      PRIVATE-TOKEN: { { fact_gitlab_access_token.stdout } }
+      PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
     body:
       key: "oidc-kubeconfig"
       value: "{{ lookup('ansible.builtin.file', '{{ kubeconfig_location }}/oidc-kubeconfig') }}"
