@@ -74,6 +74,7 @@ longhorn_data_path: /var/lib/longhorn/
 microk8s_apiserver_port: 16443
 microk8s_dev_skip: false
 dev_skip: false
+base_domain: "dev.example.com"
 kubernetes_oidc_enabled: false
 kubernetes_oidc_issuer: https://issurerurl
 kubernetes_oidc_client_id: "acsdfasdfasdf"

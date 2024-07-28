@@ -76,6 +76,19 @@
     kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_client_id}" | base64 -d
   register: kubernetes_oidc_client_id
 
+- name: copy kubeconfig for oidc and add credentials.
+  shell: |
+    cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/oidc-kubeconfig
+    export KUBECONFIG={{ kubeconfig_location }}/oidc-kubeconfig
+    kubectl config delete-user admin
+    kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
+
+- name: fetch build server setup key
+  fetch:
+    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    dest: "{{ kubeconfig_local_location }}"
+    flat: yes
+
 - name: set k8s oidc facts
   set_fact:
     kubernetes_oidc_issuer: "{{ kubernetes_oidc_issuer.stdout }}"
