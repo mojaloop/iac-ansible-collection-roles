@@ -109,6 +109,7 @@
         filename: "{{ kubeconfig_location }}/oidc-kubeconfig"
         mime_type: text/plain
     status_code: 200
+    remote_src: yes
 
 - name: set k8s oidc facts
   set_fact:
