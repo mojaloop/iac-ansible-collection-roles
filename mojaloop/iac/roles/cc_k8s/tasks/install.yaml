@@ -96,20 +96,25 @@
     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
   register: fact_gitlab_access_token
 
-- name: save oidc kubeconfig to gitlab
-  uri:
-    url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ fact_bootstrap_project_id.stdout }}/secure_files"
-    method: POST
-    body_format: form-multipart
-    headers:
-      PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
-    body:
-      name: kubeconfig
-      file:
-        filename: "{{ kubeconfig_location }}/oidc-kubeconfig"
-        mime_type: text/plain
-    status_code: 200
-    remote_src: yes
+- name: fetch oidc kubeconfig
+  fetch:
+    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/"
+
+# - name: save oidc kubeconfig to gitlab
+#   uri:
+#     url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ fact_bootstrap_project_id.stdout }}/secure_files"
+#     method: POST
+#     body_format: form-multipart
+#     headers:
+#       PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
+#     body:
+#       name: kubeconfig
+#       file:
+#         filename: "{{ kubeconfig_location }}/oidc-kubeconfig"
+#         mime_type: text/plain
+#     status_code: 200
+#     remote_src: yes
 
 - name: set k8s oidc facts
   set_fact:
