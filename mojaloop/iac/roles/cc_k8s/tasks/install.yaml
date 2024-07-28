@@ -83,10 +83,10 @@
     kubectl config delete-user admin
     kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
 
-- name: fetch build server setup key
+- name: fetch oidc kubeconfig
   fetch:
     src: "{{ kubeconfig_location }}/oidc-kubeconfig"
-    dest: "{{ kubeconfig_local_location }}"
+    dest: "{{ kubeconfig_local_location }}/"
     flat: yes
 
 - name: set k8s oidc facts
