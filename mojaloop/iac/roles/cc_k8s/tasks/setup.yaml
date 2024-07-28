@@ -21,7 +21,7 @@
     fact_netbird_build_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].build_setup_key_secret_key }}"
     fact_k8s_oidc_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_oidc_post_config_output_secret }}"
     fact_k8s_oidc_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"
-    fact_gitlab_output_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['post_config'].k8s_oidc_post_config_output_secret }}"
+    fact_gitlab_output_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['post_config'].output_secret }}"
     fact_gitlab_namespace: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
     fact_gitlab_token_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_name }}"
     fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
