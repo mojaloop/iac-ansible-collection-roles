@@ -21,7 +21,18 @@
     fact_netbird_build_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].build_setup_key_secret_key }}"
     fact_k8s_oidc_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_oidc_post_config_output_secret }}"
     fact_k8s_oidc_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"
-
+    fact_gitlab_output_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['post_config'].k8s_oidc_post_config_output_secret }}"
+    fact_gitlab_namespace: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
+    fact_gitlab_token_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_name }}"
+    fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
+- name: set gitlab domain to public
+  set_fact:
+    fact_gitlab_fqdn: "gitlab.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].public_ingress_access_domain | bool
+- name: set gitlab domain fact
+  set_fact:
+    fact_gitlab_fqdn: "gitlab.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].public_ingress_access_domain | bool)
 - name: install kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl

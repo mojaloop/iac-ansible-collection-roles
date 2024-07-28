@@ -286,6 +286,8 @@ argocd_default:
           gitlab_admin_rbac_group: "gitlab_administrators"
           gitlab_user_rbac_group: "gitlab_users"
           terraform_modules_tag: "vexp-cck8sargoroot581"
+          root_token_secret_name: "root-token-secret"
+          root_token_secret_key: "token"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
@@ -325,6 +327,7 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'3'"
           ansible_collection_tag: "vexp-cck8s19"
+          output_secret: "gitlab-post-config"
     monitoring:
       argocd_app_name: "monitoring"
       app_namespace: "argocd"
