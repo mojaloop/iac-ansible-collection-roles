@@ -96,6 +96,11 @@
     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
   register: fact_gitlab_access_token
 
+- name: Load kubeconfig
+  ansible.builtin.slurp:
+    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
+  register: slurped_kubeconfig
+
 - name: save oidc kubeconfig to gitlab
   uri:
     url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ fact_bootstrap_project_id.stdout }}/variables"
@@ -105,7 +110,7 @@
       PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
     body:
       key: "oidc-kubeconfig"
-      value: "{{ lookup('ansible.builtin.file', '{{ kubeconfig_location }}/oidc-kubeconfig') }}"
+      value: "{{ slurped_kubeconfig.content | ansible.builtin.b64decode }}"
     status_code: 200
 
 - name: set k8s oidc facts
