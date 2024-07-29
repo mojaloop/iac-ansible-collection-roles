@@ -102,11 +102,6 @@
     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
   register: fact_gitlab_access_token
 
-- name: fetch oidc kubeconfig
-  fetch:
-    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
-    dest: "{{ kubeconfig_local_location }}/"
-
 - name: save oidc kubeconfig to gitlab
   shell: |
     git config --global user.email "root@{{ fact_gitlab_fqdn }}"
@@ -117,6 +112,12 @@
     git add oidc-kubeconfig
     git commit -m "Push existing oidc kubeconfig to GitLab"
     git push
+
+- name: copy env vars for push to cluster script
+  template:
+    src: "localenv.sh.j2"
+    dest: "{{ kubeconfig_local_location }}//gitlabenv.sh"
+  delegate_to: localhost
 
 - name: set k8s oidc facts
   set_fact:
