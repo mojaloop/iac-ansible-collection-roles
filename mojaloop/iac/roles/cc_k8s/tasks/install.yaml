@@ -125,7 +125,7 @@
 
 - name: save oidc kubeconfig to gitlab
   uri:
-    url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ gitlab_output_secret.results.tenancy_docs_project_id | b64decode }}/repository/commits"
+    url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ gitlab_output_secret.resources[0].data.tenancy_docs_project_id | b64decode }}/repository/commits"
     method: POST
     body_format: json
     headers:
