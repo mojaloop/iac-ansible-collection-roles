@@ -100,6 +100,6 @@
 - name: Upload cc template files
   template:
     src: "{{ item.src }}"
-    dest: "{{ cctmpvalues.path }}/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "{{role_path}}/templates/"
+    dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/argocd"
   when: item.state == 'file'
