@@ -98,6 +98,7 @@
 
 - name: Wait for and Get gitlab output secret
   kubernetes.core.k8s_info:
+    kubeconfig: "{{ kubeconfig_local_location }}/kubeconfig"
     kind: Secret
     namespace: "{{ fact_gitlab_namespace }}"
     name: "{{ fact_gitlab_output_secret_name }}"
@@ -105,6 +106,7 @@
     wait_sleep: 10
     wait_timeout: 600
   register: gitlab_output_secret
+  delegate_to: localhost
 
 - name: debug secret output
   debug:
