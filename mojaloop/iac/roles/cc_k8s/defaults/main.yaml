@@ -332,8 +332,7 @@ argocd_default:
       argocd_app_name: "monitoring"
       app_namespace: "argocd"
       app_enabled: "true"
-      # application_gitrepo_tag: "vexp-cck8sargoroot95"
-      application_gitrepo_tag: "feature/cc-k8s"
+      application_gitrepo_tag: "vexp-cck8sargoroot95"
       sync_wave: "'-8'"
       sub_apps:
         pre:
