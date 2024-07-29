@@ -107,7 +107,8 @@
   register: gitlab_output_secret
 
 - name: debug secret output
-  msg: "{{ gitlab_output_secret.resources[0].data }}"
+  debug:
+    msg: "{{ gitlab_output_secret.resources[0].data }}"
 
 - name: get gitlab access token
   shell: |
