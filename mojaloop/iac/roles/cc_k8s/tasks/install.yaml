@@ -90,6 +90,25 @@
     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_output_secret_name }} -o jsonpath="{.data.bootstrap_project_id}" | base64 -d
   register: fact_bootstrap_project_id
 
+- name: get gitlab bootstrap proj id
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_output_secret_name }} -o jsonpath="{.data.bootstrap_project_id}" | base64 -d
+  register: fact_bootstrap_project_id
+
+- name: Wait for and Get gitlab output secret
+  kubernetes.core.k8s_info:
+    kind: Secret
+    namespace: "{{ fact_gitlab_namespace }}"
+    name: "{{ fact_gitlab_output_secret_name }}"
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 600
+  register: gitlab_output_secret
+
+- name: debug secret output
+  msg: "{{ gitlab_output_secret.resources[0].data }}"
+
 - name: get gitlab access token
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -103,16 +122,12 @@
 
 # - name: save oidc kubeconfig to gitlab
 #   uri:
-#     url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ fact_bootstrap_project_id.stdout }}/secure_files"
+#     url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ gitlab_output_secret.results.data..stdout }}/repository/commits"
 #     method: POST
-#     body_format: form-multipart
+#     body_format: json
 #     headers:
 #       PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
-#     body:
-#       name: kubeconfig
-#       file:
-#         filename: "{{ kubeconfig_location }}/oidc-kubeconfig"
-#         mime_type: text/plain
+#     body: "{{ lookup('template', 'createpeergroup.json.j2') }}"
 #     status_code: 200
 #     remote_src: yes
 
