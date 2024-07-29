@@ -84,18 +84,6 @@
     kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
     kubectl config set-context $(kubectl config current-context) --user=oidc
 
-- name: get gitlab bootstrap proj id
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_output_secret_name }} -o jsonpath="{.data.bootstrap_project_id}" | base64 -d
-  register: fact_bootstrap_project_id
-
-- name: get gitlab bootstrap proj id
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_output_secret_name }} -o jsonpath="{.data.bootstrap_project_id}" | base64 -d
-  register: fact_bootstrap_project_id
-
 - name: Wait for and Get gitlab output secret
   kubernetes.core.k8s_info:
     kubeconfig: "{{ kubeconfig_local_location }}/kubeconfig"
@@ -107,10 +95,6 @@
     wait_timeout: 600
   register: gitlab_output_secret
   delegate_to: localhost
-
-- name: debug secret output
-  debug:
-    msg: "{{ gitlab_output_secret.resources[0].data }}"
 
 - name: get gitlab access token
   shell: |
@@ -131,11 +115,12 @@
     headers:
       PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
     body: "{{ lookup('template', 'projectcommit.json.j2') }}"
-    status_code: 200
+    status_code: 201
     remote_src: yes
   vars:
     commit_message: "add oidc kubeconfig"
-    file_path: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    content_file_path: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    file_path: "oidc-kubeconfig"
 
 - name: set k8s oidc facts
   set_fact:
