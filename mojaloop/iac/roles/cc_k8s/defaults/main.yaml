@@ -349,9 +349,9 @@ argocd_default:
           grafana_mimir_helm_version: "1.2.10"
           prometheus_pvc_size: "10Gi"
           prometheus_retention_period: "10d"
-          mimir_max_global_series_per_user: 1100000
-          mimir_ingestion_rate: 210000
-          mimir_ingestion_burst_size: 500000
+          mimir_max_global_series_per_user: "1100000"
+          mimir_ingestion_rate: "210000"
+          mimir_ingestion_burst_size: "500000"
           alertmanager_enabled: "false"
           namespace: "monitoring"
           sync_wave: "'-9'" #after rook is done
