@@ -123,16 +123,19 @@
     src: "{{ kubeconfig_location }}/oidc-kubeconfig"
     dest: "{{ kubeconfig_local_location }}/"
 
-# - name: save oidc kubeconfig to gitlab
-#   uri:
-#     url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ gitlab_output_secret.results.data..stdout }}/repository/commits"
-#     method: POST
-#     body_format: json
-#     headers:
-#       PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
-#     body: "{{ lookup('template', 'createpeergroup.json.j2') }}"
-#     status_code: 200
-#     remote_src: yes
+- name: save oidc kubeconfig to gitlab
+  uri:
+    url: "https://{{ fact_gitlab_fqdn }}/api/v4/projects/{{ gitlab_output_secret.results.tenancy_docs_project_id | b64decode }}/repository/commits"
+    method: POST
+    body_format: json
+    headers:
+      PRIVATE-TOKEN: "{{ fact_gitlab_access_token.stdout }}"
+    body: "{{ lookup('template', 'projectcommit.json.j2') }}"
+    status_code: 200
+    remote_src: yes
+  vars:
+    commit_message: "add oidc kubeconfig"
+    file_path: "{{ kubeconfig_location }}/oidc-kubeconfig"
 
 - name: set k8s oidc facts
   set_fact:
