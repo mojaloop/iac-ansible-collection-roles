@@ -111,10 +111,10 @@
   shell: |
     git config --global user.email "root@{{ fact_gitlab_fqdn }}"
     git config --global user.name "root"
-    git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git .
+    git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git
     cd tenancy-docs
     cp {{ kubeconfig_location }}/oidc-kubeconfig .
-    git add .
+    git add oidc-kubeconfig
     git commit -m "Push existing oidc kubeconfig to GitLab"
     git push
 
