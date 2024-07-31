@@ -366,6 +366,7 @@ argocd_default:
           tf_provider_version: "3.6.0"
           admin_rbac_group: "grafana_administrators"
           user_rbac_group: "grafana_users"
+          mojaloop_dashboards_tag: "v16.3.0-snapshot.24"
         post_config:
           app_name: "monitoring-post-config"
           namespace: "monitoring"
