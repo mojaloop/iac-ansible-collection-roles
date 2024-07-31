@@ -357,6 +357,7 @@ argocd_default:
           mimir_max_global_series_per_user: "'1000000'"
           mimir_ingestion_rate: "'200000'"
           mimir_ingestion_burst_size: "'500000'"
+          mimir_retention_period: "3d" # TODO: increase after testing that limit works
           alertmanager_enabled: "false"
           namespace: "monitoring"
           sync_wave: "'-9'" #after rook is done
