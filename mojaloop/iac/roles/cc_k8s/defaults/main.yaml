@@ -345,6 +345,7 @@ argocd_default:
           namespace: "monitoring"
           sub_app_enabled: "true"
           sync_wave: "'-10'"
+          mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
           mimir_bucket_storage_size: "10Gi"
         monitoring:
