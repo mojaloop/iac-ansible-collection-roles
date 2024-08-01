@@ -289,7 +289,7 @@ argocd_default:
           root_token_secret_name: "root-token-secret"
           root_token_secret_key: "token"
         registry:
-          public_ingress_access_domain: "false"
+          public_ingress_access_domain: "true"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
