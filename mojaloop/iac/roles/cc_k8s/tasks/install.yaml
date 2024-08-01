@@ -57,14 +57,14 @@
     src: /tmp/build-server-setup-key
     dest: /tmp/
     flat: yes
-  when: not pipeline_executor
+  when: not (pipeline_executor | bool)
 
 - name: join build server to netbird
   shell: |
     netbird service start || true
     netbird up -m https://netbird.{{ fact_dns_public_subdomain }}:443 -k $(cat /tmp/build-server-setup-key)
   delegate_to: localhost
-  when: not pipeline_executor
+  when: not (pipeline_executor | bool)
 
 - name: get k8s kubernetes_oidc_issuer
   shell: |
@@ -120,7 +120,7 @@
     src: "localenv.sh.j2"
     dest: "{{ kubeconfig_local_location }}//gitlabenv.sh"
   delegate_to: localhost
-  when: not pipeline_executor
+  when: not (pipeline_executor | bool)
 
 - name: set k8s oidc facts
   set_fact:
