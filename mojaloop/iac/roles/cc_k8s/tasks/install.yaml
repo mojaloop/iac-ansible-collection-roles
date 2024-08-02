@@ -118,7 +118,7 @@
 - name: copy env vars for push to cluster script
   template:
     src: "localenv.sh.j2"
-    dest: "{{ kubeconfig_local_location }}//gitlabenv.sh"
+    dest: "{{ kubeconfig_local_location }}/gitlabenv.sh"
   delegate_to: localhost
   when: not (pipeline_executor | bool)
 
