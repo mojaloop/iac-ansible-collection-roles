@@ -13,10 +13,10 @@ spec:
       prune: true
       selfHeal: true
     retry:
-      limit: 20
+      limit: 60
       backoff:
         duration: 10s
-        maxDuration: 3m0s
+        maxDuration: 1m0s
         factor: 2
     syncOptions:
       - CreateNamespace=true
