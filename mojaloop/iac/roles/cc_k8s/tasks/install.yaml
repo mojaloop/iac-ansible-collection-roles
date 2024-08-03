@@ -105,6 +105,15 @@
     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
   register: fact_gitlab_access_token
 
+- name: copy readme.md to bastion
+  template:
+    src: "tenancy-docs-readme.md.j2"
+    dest: "{{ kubeconfig_location }}/README.md"
+  vars:
+    netbird_admin_url: "https://netbird-dashboard.{{ fact_dns_public_subdomain }}:443"
+    netbird_mgmt_url: "https://netbird.{{ fact_dns_public_subdomain }}:443"
+    gitlab_fqdn: "{{ fact_gitlab_fqdn }}"
+
 - name: save oidc kubeconfig to gitlab
   shell: |
     git config --global user.email "root@{{ fact_gitlab_fqdn }}"
@@ -112,8 +121,9 @@
     git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git {{ cctmpvalues.path }}/tenancy-docs
     cd {{ cctmpvalues.path }}/tenancy-docs
     cp {{ kubeconfig_location }}/oidc-kubeconfig .
-    git add oidc-kubeconfig
-    git commit -m "Push existing oidc kubeconfig to GitLab"
+    cp {{ kubeconfig_location }}/README.md .
+    git add oidc-kubeconfig README.md
+    git commit -m "Push existing oidc kubeconfig and readme to GitLab"
     git push
 
 - name: copy env vars for push to cluster script
