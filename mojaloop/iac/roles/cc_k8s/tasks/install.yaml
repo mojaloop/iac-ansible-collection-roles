@@ -102,6 +102,18 @@
     netbird_mgmt_url: "https://netbird.{{ fact_dns_public_subdomain }}:443"
     gitlab_fqdn: "{{ fact_gitlab_fqdn }}"
 
+- name: wait for gitlab post-config to be done
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n argocd get application gitlab-post-config -o=jsonpath='{.status.health.status}'
+  register: outputgitlabpostconfig
+  until: outputgitlabpostconfig is not failed and outputgitlabpostconfig.stdout == "Healthy"
+  retries: 100
+  delay: 30
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
 - name: save oidc kubeconfig to gitlab
   shell: |
     git config --global user.email "root@{{ fact_gitlab_fqdn }}"
