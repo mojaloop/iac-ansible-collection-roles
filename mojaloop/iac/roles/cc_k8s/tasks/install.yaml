@@ -87,18 +87,6 @@
     kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
     kubectl config set-context $(kubectl config current-context) --user=oidc
 
-- name: Wait for and Get gitlab output secret
-  kubernetes.core.k8s_info:
-    kubeconfig: "{{ kubeconfig_local_location }}/kubeconfig"
-    kind: Secret
-    namespace: "{{ fact_gitlab_namespace }}"
-    name: "{{ fact_gitlab_output_secret_name }}"
-    wait: yes
-    wait_sleep: 30
-    wait_timeout: 900
-  register: gitlab_output_secret
-  delegate_to: localhost
-
 - name: get gitlab access token
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
