@@ -117,6 +117,9 @@ argocd_default:
           vault_crossplane_modules_version: "1.0.0"
           terraform_crossplane_modules_version: "0.16.0"
           ansible_crossplane_modules_version: "0.6.0"
+        rook_ceph_bucket_config:
+          public_ingress_access_domain: "false"
+          app_name: "rook-ceph-bucket"
     vault:
       argocd_app_name: "vault"
       app_namespace: "argocd"
