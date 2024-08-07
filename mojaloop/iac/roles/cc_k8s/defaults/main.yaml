@@ -341,7 +341,7 @@ argocd_default:
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8sargoroot95"
       sync_wave: "'2'"
-      subapps:
+      sub_apps:
         config:
           app_name: "deploy-env-config"
           sub_app_enabled: "true"
