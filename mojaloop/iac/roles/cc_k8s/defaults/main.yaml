@@ -349,6 +349,8 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8sargoroot581"
           namespace: "gitlab"
           output_secret: "env-config"
+          ceph_bucket_max_objects: "'100'"
+          ceph_bucket_storage_size: "10Gi"
 
 
     monitoring:
