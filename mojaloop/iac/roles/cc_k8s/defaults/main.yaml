@@ -334,6 +334,23 @@ argocd_default:
           sync_wave: "'3'"
           ansible_collection_tag: "vexp-cck8s19"
           output_secret: "gitlab-post-config"
+
+    deploy_env:
+      argocd_app_name: "deploy-env"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "vexp-cck8sargoroot95"
+      sync_wave: "'2'"
+      subapps:
+        config:
+          app_name: "deploy-env-config"
+          sub_app_enabled: "true"
+          sync_wave: "'4'"
+          terraform_modules_tag: "vexp-cck8sargoroot581"
+          namespace: "gitlab"
+          output_secret: "env-config"
+
+
     monitoring:
       argocd_app_name: "monitoring"
       app_namespace: "argocd"
