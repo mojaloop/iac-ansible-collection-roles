@@ -350,7 +350,7 @@ argocd_default:
           namespace: "gitlab"
           output_secret: "env-config"
           ceph_bucket_max_objects: "'100'"
-          ceph_bucket_storage_size: "10Gi"
+          ceph_bucket_max_size: "10Gi"
 
 
     monitoring:
