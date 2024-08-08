@@ -386,6 +386,7 @@ argocd_default:
           mimir_retention_period: "3d" # TODO: increase after testing that limit works
           loki_helm_version: "2.13.0"
           ctrl_cntr_loki_retention_period: "3d" #TODO: increase after testing that limit works
+          ctrl_cntr_loki_ingester_max_chunk_age: "3h"
           alertmanager_enabled: "false"
           namespace: "monitoring"
           sync_wave: "'-9'" #after rook is done
