@@ -385,6 +385,7 @@ argocd_default:
           mimir_ingestion_burst_size: "'500000'"
           mimir_retention_period: "3d" # TODO: increase after testing that limit works
           loki_helm_version: "2.13.0"
+          ctrl_cntr_loki_retention_period: "3d" #TODO: increase after testing that limit works
           alertmanager_enabled: "false"
           namespace: "monitoring"
           sync_wave: "'-9'" #after rook is done
