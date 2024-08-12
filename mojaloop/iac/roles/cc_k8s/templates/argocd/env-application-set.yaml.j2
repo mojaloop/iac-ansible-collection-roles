@@ -1,0 +1,49 @@
+{% for env_name in fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(",") %}
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ env_name }}-env-onboard
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://gitlab.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}/iac/{{ env_name }}.git
+      revision: HEAD
+      directories:
+      - path: custom-config/cluster-config.yaml
+  template:
+    metadata:
+      name: '{{ env_name }}'
+    spec:
+      project: default
+      source:
+        repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+        targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
+        path: '{{ fact_argo_merged_config.initial_argo_gitrepo_path}}/deploy-env-onboard.yaml'
+        plugin:
+          name: envsubst
+            env:
+            - name: "deploy_env_onboard_app_name"
+              value: "{{ env_name }}"
+            - name: "deploy_env_onboard_app_namespace"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].namespace }}"
+            - name: "deploy_env_onboard_app_sync_wave"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sync_wave }}"  
+            - name: "deploy_env_onboard_terraform_modules_tag"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
+            - name: "vault_domain"
+              value: "{{ '{{' }} vault_oidc_domain {{ '}}'}}"
+            - name: "argocd_domain"
+              value: "{{ '{{' }} argocd_oidc_domain {{ '}}'}}"
+            - name: "grafana_domain"
+              value: "{{ '{{' }} grafana_oidc_domain {{ '}}'}}"                               
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'argocd'
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+{% endfor %}
+    

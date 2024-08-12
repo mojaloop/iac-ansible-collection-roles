@@ -352,6 +352,12 @@ argocd_default:
           output_secret: "env-config"
           ceph_bucket_max_objects: "'100'"
           ceph_bucket_max_size: "10Gi"
+        onboard:
+          app_name: "deploy-env-onboard"
+          sub_app_enabled: "true"
+          namespace: "gitlab"
+          sync_wave: "'5'"
+          terraform_modules_tag: "vexp-cck8sargoroot581"
 
     monitoring:
       argocd_app_name: "monitoring"
