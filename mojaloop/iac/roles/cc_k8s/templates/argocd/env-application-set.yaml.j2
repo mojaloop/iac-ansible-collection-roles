@@ -9,7 +9,7 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
-      repoURL: https://gitlab.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}/iac/{{ env_name }}.git
+      repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
       revision: HEAD
       directories:
       - path: custom-config/cluster-config.yaml
@@ -26,7 +26,7 @@ spec:
           name: envsubst
             env:
             - name: "deploy_env_onboard_app_name"
-              value: "{{ env_name }}"
+              value: "{{ env_name }}-env-onboard"
             - name: "deploy_env_onboard_app_namespace"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].namespace }}"
             - name: "deploy_env_onboard_app_sync_wave"
