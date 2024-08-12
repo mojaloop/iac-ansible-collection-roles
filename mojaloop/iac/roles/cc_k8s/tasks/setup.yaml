@@ -35,6 +35,16 @@
     fact_gitlab_fqdn: "gitlab.{{ fact_dns_private_subdomain }}"
   when: not (fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].public_ingress_access_domain | bool)
 
+- name: set zitadel domain to public
+  set_fact:
+    fact_zitadel_fqdn: "gitlab.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool
+
+- name: set zitadel domain fact
+  set_fact:
+    fact_zitadel_fqdn: "gitlab.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool)
+
 - name: install kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl

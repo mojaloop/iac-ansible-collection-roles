@@ -21,7 +21,7 @@ spec:
       source:
         repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
-        path: '{{ fact_argo_merged_config.initial_argo_gitrepo_path}}/deploy-env-onboard.yaml'
+        path: 'gitops/applications/base/deploy-env-onboard'
         plugin:
           name: envsubst
             env:
@@ -33,6 +33,14 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sync_wave }}"  
             - name: "deploy_env_onboard_terraform_modules_tag"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
+            - name: "zitadel_fqdn"
+              value: "{{ fact_zitadel_fqdn }}"
+            - name: "vault_namespace"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
+            - name: "zitadel_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_tf_provider_version }}"
+            - name: "vault_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"
             - name: "vault_domain"
               value: "{{ '{{' }} vault_oidc_domain {{ '}}'}}"
             - name: "argocd_domain"
