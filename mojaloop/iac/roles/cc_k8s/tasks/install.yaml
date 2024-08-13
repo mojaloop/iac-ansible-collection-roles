@@ -22,6 +22,11 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
+- name: Install env app set
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml    
+
 - name: Install utils and wait for argocd autosync
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
