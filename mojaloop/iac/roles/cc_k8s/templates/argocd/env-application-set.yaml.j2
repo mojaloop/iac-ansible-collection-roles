@@ -11,7 +11,7 @@ spec:
   - git:
       repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
       revision: HEAD
-      directories:
+      files:
       - path: custom-config/cluster-config.yaml
   template:
     metadata:
@@ -44,13 +44,13 @@ spec:
             - name: "vault_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"
             - name: "vault_domain"
-              value: "{{ '{{' }} vault_oidc_domain {{ '}}'}}"
+              value: "{{ '{{' }} .ault_oidc_domain {{ '}}'}}"
             - name: "argocd_domain"
-              value: "{{ '{{' }} argocd_oidc_domain {{ '}}'}}"
+              value: "{{ '{{' }} .argocd_oidc_domain {{ '}}'}}"
             - name: "grafana_domain"
-              value: "{{ '{{' }} grafana_oidc_domain {{ '}}'}}"   
+              value: "{{ '{{' }} .grafana_oidc_domain {{ '}}'}}"   
             - name: "domain"
-              value: "{{ '{{' }} domain {{ '}}'}}"                              
+              value: "{{ '{{' }} .domain {{ '}}'}}"                              
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
