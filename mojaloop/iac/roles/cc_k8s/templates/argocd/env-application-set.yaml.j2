@@ -24,7 +24,7 @@ spec:
         path: 'gitops/applications/base/deploy-env-onboard'
         plugin:
           name: envsubst
-            env:
+          env:
             - name: "deploy_env_onboard_app_name"
               value: "{{ env_name }}-env-onboard"
             - name: "env_name"
