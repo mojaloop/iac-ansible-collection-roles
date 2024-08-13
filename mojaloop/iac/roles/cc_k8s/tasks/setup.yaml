@@ -37,12 +37,12 @@
 
 - name: set zitadel domain to public
   set_fact:
-    fact_zitadel_fqdn: "gitlab.{{ fact_dns_public_subdomain }}"
+    fact_zitadel_fqdn: "zitadel.{{ fact_dns_public_subdomain }}"
   when: fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool
 
 - name: set zitadel domain fact
   set_fact:
-    fact_zitadel_fqdn: "gitlab.{{ fact_dns_private_subdomain }}"
+    fact_zitadel_fqdn: "zitadel.{{ fact_dns_private_subdomain }}"
   when: not (fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool)
 
 - name: install kubectl
