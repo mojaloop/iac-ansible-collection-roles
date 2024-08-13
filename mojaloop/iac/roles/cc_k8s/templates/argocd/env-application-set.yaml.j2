@@ -20,7 +20,7 @@ spec:
       project: default
       source:
         repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
-        targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
+        targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/base/deploy-env-onboard'
         plugin:
           name: envsubst
