@@ -250,6 +250,7 @@ argocd_default:
           build_setup_key_secret_key: "build-setup-key"
           internal_k8s_cidr: "127.0.0.1/32"
           ansible_collection_tag: "vexp-cck8s19"
+          netbird_tf_provider_version: "0.1.0"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"

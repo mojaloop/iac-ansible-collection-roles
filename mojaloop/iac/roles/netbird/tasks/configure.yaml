@@ -48,21 +48,6 @@
     idm_user_group: "{{ fact_user_groupname }}"
   when: not ansible_check_mode
 
-- name: Create GW Peer Group to provide external access to cluster
-  uri:
-    url: "{{ netbird_url }}/api/groups"
-    method: POST
-    headers:
-      Accept: application/json
-      Content-Type: application/json
-      Authorization: Bearer {{ fact_api_token }}
-    body: "{{ lookup('template', 'createpeergroup.json.j2') }}"
-    body_format: json
-    status_code: [200, 409] #ignores duplicate error
-  vars:
-    peer_group_name: "{{ cluster_gw_peer_group_name }}"
-  when: not ansible_check_mode
-
 - name: Get Groups
   uri:
     url: "{{ netbird_url }}/api/groups"
@@ -76,10 +61,8 @@
 
 - name: set group facts
   set_fact:
-    fact_cluster_external_access_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_user_groupname) | map(attribute='id') | list | first }}"
-    fact_cluster_gw_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', cluster_gw_peer_group_name) | map(attribute='id') | list | first }}"
-    fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
     fact_cluster_all_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', 'All') | map(attribute='id') | list | first }}"
+    fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
   when: not ansible_check_mode
 
 - name: Update dns settings to turn off dns on all peer group
@@ -94,62 +77,6 @@
     status_code: 200
   vars:
     netbird_all_peer_group_id: "{{ fact_cluster_all_peer_group_id }}"
-  when: not ansible_check_mode
-
-- name: Create route for internal k8s traffic
-  uri:
-    url: "{{ netbird_url }}/api/routes"
-    method: POST
-    headers:
-      Accept: application/json
-      Content-Type: application/json
-      Authorization: Bearer {{ fact_api_token }}
-    body: "{{ lookup('template', 'createclusterroute.json.j2') }}"
-    body_format: json
-    status_code: [200, 409] #ignore 409 duplicate attempt
-  vars:
-    cluster_gw_peer_group_id: "{{ fact_cluster_gw_peer_group_id }}"
-    cluster_external_access_peer_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
-  when: not ansible_check_mode
-
-- name: Create Setup Key for gateway to join
-  uri:
-    url: "{{ netbird_url }}/api/setup-keys"
-    method: POST
-    headers:
-      Accept: application/json
-      Content-Type: application/json
-      Authorization: Bearer {{ fact_api_token }}
-    body: "{{ lookup('template', 'createsetupkey.json.j2') }}"
-    body_format: json
-    status_code: 200
-  register: gw_setup_key
-  vars:
-    auto_group_id: "{{ fact_cluster_gw_peer_group_id }}"
-    setup_key_usage_limit: 0
-    setup_key_type: "reusable"
-    setup_key_name: "CC GW join key"
-    setup_key_ephemeral: false
-  when: not ansible_check_mode
-
-- name: Create Setup Key for gateway to join
-  uri:
-    url: "{{ netbird_url }}/api/setup-keys"
-    method: POST
-    headers:
-      Accept: application/json
-      Content-Type: application/json
-      Authorization: Bearer {{ fact_api_token }}
-    body: "{{ lookup('template', 'createsetupkey.json.j2') }}"
-    body_format: json
-    status_code: 200
-  register: build_server_setup_key
-  vars:
-    auto_group_id: "{{ fact_cluster_external_access_peer_group_id }}"
-    setup_key_usage_limit: 1
-    setup_key_type: "one-off"
-    setup_key_name: "build host join key"
-    setup_key_ephemeral: true
   when: not ansible_check_mode
 
 - name: Get Users
@@ -180,10 +107,4 @@
   vars:
     auto_groups: "{{ item.auto_groups }}"
   with_items: "{{ fact_admin_user_id_list }}"
-  when: not ansible_check_mode
-
-- name: save setup key
-  kubernetes.core.k8s:
-    state: present
-    template: "k8ssecret.yaml.j2"
   when: not ansible_check_mode
