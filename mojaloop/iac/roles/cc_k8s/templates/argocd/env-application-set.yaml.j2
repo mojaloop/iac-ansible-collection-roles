@@ -48,7 +48,9 @@ spec:
             - name: "argocd_domain"
               value: "{{ '{{' }} argocd_oidc_domain {{ '}}'}}"
             - name: "grafana_domain"
-              value: "{{ '{{' }} grafana_oidc_domain {{ '}}'}}"                               
+              value: "{{ '{{' }} grafana_oidc_domain {{ '}}'}}"   
+            - name: "domain"
+              value: "{{ '{{' }} domain {{ '}}'}}"                              
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
