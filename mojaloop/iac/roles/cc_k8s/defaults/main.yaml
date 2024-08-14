@@ -359,6 +359,12 @@ argocd_default:
           namespace: "gitlab"
           sync_wave: "'5'"
           terraform_modules_tag: "vexp-cck8sargoroot581"
+          grafana_admin_rbac_group: "grafana_administrators"
+          grafana_user_rbac_group: "grafana_users"
+          vault_admin_rbac_group: "vault_administrators"
+          vault_user_rbac_group: "vault_users"              
+          argocd_admin_rbac_group: "argocd_administrators"
+          argocd_user_rbac_group: "argocd_users"             
 
     monitoring:
       argocd_app_name: "monitoring"
