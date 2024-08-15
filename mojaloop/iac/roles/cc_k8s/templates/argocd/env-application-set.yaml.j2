@@ -62,7 +62,7 @@ spec:
             - name: "netbird_user_rbac_group"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].rbac_user_group }}"  
             - name: "netbird_admin_rbac_group"
-              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].admin_user_group }}"                                                                        
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].rbac_admin_group }}"                                                                        
             - name: "vault_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"  
             - name: "vault_keys_secret"
