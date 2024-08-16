@@ -108,3 +108,9 @@
     auto_groups: "{{ item.auto_groups }}"
   with_items: "{{ fact_admin_user_id_list }}"
   when: not ansible_check_mode
+
+- name: save post config secret
+  kubernetes.core.k8s:
+    state: present
+    template: "k8ssecret.yaml.j2"
+  when: not ansible_check_mode
