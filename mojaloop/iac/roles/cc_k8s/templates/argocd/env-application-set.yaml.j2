@@ -82,7 +82,9 @@ spec:
             - name: "grafana_domain"
               value: "{{ '{{' }} .grafana_oidc_domain {{ '}}'}}"   
             - name: "domain"
-              value: "{{ '{{' }} .domain {{ '}}'}}"                              
+              value: "{{ '{{' }} .domain {{ '}}'}}"
+            - name: "env_cidr"
+              value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"                                
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
