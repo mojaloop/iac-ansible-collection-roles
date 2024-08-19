@@ -45,6 +45,16 @@
     fact_zitadel_fqdn: "zitadel.{{ fact_dns_private_subdomain }}"
   when: not (fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool)
 
+- name: set netbird domain to public
+  set_fact:
+    fact_netbird_fqdn: "netbird.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool
+
+- name: set netbird domain fact
+  set_fact:
+    fact_netbird_fqdn: "netbird.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool)  
+
 - name: install kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl

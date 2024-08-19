@@ -37,6 +37,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}"
             - name: "zitadel_fqdn"
               value: "{{ fact_zitadel_fqdn }}"
+            - name: "netbird_fqdn"
+              value: "{{ fact_netbird_fqdn }}"              
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
             - name: "gitlab_namespace"
