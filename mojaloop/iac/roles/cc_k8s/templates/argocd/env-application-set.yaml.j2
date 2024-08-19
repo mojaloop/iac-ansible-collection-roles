@@ -46,7 +46,9 @@ spec:
             - name: "gitlab_namespace"
               value: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
             - name: "netbird_namespace"
-              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"                
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"
+            - name: "netbird_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].netbird_tf_provider_version }}"                
             - name: "zitadel_namespace"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"                                
             - name: "zitadel_tf_provider_version"
@@ -86,7 +88,9 @@ spec:
             - name: "domain"
               value: "{{ '{{' }} .domain {{ '}}'}}"
             - name: "env_cidr"
-              value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"                                
+              value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"      
+            - name: "argocd_namespace"
+              value: "argocd"                          
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'

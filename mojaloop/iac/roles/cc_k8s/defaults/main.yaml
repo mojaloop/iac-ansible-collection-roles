@@ -205,7 +205,7 @@ argocd_default:
           namespace: "zitadel"
           helm_version: "7.15.0"
           log_level: "info"
-          zitadel_tf_provider_version: "~> 1.2"
+          zitadel_tf_provider_version: "99.99.99"
           terraform_modules_tag: "vexp-cck8s19"
           vault_rbac_admin_group: "techops-admin"
           zitadel_grant_prefix: "zitadel:grants"
@@ -250,7 +250,7 @@ argocd_default:
           build_setup_key_secret_key: "build-setup-key"
           internal_k8s_cidr: "127.0.0.1/32"
           ansible_collection_tag: "vexp-cck8s19"
-          netbird_tf_provider_version: "0.1.0"
+          netbird_tf_provider_version: "99.99.99"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
@@ -284,7 +284,7 @@ argocd_default:
       sub_apps:
         gitlab:
           app_name: "gitlab"
-          helm_version: "8.1.2"
+          helm_version: "8.3.0"
           namespace: "gitlab"
           public_ingress_access_domain: "true"
           oidc_secret: "gitlab-oidc-secret"
@@ -362,9 +362,9 @@ argocd_default:
           grafana_admin_rbac_group: "grafana_administrators"
           grafana_user_rbac_group: "grafana_users"
           vault_admin_rbac_group: "vault_administrators"
-          vault_user_rbac_group: "vault_users"              
+          vault_user_rbac_group: "vault_users"
           argocd_admin_rbac_group: "argocd_administrators"
-          argocd_user_rbac_group: "argocd_users"             
+          argocd_user_rbac_group: "argocd_users"
 
     monitoring:
       argocd_app_name: "monitoring"
