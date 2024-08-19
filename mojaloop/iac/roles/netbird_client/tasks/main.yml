@@ -12,7 +12,7 @@
 - name: Install Netbird CLI
   package:
     name:
-      - netbird={{ fact_netbird_version }}
+      - netbird={{ netbird_version }}
 
 
 - name: join the node to netbird
