@@ -20,26 +20,7 @@
     body_format: json
     status_code: [200, 400, 500]
 
-- name: Get all existing networks 
-  uri:
-    url: https://api.{{ netmaker_base_domain }}/api/networks
-    method: GET
-    headers:
-      Content-Type: application/json
-      Authorization: Bearer {{ netmaker_master_key }}
-    status_code: [200]
-    return_content: true
-    body_format: json
-  register: existing_netmaker_networks  
-
-
-- name: Compose the new network list
-  set_fact:
-    new_netmaker_networks: '{{ ( new_netmaker_networks | list ) + ( [ {"network_name": item.network_name, "node_keys": item.node_keys, "network_cidr": item.network_cidr }] | list )}}'
-  when: ( existing_netmaker_networks.content | from_json ) | selectattr('netid', 'equalto', item.network_name) | list | count == 0 
-  with_items: "{{ netmaker_networks }}"    
-
-- name: Create new networks in netmaker
+- name: Add networks if don't exist
   uri:
     url: https://api.{{ netmaker_base_domain }}/api/networks
     method: POST
@@ -48,8 +29,10 @@
       Authorization: Bearer {{ netmaker_master_key }}
     body: "{{ lookup('template', 'createnetwork.json.j2') }}"
     body_format: json
-    status_code: [200]
-  loop: "{{ new_netmaker_networks }}"
+    status_code: [200, 400]
+  loop: "{{ netmaker_networks }}"
+  loop_control:
+    index_var: ipindex
 
 - name: Get keys
   uri:
@@ -60,7 +43,6 @@
       Authorization: Bearer {{ netmaker_master_key }}
     status_code: [200]
     return_content: true
-    body_format: json
   register: key_response
 
 - name: Add key for control network for netclient
@@ -75,8 +57,8 @@
     status_code: [200, 400]
   vars:
     keytag: "{{ item.0.network_name }}-{{ item.1 }}"
-  when: "( key_response.content  | from_json ) | selectattr('tags', 'equalto', ( keytag | list )) | list | count == 0"
-  loop: "{{ new_netmaker_networks | subelements('node_keys') }}"
+  when: "keytag not in key_response.content"
+  loop: "{{ netmaker_networks | subelements('node_keys') }}"
 
 - name: Get keys again
   uri:

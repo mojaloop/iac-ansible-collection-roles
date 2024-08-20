@@ -1,0 +1,14 @@
+apiVersion: apiserver.config.k8s.io/v1beta1
+kind: AuthenticationConfiguration
+jwt:
+- issuer:
+    url: "{{ kubernetes_oidc_issuer }}"
+    audiences:
+    - "{{ kubernetes_oidc_client_id }}"
+  claimMappings:
+    username:
+      claim: "{{ kubernetes_oidc_username_claim }}"
+      prefix: "{{ kubernetes_oidc_username_prefix }}"
+    groups:
+      claim: "{{ kubernetes_oidc_groups_claim }}"
+      prefix: "{{ kubernetes_oidc_groups_prefix }}"

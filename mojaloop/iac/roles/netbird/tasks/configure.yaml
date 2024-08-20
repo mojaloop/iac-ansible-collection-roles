@@ -1,0 +1,116 @@
+- name: set facts
+  set_fact:
+    fact_admin_groupname: "{{ zitadel_netbird_project_id }}:{{ cluster_admin_access_peer_group_name }}"
+    fact_user_groupname: "{{ zitadel_netbird_project_id }}:{{ cluster_external_access_peer_group_name }}"
+- name: generate bearer token
+  uri:
+    url: "{{ zitadel_url }}/oauth/v2/token"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_id: "{{ api_user_client_id }}"
+      client_secret: "{{ api_user_client_secret }}"
+      grant_type: "client_credentials"
+      scope: "openid email profile urn:iam:org:project:roles urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{{ zitadel_netbird_project_id }}:aud"
+    status_code: 200
+  register: token_response
+  check_mode: no
+
+- name: set token fact
+  set_fact:
+    fact_api_token: "{{ token_response.json.access_token }}"
+
+- name: Wait netbird to respond
+  uri:
+    url: "{{ netbird_url }}/api/accounts"
+    method: GET
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+  register: _accounts
+  until: _accounts.status == 200
+  retries: 30
+  delay: 10
+  when: not ansible_check_mode
+
+- name: Update cluster account settings
+  uri:
+    url: "{{ netbird_url }}/api/accounts/{{ _accounts.json | map(attribute='id') | first }}"
+    method: PUT
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updateaccount.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    idm_admin_group: "{{ fact_admin_groupname }}"
+    idm_user_group: "{{ fact_user_groupname }}"
+  when: not ansible_check_mode
+
+- name: Get Groups
+  uri:
+    url: "{{ netbird_url }}/api/groups"
+    method: GET
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    status_code: 200
+  register: api_groups
+  when: not ansible_check_mode
+
+- name: set group facts
+  set_fact:
+    fact_cluster_all_peer_group_id: "{{ api_groups.json | selectattr('name','equalto', 'All') | map(attribute='id') | list | first }}"
+    fact_cluster_admin_user_group_id: "{{ api_groups.json | selectattr('name','equalto', fact_admin_groupname) | map(attribute='id') | list | first }}"
+  when: not ansible_check_mode
+
+- name: Update dns settings to turn off dns on all peer group
+  uri:
+    url: "{{ netbird_url }}/api/dns/settings"
+    method: PUT
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updatedns.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    netbird_all_peer_group_id: "{{ fact_cluster_all_peer_group_id }}"
+  when: not ansible_check_mode
+
+- name: Get Users
+  uri:
+    url: "{{ netbird_url }}/api/users"
+    method: GET
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    status_code: 200
+  register: api_users
+  check_mode: no
+
+- name: set admin user ids
+  set_fact:
+    fact_admin_user_id_list: "{{ api_users.json | selectattr('role','equalto', 'user') | selectattr('auto_groups','issuperset',[fact_cluster_admin_user_group_id]) }}"
+
+- name: Update admin role for users with admin group
+  uri:
+    url: "{{ netbird_url }}/api/users/{{ item.id }}"
+    method: PUT
+    headers:
+      Accept: application/json
+      Authorization: Bearer {{ fact_api_token }}
+    body: "{{ lookup('template', 'updateadminuser.json.j2') }}"
+    body_format: json
+    status_code: 200
+  vars:
+    auto_groups: "{{ item.auto_groups }}"
+  with_items: "{{ fact_admin_user_id_list }}"
+  when: not ansible_check_mode
+
+- name: save post config secret
+  kubernetes.core.k8s:
+    state: present
+    template: "k8ssecret.yaml.j2"
+  when: not ansible_check_mode

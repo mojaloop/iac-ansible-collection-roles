@@ -1,0 +1,23 @@
+- hosts: bastion
+  become: true
+  roles:
+    - role: geerlingguy.k8s.helm
+      vars:
+        helm_version: "v3.14.0"
+    - role: mojaloop.iac.cc_k8s
+      vars:
+        teardown: true
+
+- hosts: agent
+  become: true
+  vars:
+    teardown: true
+  roles:
+    - role: mojaloop.iac.microk8s
+
+- hosts: master
+  become: true
+  vars:
+    teardown: true
+  roles:
+    - role: mojaloop.iac.microk8s

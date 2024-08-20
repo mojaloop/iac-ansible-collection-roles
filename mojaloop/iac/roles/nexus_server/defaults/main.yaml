@@ -1,10 +1,8 @@
-container_name: nexus
-container_image: sonatype/nexus3:3.56.0
-volume_name: nexus-data
-new_admin_pw: crazypassw0rd2
+admin_password: oEPpOxBv_y_h5yB8uMdz
 proxy_repo_name: base-docker
 group_repo_name: docker-group
 nexus_docker_repo_listening_port: 8083
+nexus_server: nexus-app-nexus3.nexus.svc.cluster.local:8081
 docker_group_member_list:
   ["base-docker", "ghcr.io-proxy", "quay.io-proxy", "k8s.gcr.io"]
 docker_proxy_repos:
