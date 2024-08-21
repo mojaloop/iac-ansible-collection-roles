@@ -1,5 +1,5 @@
 # /var/snap/microk8s/current/args/certs.d/docker.io/hosts.toml
-server = "docker.io"
+server = "https://docker.io"
 
-[host."{{ registry_mirror_fqdn }}"]
+[host."https://{{ registry_mirror_fqdn }}"]
 capabilities = ["pull", "resolve"]
