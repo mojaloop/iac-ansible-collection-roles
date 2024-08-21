@@ -417,6 +417,8 @@ argocd_default:
           user_rbac_group: "grafana_users"
           mojaloop_dashboards_tag: "v16.3.0-snapshot.24"
           dashboard_datasource_name: "Mimir"
+        mimir:
+          public_ingress_access_domain: "false"
         post_config:
           app_name: "monitoring-post-config"
           namespace: "monitoring"
