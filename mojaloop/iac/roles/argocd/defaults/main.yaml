@@ -21,3 +21,6 @@ install_nodelocaldns: false
 gitlab_oidc_issuer: http://issuer-fqdn
 argocd_fqdn: example.com
 oidc_admin_group: tenant-admins
+kubernetes_oidc_k8s_user_group: none
+kubernetes_oidc_k8s_admin_group: none
+kubernetes_oidc_enabled: false

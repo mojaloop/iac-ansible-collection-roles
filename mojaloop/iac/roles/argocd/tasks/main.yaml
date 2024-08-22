@@ -71,7 +71,8 @@
     #- netclient
     - argo-oidc-secrets
     - argocd-server-patch
-    - argocd-cmd-params-cm-patch    
+    - argocd-cmd-params-cm-patch
+    - k8s-oidc-rbac
     #- coredns-values
 
 # - name: Install coredns

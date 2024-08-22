@@ -11,6 +11,9 @@ resources:
 - argo-gitlab.yaml
 - vault-env.yaml
 - argo-oidc-secrets.yaml
+{% if kubernetes_oidc_enabled | bool %}
+- k8s-oidc-rbac.yaml 
+{% endif %}
 
 patches:
 - path: argocd-cm-patch.yaml

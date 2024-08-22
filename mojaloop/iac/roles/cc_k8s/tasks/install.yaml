@@ -25,7 +25,7 @@
 - name: Install env app set
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml    
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
@@ -142,7 +142,7 @@
   set_fact:
     kubernetes_oidc_issuer: "{{ kubernetes_oidc_issuer.stdout }}"
     kubernetes_oidc_client_id: "{{ kubernetes_oidc_client_id.stdout }}"
-    kubernetes_oidc_groups_claim: "zitadel:grants"
+    kubernetes_oidc_groups_claim: "{{ fact_kubernetes_oidc_groups_claim }}"
     kubernetes_oidc_groups_prefix: ""
     kubernetes_oidc_username_prefix: ""
     kubernetes_oidc_username_claim: "email"

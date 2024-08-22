@@ -90,7 +90,9 @@ spec:
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"      
             - name: "argocd_namespace"
-              value: "argocd"                          
+              value: "argocd"
+            - name: "kubernetes_oidc_groups_claim"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_grant_prefix }}" 
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'

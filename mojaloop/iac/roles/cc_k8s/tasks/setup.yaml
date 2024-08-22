@@ -24,6 +24,7 @@
     fact_gitlab_namespace: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
     fact_gitlab_token_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_name }}"
     fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
+    fact_kubernetes_oidc_groups_claim: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_grant_prefix }}"
 
 - name: set gitlab domain to public
   set_fact:
@@ -53,7 +54,7 @@
 - name: set netbird domain fact
   set_fact:
     fact_netbird_fqdn: "netbird.{{ fact_dns_private_subdomain }}"
-  when: not (fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool)  
+  when: not (fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool)
 
 - name: install kubectl
   get_url:
