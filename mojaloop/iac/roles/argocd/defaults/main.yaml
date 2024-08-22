@@ -24,3 +24,5 @@ oidc_admin_group: tenant-admins
 kubernetes_oidc_k8s_user_group: none
 kubernetes_oidc_k8s_admin_group: none
 kubernetes_oidc_enabled: false
+kubernetes_oidc_issuer: none
+kubernetes_oidc_client_id: none

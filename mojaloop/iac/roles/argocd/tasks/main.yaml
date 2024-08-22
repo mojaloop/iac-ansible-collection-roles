@@ -106,3 +106,18 @@
     kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argo-root-app.yaml
+
+- name: copy kubeconfig for oidc and add credentials.
+  shell: |
+    cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/oidc-kubeconfig
+    export KUBECONFIG={{ kubeconfig_location }}/oidc-kubeconfig
+    kubectl config delete-user admin
+    kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
+    kubectl config set-context $(kubectl config current-context) --user=oidc
+  when: kubernetes_oidc_enabled | bool
+
+- name: Fetch oidc-kubeconfig
+  fetch:
+    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/oidc-kubeconfig"
+    flat: yes
