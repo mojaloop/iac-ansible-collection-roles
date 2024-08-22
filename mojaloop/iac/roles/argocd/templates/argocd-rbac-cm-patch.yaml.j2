@@ -8,6 +8,7 @@ metadata:
 data:
   policy.csv: |
     p, role:org-admin, applications, *, */*, allow
-    g, {{ oidc_admin_group }}, role:org-admin
+    g, {{ zitadel_project_id }}:{{ argocd_admin_rbac_group }}, role:org-admin
+    g, {{ zitadel_project_id }}:{{ argocd_readonly_rbac_group }}, role:readonly
   policy.default: role:readonly
   scopes: '[groups_direct]'
