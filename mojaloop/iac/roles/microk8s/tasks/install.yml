@@ -84,6 +84,15 @@
     - "'helm3' in microk8s_plugins"
     - microk8s_plugins.helm3
 
+- name: "create directory for mirror registry configs"
+  file:
+    path: /var/snap/microk8s/current/args/certs.d/{{ item }}/
+    state: directory
+    recurse: no
+  with_items: "{{ docker_registry_mirrors }}"
+  when:
+    - enable_registry_mirror
+
 - name: Create mirror registry config
   become: true
   ansible.builtin.template:
