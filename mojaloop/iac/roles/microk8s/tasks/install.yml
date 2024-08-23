@@ -88,7 +88,7 @@
   become: true
   ansible.builtin.template:
     src: hosts.toml.j2
-    dest: /var/snap/microk8s/current/args/certs.d/{{ item.value }}/hosts.toml
+    dest: /var/snap/microk8s/current/args/certs.d/{{ item }}/hosts.toml
   with_items: "{{ docker_registry_mirrors }}"
   when:
     - enable_registry_mirror
