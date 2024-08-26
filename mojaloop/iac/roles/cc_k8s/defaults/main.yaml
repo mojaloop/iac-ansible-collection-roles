@@ -263,6 +263,7 @@ argocd_default:
           helm_version: "4.44.0"
           namespace: "nexus"
           public_ingress_access_domain: "true"
+          storage_size: "30Gi"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
