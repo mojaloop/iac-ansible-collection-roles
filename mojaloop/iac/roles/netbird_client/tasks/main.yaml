@@ -1,0 +1,4 @@
+- include_tasks: install.yaml
+  when: not teardown
+- include_tasks: remove.yaml
+  when: teardown  

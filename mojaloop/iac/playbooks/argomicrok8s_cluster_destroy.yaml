@@ -4,6 +4,7 @@
     teardown: true
   roles:
     - role: mojaloop.iac.microk8s
+    - role: mojaloop.iac.netbird_client
 
 - hosts: master
   become: true
@@ -11,3 +12,4 @@
     teardown: true
   roles:
     - role: mojaloop.iac.microk8s
+    - role: mojaloop.iac.netbird_client

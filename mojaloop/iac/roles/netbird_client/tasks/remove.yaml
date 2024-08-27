@@ -1,0 +1,12 @@
+
+- name: unjoin the node from netbird
+  shell: |
+    netbird down
+
+  
+- name: remove netbird package
+  package:
+    name:
+      - wireguard
+      - netbird={{ netbird_version }}
+    state: absent
