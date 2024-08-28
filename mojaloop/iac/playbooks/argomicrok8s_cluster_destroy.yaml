@@ -13,3 +13,10 @@
   roles:
     - role: mojaloop.iac.microk8s
     - role: mojaloop.iac.netbird_client
+
+- hosts: bastion
+  become: true
+  vars:
+    teardown: true
+  roles:
+    - mojaloop.iac.netbird_client    
