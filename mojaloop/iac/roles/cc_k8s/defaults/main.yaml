@@ -371,7 +371,7 @@ argocd_default:
       argocd_app_name: "monitoring"
       app_namespace: "argocd"
       app_enabled: "true"
-      application_gitrepo_tag: "a9bf923e9715d80ba2bf5a8c2430b22bc8b6fa11"
+      application_gitrepo_tag: "muz/ccv2-dev"
       sync_wave: "'-8'"
       sub_apps:
         pre:
