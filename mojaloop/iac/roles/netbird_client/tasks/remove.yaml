@@ -1,10 +1,12 @@
 
 - name: unjoin the node from netbird
+  become: true
   shell: |
     netbird down
 
   
 - name: remove netbird package
+  become: true
   package:
     name:
       - wireguard
