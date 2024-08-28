@@ -12,3 +12,5 @@
   package:
     name:
       - python3
+      - ca-certificates
+      - gnupg

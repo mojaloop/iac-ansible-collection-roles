@@ -1,0 +1,27 @@
+# tenancy-docs
+
+
+
+## Getting started
+
+
+
+## Install requirements
+
+- [ ] [install netbird vpn](https://docs.netbird.io/how-to/installation)
+- [ ] [install kubectl plugin for oidc login](https://github.com/int128/kubelogin)
+
+
+## Configure netbird 
+
+- [ ] [click on Settings -> Advanced Settings]
+- [ ] [Enter {{ netbird_mgmt_url }} for management url and {{ netbird_admin_url }} for admin url]
+- [ ] [Click on Connect]
+
+## Download oidc-kubeconfig from gitlab project
+
+- [ ] [download kubeconfig](https://{{ gitlab_fqdn }}/tenancy-internal/tenancy-docs/-/raw/main/oidc-kubeconfig?ref_type=heads)
+- [ ] [export KUBECONFIG=<<downloaded file location>>]
+
+## Test kubectl
+- [ ] [test by running kubectl get nodes]

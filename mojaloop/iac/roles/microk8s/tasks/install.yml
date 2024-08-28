@@ -37,12 +37,28 @@
     src: microk8s-config.yaml.j2
     dest: /var/snap/microk8s/common/.microk8s.yaml
 
+- name: Create oidc config file for mk8s
+  become: true
+  ansible.builtin.copy:
+    src: oidc.conf.yaml
+    dest: /var/snap/microk8s/common/.oidc_config.yaml
+    force: no
+  when: kubernetes_oidc_enabled | bool
+
 - name: Install microk8s
   become: true
   snap:
     name: microk8s
     classic: yes
     channel: "{{ microk8s_version }}"
+#requires 1.30 and above, if running 1.29 or below, need to add --feature-gates=StructuredAuthenticationConfiguration=true
+- name: add oidc config
+  become: true
+  blockinfile:
+    dest: /var/snap/microk8s/current/args/kube-apiserver
+    marker: "# {mark} ANSIBLE MANAGED: microk8s add oidc config"
+    content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
+  when: kubernetes_oidc_enabled | bool
 
 - name: Wait for microk8s to be ready
   become: true
@@ -68,11 +84,21 @@
     - "'helm3' in microk8s_plugins"
     - microk8s_plugins.helm3
 
+- name: "create directory for mirror registry configs"
+  file:
+    path: /var/snap/microk8s/current/args/certs.d/{{ item }}/
+    state: directory
+    recurse: no
+  with_items: "{{ docker_registry_mirrors }}"
+  when:
+    - enable_registry_mirror
+
 - name: Create mirror registry config
   become: true
   ansible.builtin.template:
     src: hosts.toml.j2
-    dest: /var/snap/microk8s/current/args/certs.d/docker.io/hosts.toml
+    dest: /var/snap/microk8s/current/args/certs.d/{{ item }}/hosts.toml
+  with_items: "{{ docker_registry_mirrors }}"
   when:
     - enable_registry_mirror
 

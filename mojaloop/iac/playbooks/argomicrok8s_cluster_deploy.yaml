@@ -2,18 +2,19 @@
   become: true
   roles:
     - mojaloop.iac.bastion_common
-    - mojaloop.iac.netclient
-    - mojaloop.iac.haproxy
+    - mojaloop.iac.netbird_client
 
 - hosts: master
   become: true
   roles:
-    - role: mojaloop.iac.k8s_node_common
+    - mojaloop.iac.k8s_node_common
+    - mojaloop.iac.netbird_client
 
 - hosts: agent
   become: true
   roles:
-    - role: mojaloop.iac.k8s_node_common
+    - mojaloop.iac.k8s_node_common
+    - mojaloop.iac.netbird_client
 
 - hosts: master
   become: true
@@ -51,6 +52,14 @@
           kata: false # A secure container runtime with lightweight virtual machines
           openebs: false # openebs storage
           openfaas: false
+
+- hosts: master
+  become: true
+  tasks:
+    - name: write current oidc config
+      ansible.builtin.import_role:
+        name: mojaloop.iac.microk8s
+        tasks_from: configure-oidc
 
 - hosts: agent
   become: true

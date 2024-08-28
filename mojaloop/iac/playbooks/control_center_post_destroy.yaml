@@ -1,6 +1,0 @@
-- hosts: netmaker
-  become: true
-  vars:
-    teardown: true  
-  roles:
-    - mojaloop.iac.netmaker

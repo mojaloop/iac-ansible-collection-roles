@@ -1,0 +1,14 @@
+apiVersion: apiserver.config.k8s.io/v1beta1
+kind: AuthenticationConfiguration
+jwt:
+  - issuer:
+      url: "https://issurerurl"
+      audiences:
+        - "acsdfasdfasdf"
+    claimMappings:
+      username:
+        claim: "username"
+        prefix: "oidc:"
+      groups:
+        claim: "techops-admin, techops-user"
+        prefix: "oidc:"

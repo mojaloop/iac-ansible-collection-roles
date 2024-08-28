@@ -7,7 +7,8 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   policy.csv: |
-    p, role:org-admin, applications, *, */*, allow
-    g, {{ oidc_admin_group }}, role:org-admin
-  policy.default: role:readonly
-  scopes: '[groups_direct]'
+    g, {{ zitadel_project_id }}:{{ argocd_admin_rbac_group }}, role:admin
+    g, {{ zitadel_project_id }}:{{ argocd_readonly_rbac_group }}, role:readonly
+  policy.default: ''
+  policy.matchMode: glob
+  scopes: '[zitadel:grants]'  

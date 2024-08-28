@@ -1,0 +1,15 @@
+- name: Create config file for mk8s
+  become: true
+  ansible.builtin.template:
+    src: oidc.conf.yaml.j2
+    dest: /var/snap/microk8s/common/.oidc_config.yaml
+    force: yes
+  register: oidcconfig
+  when: kubernetes_oidc_enabled | bool
+
+- name: Restart microk8s
+  become: true
+  shell: |
+    snap restart microk8s
+    microk8s.status --wait-ready
+  when: kubernetes_oidc_enabled | bool and oidcconfig is changed

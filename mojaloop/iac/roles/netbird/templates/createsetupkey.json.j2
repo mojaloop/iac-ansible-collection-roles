@@ -1,0 +1,11 @@
+{
+  "name": "{{ setup_key_name }}",
+  "type": "{{ setup_key_type }}",
+  "expires_in": 86400,
+  "revoked": false,
+  "auto_groups": [
+    "{{ auto_group_id }}"
+  ],
+  "usage_limit": {{ setup_key_usage_limit }},
+  "ephemeral": {{ setup_key_ephemeral }}
+}

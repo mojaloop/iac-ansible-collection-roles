@@ -1,0 +1,15 @@
+{
+  "description": "{{ cluster_route_name }}",
+  "network_id": "{{ cluster_route_name }}",
+  "enabled": true,
+  "peer_groups": [
+    "{{ cluster_gw_peer_group_id }}"
+  ],
+  "network": "{{ cluster_network_cidr }}",
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "{{ cluster_external_access_peer_group_id }}"
+  ],
+  "keep_route": true
+}

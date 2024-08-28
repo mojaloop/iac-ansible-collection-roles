@@ -8,8 +8,8 @@ metadata:
 data:
   url: https://argocd.{{ argocd_domain }}
   oidc.config: |
-    name: Gitlab
-    issuer: {{ gitlab_server_url }}
+    name: Zitadel
+    issuer: {{ zitadel_server_url }}
     clientID: $argo-oidc:clientid
     clientSecret: $argo-oidc:clientsecret
     requestedScopes: ["openid", "profile", "email", "read_api"]

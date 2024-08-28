@@ -1,0 +1,148 @@
+- name: Find argocd app install status
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ fact_argocd_helm_namespace }} wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=1m application/{{ fact_argocd_helm_release }}
+  register: argocdappexists
+  ignore_errors: true
+
+- name: Install argocd
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    helm repo add argo https://argoproj.github.io/argo-helm
+    helm repo update
+    helm upgrade --install {{ fact_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ fact_argocd_helm_namespace }} --version {{ fact_argocd_helm_version }} \
+      --set fullnameOverride={{ fact_argocd_helm_release }} \
+      --set applicationSet.enabled=false \
+      --set notifications.enabled=false \
+      --set dex.enabled=false \
+      --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
+    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
+  when: argocdappexists is failed
+
+- name: Install root app
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
+
+- name: Install env app set
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
+
+- name: Install utils and wait for argocd autosync
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+    until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
+    kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
+    until argocd app sync {{ fact_argocd_helm_release }}; do echo "awaiting argocd to sync..." && sleep 10; done
+    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
+  args:
+    executable: /bin/bash
+
+- name: wait for netbird-management autosync
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_netbird_namespace }} rollout status deployment/netbird-management
+    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }}
+  register: outputnetbird
+  until: outputnetbird is not failed
+  retries: 100
+  delay: 30
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+- name: join bastion to netbird
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    netbird up -m https://netbird.{{ fact_dns_public_subdomain }}:443 -k $(kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_gw_setup_key_secret_key }}}" | base64 -d)
+    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_build_setup_key_secret_key }}}" | base64 -d > /tmp/build-server-setup-key
+
+- name: fetch build server setup key
+  fetch:
+    src: /tmp/build-server-setup-key
+    dest: /tmp/
+    flat: yes
+  when: not (pipeline_executor | bool)
+
+- name: join build server to netbird
+  shell: |
+    netbird service install || true
+    netbird service start || true
+    netbird up -m https://netbird.{{ fact_dns_public_subdomain }}:443 -k $(cat /tmp/build-server-setup-key)
+  delegate_to: localhost
+  when: not (pipeline_executor | bool)
+
+- name: get k8s kubernetes_oidc_issuer
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_issuer}" | base64 -d
+  register: kubernetes_oidc_issuer
+
+- name: get k8s kubernetes_oidc_client_id
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_client_id}" | base64 -d
+  register: kubernetes_oidc_client_id
+
+- name: copy kubeconfig for oidc and add credentials.
+  shell: |
+    cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/oidc-kubeconfig
+    export KUBECONFIG={{ kubeconfig_location }}/oidc-kubeconfig
+    kubectl config delete-user admin
+    kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
+    kubectl config set-context $(kubectl config current-context) --user=oidc
+
+- name: get gitlab access token
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
+  register: fact_gitlab_access_token
+
+- name: copy readme.md to bastion
+  template:
+    src: "tenancy-docs-readme.md.j2"
+    dest: "{{ kubeconfig_location }}/README.md"
+  vars:
+    netbird_admin_url: "https://netbird-dashboard.{{ fact_dns_public_subdomain }}:443"
+    netbird_mgmt_url: "https://netbird.{{ fact_dns_public_subdomain }}:443"
+    gitlab_fqdn: "{{ fact_gitlab_fqdn }}"
+
+- name: wait for gitlab post-config to be done
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n argocd get application gitlab-post-config -o=jsonpath='{.status.health.status}'
+  register: outputgitlabpostconfig
+  until: outputgitlabpostconfig is not failed and outputgitlabpostconfig.stdout == "Healthy"
+  retries: 100
+  delay: 30
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+- name: save oidc kubeconfig to gitlab
+  shell: |
+    git config --global user.email "root@{{ fact_gitlab_fqdn }}"
+    git config --global user.name "root"
+    git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git {{ cctmpvalues.path }}/tenancy-docs
+    cd {{ cctmpvalues.path }}/tenancy-docs
+    cp {{ kubeconfig_location }}/oidc-kubeconfig .
+    cp {{ kubeconfig_location }}/README.md .
+    git add oidc-kubeconfig README.md
+    git commit -m "Push existing oidc kubeconfig and readme to GitLab"
+    git push
+
+- name: copy env vars for push to cluster script
+  template:
+    src: "localenv.sh.j2"
+    dest: "{{ kubeconfig_local_location }}/gitlabenv.sh"
+  delegate_to: localhost
+  when: not (pipeline_executor | bool)
+
+- name: set k8s oidc facts
+  set_fact:
+    kubernetes_oidc_issuer: "{{ kubernetes_oidc_issuer.stdout }}"
+    kubernetes_oidc_client_id: "{{ kubernetes_oidc_client_id.stdout }}"
+    kubernetes_oidc_groups_claim: "{{ fact_kubernetes_oidc_groups_claim }}"
+    kubernetes_oidc_groups_prefix: ""
+    kubernetes_oidc_username_prefix: ""
+    kubernetes_oidc_username_claim: "email"
