@@ -73,12 +73,13 @@
     - argocd-server-patch
     - argocd-cmd-params-cm-patch
     - k8s-oidc-rbac
-    #- coredns-values
+    - coredns-values
 
-# - name: Install coredns
-#   shell: |
-#     helm repo add coredns https://coredns.github.io/helm
-#     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install coredns coredns/coredns --version {{ coredns_version }} -n kube-system --create-namespace -f {{ argotmpvalues.path }}/coredns-values.yaml
+- name: Install coredns
+  shell: |
+    helm repo add coredns https://coredns.github.io/helm
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install coredns coredns/coredns --version {{ coredns_version }} -n kube-system --create-namespace -f {{ argotmpvalues.path }}/coredns-values.yaml
+  when: install_coredns | bool
 
 - name: Install nodelocal dns cache
   shell: |
@@ -87,7 +88,7 @@
     | sed -e "s/__PILLAR__DNS__SERVER__/$(kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig get service --namespace kube-system kube-dns -o jsonpath='{.spec.clusterIP}')/g" \
     | sed -e 's/__PILLAR__LOCAL__DNS__/169.254.20.10/g' \
     | kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f -
-  when: install_nodelocaldns
+  when: install_nodelocaldns | bool
 
 - name: Install external-secrets
   shell: |
