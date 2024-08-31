@@ -9,7 +9,9 @@
 - name: set current state fact
   set_fact:
     microk8s_status: "{{ microk8s_status.stdout | from_yaml }}"
-
+- name: debug addons
+  debug:
+    msg: "{{ microk8s_plugins }}"
 - name: enable addons
   become: true
   loop: "{{ microk8s_status.addons }}"
