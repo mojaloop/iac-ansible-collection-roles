@@ -420,7 +420,7 @@ argocd_default:
         mimir:
           public_ingress_access_domain: "false"
         prometheus:
-          pvc_size: "10Gi"
+          pvc_size: "100Gi"
           retention_period: "10d"
           tsdb_min_block_duration: "30m"
           tsdb_max_block_duration: "30m"
