@@ -295,6 +295,7 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8sargoroot581"
           root_token_secret_name: "root-token-secret"
           root_token_secret_key: "token"
+          gitaly_storage_size: "10Gi"
         registry:
           public_ingress_access_domain: "true"
         pre:
