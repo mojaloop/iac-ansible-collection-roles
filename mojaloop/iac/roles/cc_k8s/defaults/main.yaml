@@ -396,7 +396,7 @@ argocd_default:
           mimir_max_global_series_per_user: "'1000000'"
           mimir_ingestion_rate: "'200000'"
           mimir_ingestion_burst_size: "'500000'"
-          mimir_retention_period: "3d" # TODO: increase after testing that limit works
+          mimir_retention_period: "10d" # TODO: increase after testing that limit works
           ctrl_cntr_loki_helm_version: "2.13.0"
           ctrl_cntr_loki_retention_period: "3d" #TODO: increase after testing that limit works
           ctrl_cntr_loki_ingester_max_chunk_age: "2h"
