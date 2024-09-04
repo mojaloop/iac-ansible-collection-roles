@@ -424,7 +424,7 @@ argocd_default:
           retention_period: "1d" # TODO: increase to 10d later
           tsdb_min_block_duration: "30m"
           tsdb_max_block_duration: "30m"
-          resources_preset_bitnami: "large"
+          resources_preset_bitnami: "xlarge"
           remote_write_tenant_id: "infitx"
           cluster_label_value: "control-center"
         post_config:
