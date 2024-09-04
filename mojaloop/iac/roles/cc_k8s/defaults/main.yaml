@@ -424,11 +424,7 @@ argocd_default:
           retention_period: "1d" # TODO: increase to 10d later
           tsdb_min_block_duration: "30m"
           tsdb_max_block_duration: "30m"
-<<<<<<< HEAD
           resources_preset_bitnami: "2xlarge"
-=======
-          resources_preset_bitnami: "xlarge"
->>>>>>> 75ae8c7 (increase prometheus resource preset to xlarge)
           remote_write_tenant_id: "infitx"
           cluster_label_value: "control-center"
         post_config:
