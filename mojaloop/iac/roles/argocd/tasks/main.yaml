@@ -77,7 +77,7 @@
 
 - name: Install node-local-ha
   shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ extsectmpvalues.path }}/node-local-ha.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/node-local-ha.yaml
   when: install_coredns | bool
 
 - name: Install external-secrets
