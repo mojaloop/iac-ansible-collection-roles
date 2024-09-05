@@ -2,4 +2,4 @@
   become: true
   roles:
     - mojaloop.iac.bastion_common
-    - mojaloop.iac.netclient
+    - mojaloop.iac.netbird_client
