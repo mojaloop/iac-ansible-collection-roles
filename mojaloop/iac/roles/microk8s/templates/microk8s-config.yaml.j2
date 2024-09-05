@@ -1,6 +1,6 @@
-# microk8s-config.yaml
+# Default launch configuration for MicroK8s.
 ---
 version: 0.1.0
-addons:
-  - name: dns
-    args: [{{ microk8s_dns_resolvers }}] 
+extraKubeletArgs:
+  --cluster-domain: cluster.local
+  --cluster-dns: {{ dns_bind_address }}

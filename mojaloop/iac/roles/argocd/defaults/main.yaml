@@ -18,7 +18,6 @@ kubectl_version: "1.24.6"
 coredns_version: "1.32.0"
 coredns_max_scale: 10
 install_coredns: false
-install_nodelocaldns: false
 gitlab_oidc_issuer: http://issuer-fqdn
 argocd_fqdn: example.com
 oidc_admin_group: tenant-admins
@@ -27,3 +26,4 @@ kubernetes_oidc_k8s_admin_group: none
 kubernetes_oidc_enabled: false
 kubernetes_oidc_issuer: none
 kubernetes_oidc_client_id: none
+dns_bind_address: 169.254.20.10
