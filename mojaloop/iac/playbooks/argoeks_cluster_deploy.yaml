@@ -6,7 +6,7 @@
     - mojaloop.iac.eks_util
     - geerlingguy.k8s.helm
     - mojaloop.iac.argocd
-    - mojaloop.iac.eks_cleanup
+    #- mojaloop.iac.eks_cleanup
 
 - name: Create Test Harness
   import_playbook: test_harness_deploy.yaml
