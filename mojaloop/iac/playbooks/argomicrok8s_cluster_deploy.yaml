@@ -74,6 +74,10 @@
   become: true
   roles:
     - geerlingguy.k8s.helm
+
+- hosts: "{{ groups['bastion'] | first }}"
+  become: true
+  roles:
     - mojaloop.iac.argocd
 
 - name: Create Test Harness
