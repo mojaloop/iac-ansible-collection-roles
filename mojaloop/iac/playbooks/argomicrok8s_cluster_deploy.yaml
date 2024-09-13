@@ -70,14 +70,10 @@
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
 
-- hosts: bastion
-  become: true
-  roles:
-    - geerlingguy.k8s.helm
-
 - hosts: "{{ groups['bastion'] | first }}"
   become: true
   roles:
+    - geerlingguy.k8s.helm
     - mojaloop.iac.argocd
 
 - name: Create Test Harness
