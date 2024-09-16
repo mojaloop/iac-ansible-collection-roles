@@ -1,0 +1,15 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install CoreDNS
+  apt:
+    name: "{{ coredns_package }}"
+    state: present
+    version: "{{ coredns_version }}"
+
+- name: Ensure CoreDNS is running
+  service:
+    name: "{{ coredns_package }}"
+    state: started
+    enabled: yes
