@@ -409,6 +409,7 @@ argocd_default:
           alertmanager_enabled: "false"
           namespace: "monitoring"
           sync_wave: "'-9'" #after rook is done
+          cloudwatch_exporter_role_arn: "arn:aws:iam::<project_id>:role/<role_name>"
         grafana:
           public_ingress_access_domain: "false"
           image_version: "10.2.3"
