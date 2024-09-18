@@ -51,11 +51,15 @@
   args:
     executable: /bin/bash
 
-- name: set bastion netbird setup key
+- name: get bastion netbird setup key
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_gw_setup_key_secret_key }}}" | base64 -d
-  register: fact_bastion_netbird_setup_key
+  register: bastion_netbird_setup_key
+
+- name: set bastion netbird setup key fact
+  set_fact:
+    fact_bastion_netbird_setup_key: "{{ bastion_netbird_setup_key.stdout }}"
 
 - name: save build server setup key to temp
   shell: |
