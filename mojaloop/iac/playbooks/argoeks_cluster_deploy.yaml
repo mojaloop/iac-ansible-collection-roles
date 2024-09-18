@@ -1,8 +1,13 @@
-- hosts: "{{ groups['bastion'] | first }}"
+- hosts: bastion
   become: true
   roles:
     - mojaloop.iac.bastion_common
     - mojaloop.iac.netbird_client
+    #- mojaloop.iac.eks_cleanup
+
+- hosts: "{{ groups['bastion'] | first }}"
+  become: true
+  roles:
     - mojaloop.iac.eks_util
     - geerlingguy.k8s.helm
     - mojaloop.iac.argocd
