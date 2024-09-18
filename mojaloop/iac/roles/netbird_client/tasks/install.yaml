@@ -16,4 +16,4 @@
 
 - name: join the node to netbird
   shell: |
-    netbird up -m {{ netbird_api_host }} -k {{ netbird_setup_key | trim }}
+    netbird up -m "{{ netbird_api_host }}" -k "{{ netbird_setup_key | trim }}"
