@@ -59,7 +59,7 @@
 
 - name: set bastion netbird setup key fact
   set_fact:
-    fact_bastion_netbird_setup_key: "{{ bastion_netbird_setup_key.stdout }}"
+    fact_bastion_netbird_setup_key: "{{ bastion_netbird_setup_key.stdout | trim }}"
 
 - name: save build server setup key to temp
   shell: |
