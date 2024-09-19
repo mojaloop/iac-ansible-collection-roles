@@ -60,7 +60,7 @@
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
 
-- hosts: "{{ groups['bastion'] | first }}"
+- hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
     - role: geerlingguy.k8s.helm
