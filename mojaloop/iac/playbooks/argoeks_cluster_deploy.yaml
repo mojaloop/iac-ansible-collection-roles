@@ -5,7 +5,7 @@
     - mojaloop.iac.netbird_client
     #- mojaloop.iac.eks_cleanup
 
-- hosts: "{{ groups['bastion'] | first }}"
+- hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
     - mojaloop.iac.eks_util
