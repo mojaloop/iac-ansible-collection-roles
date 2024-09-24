@@ -5,4 +5,4 @@
   vars:
     teardown: true
   roles:
-    - mojaloop.iac.netclient
+    - mojaloop.iac.netbird_client

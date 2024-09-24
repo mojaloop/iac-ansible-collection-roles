@@ -60,7 +60,7 @@
         microk8s_group_HA: "master"
         microk8s_group_WORKERS: "agent"
 
-- hosts: bastion
+- hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
     - role: geerlingguy.k8s.helm
@@ -69,6 +69,14 @@
     - role: mojaloop.iac.cc_k8s
       vars:
         helm_version: "3.14.0"
+
+- hosts: bastion
+  become: true
+  roles:
+    - role: mojaloop.iac.netbird_client
+      vars:
+        netbird_api_host: "{{ hostvars[groups['bastion'][0]]['fact_netbird_management_url'] }}"
+        netbird_setup_key: "{{ hostvars[groups['bastion'][0]]['fact_bastion_netbird_setup_key'] }}"
 
 - hosts: master
   become: true
@@ -79,9 +87,9 @@
         tasks_from: configure-oidc
       vars:
         kubernetes_oidc_enabled: true
-        kubernetes_oidc_issuer: "{{ hostvars['bastion']['kubernetes_oidc_issuer'] }}"
-        kubernetes_oidc_client_id: "{{ hostvars['bastion']['kubernetes_oidc_client_id'] }}"
-        kubernetes_oidc_groups_claim: "{{ hostvars['bastion']['kubernetes_oidc_groups_claim'] }}"
-        kubernetes_oidc_groups_prefix: "{{ hostvars['bastion']['kubernetes_oidc_groups_prefix'] }}"
-        kubernetes_oidc_username_prefix: "{{ hostvars['bastion']['kubernetes_oidc_username_prefix'] }}"
-        kubernetes_oidc_username_claim: "{{ hostvars['bastion']['kubernetes_oidc_username_claim'] }}"
+        kubernetes_oidc_issuer: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_issuer'] }}"
+        kubernetes_oidc_client_id: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_client_id'] }}"
+        kubernetes_oidc_groups_claim: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_groups_claim'] }}"
+        kubernetes_oidc_groups_prefix: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_groups_prefix'] }}"
+        kubernetes_oidc_username_prefix: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_username_prefix'] }}"
+        kubernetes_oidc_username_claim: "{{ hostvars[groups['bastion'][0]]['kubernetes_oidc_username_claim'] }}"
