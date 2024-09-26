@@ -29,6 +29,8 @@ spec:
               value: "{{ env_name }}-env-onboard"
             - name: "env_name"
               value: "{{ env_name }}"
+            - name: "cluster_name"
+              value: "{{ cluster_name }}"              
             - name: "deploy_env_onboard_app_namespace"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].namespace }}"
             - name: "deploy_env_onboard_app_sync_wave"
