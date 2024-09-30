@@ -222,6 +222,7 @@ argocd_default:
           zitadel_pg_db_release_name: "zitadel-db"
           zitadel_db_name: "zitadel"
           zitadel_db_user: "zitadel"
+          rdbms_provider: "percona"
         postgres:
           app_name: "postgres-db"
           replicas: "'1'"
