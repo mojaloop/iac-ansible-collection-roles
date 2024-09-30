@@ -117,9 +117,22 @@ argocd_default:
           vault_crossplane_modules_version: "1.0.0"
           terraform_crossplane_modules_version: "0.16.0"
           ansible_crossplane_modules_version: "0.6.0"
+          rds_crossplane_modules_version: "1.14.0"
+          ec2_crossplane_modules_version: "1.14.0"
+          crossplane_func_pat_version: "0.2.1"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
+
+    xplane_provider_config:
+      argocd_app_name: "xplane-provider-config"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      namespace: "crossplane-system"
+      sync_wave: "'-7'"
+      provider_name: "aws"
+      application_gitrepo_tag: "vexp-cck8s19"
+
     vault:
       argocd_app_name: "vault"
       app_namespace: "argocd"
@@ -341,7 +354,6 @@ argocd_default:
           gitlab_registry_storage_size: "10Gi"
           gitlab_runner_cache_max_objects: "'1000000'"
           gitlab_runner_cache_storage_size: "10Gi"
-          rdbms_provider: "percona"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
