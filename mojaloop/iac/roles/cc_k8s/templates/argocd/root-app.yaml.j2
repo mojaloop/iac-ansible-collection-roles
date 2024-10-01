@@ -33,6 +33,8 @@ spec:
             value: {{ cluster_name }}
           - name: cloud_provider
             value: {{ cluster_cloud_provider }}
+          - name: cloud_region
+            value: {{ cloud_regiion }}            
           - name: "argocd_repo_url"
             value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
           - name: "ansible_gitrepo_url"
