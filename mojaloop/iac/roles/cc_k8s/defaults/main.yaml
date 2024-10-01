@@ -9,7 +9,6 @@ kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
 helm_version: "3.14.0"
 cluster_cloud_provider: "aws"
-cloud_region: eu-west-1
 #argo
 argocd_override:
 argocd_default:
