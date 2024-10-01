@@ -2,16 +2,11 @@
   become: true
   roles:
     - mojaloop.iac.bastion_common
-    - mojaloop.iac.netbird_client
-    #- mojaloop.iac.eks_cleanup
+    - mojaloop.iac.docker
 
 - hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
     - mojaloop.iac.eks_util
     - geerlingguy.k8s.helm
-    - mojaloop.iac.argocd
-    #- mojaloop.iac.eks_cleanup
-
-- name: Create Test Harness
-  import_playbook: test_harness_deploy.yaml
+    - mojaloop.iac.cc_k8s
