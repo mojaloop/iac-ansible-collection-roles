@@ -125,7 +125,7 @@ argocd_default:
           app_name: "rook-ceph-bucket"
 
     xplane_provider_config:
-      app_name: xplane_db_provider
+      app_name: "xplane-db-provider"
       argocd_app_name: "xplane-provider-config"
       app_namespace: "argocd"
       app_enabled: "true"
