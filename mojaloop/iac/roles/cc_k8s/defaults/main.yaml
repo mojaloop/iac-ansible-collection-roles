@@ -131,7 +131,7 @@ argocd_default:
       app_enabled: "true"
       namespace: "crossplane-system"
       sync_wave: "'-7'"
-      provider_name: "aws"
+      cloud_provider: "aws"
       application_gitrepo_tag: "vexp-cck8s19"
 
     vault:
