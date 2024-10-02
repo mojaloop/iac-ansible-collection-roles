@@ -218,6 +218,7 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'-2'"
           namespace: "zitadel"
+          replicas: "'2'"
           helm_version: "8.5.0"
           log_level: "info"
           zitadel_tf_provider_version: "99.99.99"
