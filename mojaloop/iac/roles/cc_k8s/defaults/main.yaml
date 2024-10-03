@@ -181,7 +181,7 @@ argocd_default:
           namespace: "velero"
           sub_app_enabled: "true"
           object_storage_cloud_policy: "arn:blah"
-          enable_object_storage_backend: "false"
+          enable_object_storage_backend: "'false'"
           object_storage_access_role: "object-storage-access"
           object_storage_backend_path: "cc-cloud-provider-os"
           object_storage_region: "none"
@@ -228,7 +228,7 @@ argocd_default:
           letsencrypt_email: "none@example.com"
           cert_manager_namespace: "cert-manager"
           dns_backend_path: "cc-cloud-provider-dns"
-          enable_dns_backend: "true"
+          enable_dns_backend: "'true'"
           dns_access_role: "dns-access"
 
         post_config:
