@@ -168,6 +168,35 @@ argocd_default:
           vault_k8s_admin_auth_path: "admin-k8s"
           vault_k8s_admin_role_name: "admin-role"
 
+    maintenance:
+      argocd_app_name: "maintenance"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "vexp-cck8s19"
+      sync_wave: "'-5'"
+      sub_apps:
+        velero:
+          app_name: "velero"
+          helm_version: "7.2.1"
+          namespace: "velero"
+          sub_app_enabled: "true"
+          object_storage_cloud_policy: "arn:blah"
+          enable_object_storage_backend: "false"
+          object_storage_access_role: "object-storage-access"
+          object_storage_backend_path: "cc-cloud-provider-os"
+          object_storage_region: "none"
+          object_storage_secret_name: "velero-cloud-api-secret"
+          object_storage_secret_key: "velero-cloud-api-secret-key"
+          object_storage_bucket: "velero"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-6'"
+        post_config:
+          app_name: "post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-4'"
+
     dns_utils:
       argocd_app_name: "dns-utils"
       app_namespace: "argocd"
@@ -198,6 +227,10 @@ argocd_default:
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
           cert_manager_namespace: "cert-manager"
+          config_dns_backend_path: "cc-cloud-provider-dns"
+          enable_dns_backend: "true"
+          dns_access_role: "dns-access"
+
         post_config:
           app_name: "post-config"
           sub_app_enabled: "true"
@@ -358,8 +391,8 @@ argocd_default:
           gitlab_runner_cache_max_objects: "'1000000'"
           gitlab_runner_cache_storage_size: "10Gi"
           rdbms_provider: "percona"
-          rdbms_subnet_list:  "[]"
-          db_provider_cloud_region: "eu-west-1"          
+          rdbms_subnet_list: "[]"
+          db_provider_cloud_region: "eu-west-1"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
