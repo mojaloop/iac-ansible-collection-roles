@@ -227,7 +227,7 @@ argocd_default:
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
           cert_manager_namespace: "cert-manager"
-          config_dns_backend_path: "cc-cloud-provider-dns"
+          dns_backend_path: "cc-cloud-provider-dns"
           enable_dns_backend: "true"
           dns_access_role: "dns-access"
 
