@@ -120,6 +120,7 @@ argocd_default:
           rds_crossplane_modules_version: "1.14.0"
           ec2_crossplane_modules_version: "1.14.0"
           crossplane_func_pat_version: "0.2.1"
+          k8s_crossplane_module_version: "0.11.4"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
