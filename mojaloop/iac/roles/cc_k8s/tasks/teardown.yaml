@@ -1,11 +1,14 @@
-- name: Delete vault workspace
+- name: Delete resources before infra teardown
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl delete workspace vault-post-config
+    kubectl delete dbinstanceclaim -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all 
   args:
     executable: /bin/bash
+
 # - name: Wait for vault to be gone
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
