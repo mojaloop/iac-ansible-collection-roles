@@ -407,7 +407,7 @@ argocd_default:
           gitlab_db_username: "gitlab"
           praefect_db_username: "praefect"
           gitlab_dbdeploy_name_prefix: "gitlab-db"
-          praefect_dbdeploy_helm_prefix: "praefect-db"         
+          praefect_dbdeploy_name_prefix: "praefect-db"         
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
