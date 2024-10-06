@@ -356,6 +356,8 @@ argocd_default:
           root_token_secret_name: "root-token-secret"
           root_token_secret_key: "token"
           gitaly_storage_size: "10Gi"
+          praefect_externalservice_name: "praefect-db-external"
+          gitlab_externalservice_name: "gitlab-db-external"
         registry:
           public_ingress_access_domain: "true"
         pre:
@@ -396,7 +398,16 @@ argocd_default:
           gitlab_runner_cache_storage_size: "10Gi"
           rdbms_provider: "percona"
           rdbms_subnet_list: "[]"
+          vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"
+          gitlab_db_secret: "gitlab-postgresql-credentials"
+          praefect_db_secret: "praefect-postgresql-credentials"
+          gitlab_db_name: "gitlab"
+          praefect_db_name: "praefect"
+          gitlab_db_username: "gitlab"
+          praefect_db_username: "praefect"
+          gitlab_dbdeploy_name_prefix: "gitlab-db"
+          praefect_dbdeploy_helm_name_prefix: "praefect-db"         
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
