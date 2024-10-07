@@ -9,5 +9,5 @@
   roles:
     - mojaloop.iac.eks_util
     - geerlingguy.k8s.helm
-    #- mojaloop.iac.cc_k8s
-    - mojaloop.iac.cc_eks
+    - mojaloop.iac.cc_k8s
+    #- mojaloop.iac.cc_eks
