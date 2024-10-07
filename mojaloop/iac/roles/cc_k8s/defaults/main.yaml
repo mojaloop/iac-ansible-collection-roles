@@ -136,6 +136,18 @@ argocd_default:
       cloud_provider: "aws"
       application_gitrepo_tag: "vexp-cck8s19"
       sub_apps: {}
+      
+    k8s_config:
+      argocd_app_name: "k8s-post-config"
+      app_name: "k8s-post-config"
+      app_namespace: "argocd"
+      namespace: "k8s-post-config"
+      app_enabled: "true"
+      sync_wave: "'0'"
+      application_gitrepo_tag: "vexp-cck8s19"
+      terraform_modules_tag: "vexp-cck8s19"
+      k8s_cloud_region: "eu-west-2"
+      sub_apps: {}
 
     vault:
       argocd_app_name: "vault"
@@ -510,14 +522,3 @@ argocd_default:
           namespace: "monitoring"
           terraform_modules_tag: "vexp-cck8sargoroot581"
           sync_wave: "'-1'" #after zitadel is done for oidc
-
-    k8s_config:
-      argocd_app_name: "k8s-post-config"
-      app_name: "k8s-post-config"
-      app_namespace: "argocd"
-      namespace: "k8s-post-config"
-      app_enabled: "true"
-      sync_wave: "'0'"
-      application_gitrepo_tag: "vexp-cck8s19"
-      terraform_modules_tag: "vexp-cck8s19"
-      k8s_cloud_region: "eu-west-2"
