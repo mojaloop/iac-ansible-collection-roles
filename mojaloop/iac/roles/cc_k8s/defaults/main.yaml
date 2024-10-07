@@ -41,7 +41,8 @@ argocd_default:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           helm_version: "1.14.5"
-          rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
+          #rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
+          rook_csi_kubelet_dir_path: "/var/lib/kubelet"
           sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
@@ -509,3 +510,13 @@ argocd_default:
           namespace: "monitoring"
           terraform_modules_tag: "vexp-cck8sargoroot581"
           sync_wave: "'-1'" #after zitadel is done for oidc
+
+    k8s_config:
+      app_name: "k8s-post-config"
+      app_namespace: "argocd"
+      namespace: "k8s-post-config"
+      app_enabled: "true"
+      sync_wave: "'0'"
+      application_gitrepo_tag: "vexp-cck8s19"
+      terraform_modules_tag: "vexp-cck8s19"
+      k8s_cloud_region: "eu-west-2"
