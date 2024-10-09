@@ -511,6 +511,7 @@ argocd_default:
           dashboard_datasource_name: "Mimir"
         mimir:
           public_ingress_access_domain: "false"
+          max_label_names_per_series: "'35'"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
