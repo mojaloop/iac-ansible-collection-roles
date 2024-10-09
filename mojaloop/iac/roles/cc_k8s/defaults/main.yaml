@@ -202,7 +202,7 @@ argocd_default:
           object_storage_backend_path: "cc-cloud-provider-os"
           object_storage_region: "none"
           object_storage_secret_name: "velero-cloud-api-secret"
-          object_storage_secret_key: "velero-cloud-api-secret-key"
+          object_storage_secret_key: "cloud"
           object_storage_bucket: "velero"
           plugin_version: "v1.1.0"
         pre:
@@ -422,7 +422,7 @@ argocd_default:
           gitlab_db_username: "gitlab"
           praefect_db_username: "praefect"
           gitlab_dbdeploy_name_prefix: "gitlab-db"
-          praefect_dbdeploy_name_prefix: "praefect-db"         
+          praefect_dbdeploy_name_prefix: "praefect-db"
         post_config:
           app_name: "gitlab-post-config"
           sub_app_enabled: "true"
