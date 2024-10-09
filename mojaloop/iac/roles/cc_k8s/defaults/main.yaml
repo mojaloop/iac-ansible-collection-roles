@@ -148,6 +148,7 @@ argocd_default:
       terraform_modules_tag: "vexp-cck8s19"
       k8s_cloud_region: "eu-west-2"
       aws_tf_provider_version: "5.70.0"
+      eks_name: "cc33-cceks-mojal"
       sub_apps: {}
 
     vault:
