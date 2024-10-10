@@ -34,7 +34,7 @@ argocd_default:
         argocd_helm:
           app_name: "argocd"
           namespace: "argocd"
-          helm_version: "7.3.2"
+          helm_version: "7.6.8"
           public_ingress_access_domain: "false"
           sub_app_enabled: "true"
         rook_ceph:
