@@ -483,7 +483,6 @@ argocd_default:
         monitoring:
           app_name: "monitoring"
           kube_prometheus_helm_version: "9.5.10"
-          grafana_mimir_helm_version: "1.2.10"
           ctrl_cntr_loki_helm_version: "2.13.0"
           ctrl_cntr_loki_retention_period: "3d" #TODO: increase after testing that limit works
           ctrl_cntr_loki_ingester_max_chunk_age: "2h"
@@ -507,6 +506,7 @@ argocd_default:
           dashboard_datasource_name: "Mimir"
         mimir:
           public_ingress_access_domain: "false"
+          helm_version: "1.2.10" # test this config
           max_label_names_per_series: "'35'"
           # config moved from here
           max_global_series_per_user: "'5000000'"
