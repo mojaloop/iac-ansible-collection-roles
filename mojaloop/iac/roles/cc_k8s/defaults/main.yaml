@@ -512,7 +512,9 @@ argocd_default:
           querier_replica_count: "'2'"
           query_frontend_replica_count: "'1'"
           compactor_replica_count: "'1'"
-          store_gateway_replica_count: "'3'"          
+          store_gateway_replica_count: "'3'"
+          
+          mimir_ingester_storage_size: "30Gi"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
