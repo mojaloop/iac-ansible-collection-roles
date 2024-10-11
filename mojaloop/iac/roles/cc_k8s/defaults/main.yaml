@@ -196,7 +196,7 @@ argocd_default:
           helm_version: "7.2.1"
           namespace: "velero"
           sub_app_enabled: "true"
-          object_storage_cloud_policy: "arn:blah"
+          object_storage_cloud_role: "arn:blah"
           enable_object_storage_backend: "'false'"
           object_storage_access_role: "object-storage-access"
           object_storage_backend_path: "cc-cloud-provider-os"
@@ -512,7 +512,7 @@ argocd_default:
           mimir_querier_replica_count: "'2'"
           mimir_query_frontend_replica_count: "'1'"
           mimir_compactor_replica_count: "'1'"
-          mimir_store_gateway_replica_count: "'3'"          
+          mimir_store_gateway_replica_count: "'3'"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
