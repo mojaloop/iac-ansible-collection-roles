@@ -1,0 +1,7 @@
+- hosts: bastion
+  become: true
+  roles:
+    - role: geerlingguy.k8s.helm
+    - role: mojaloop.iac.cc_k8s
+      vars:
+        teardown: true
