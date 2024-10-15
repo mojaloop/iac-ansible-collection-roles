@@ -239,6 +239,7 @@ argocd_default:
           external_load_balancer_dns: "dns.name"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
+          cert_manager_cloud_policy: "arn:blah"
           external_dns_cloud_role: "arn:blah"
           dns_cloud_api_region: "none"
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
@@ -247,6 +248,7 @@ argocd_default:
           dns_backend_path: "cc-cloud-provider-dns"
           enable_dns_backend: "'true'"
           dns_access_role: "dns-access"
+          cert_manager_access_role: "cert-man-access"
 
         post_config:
           app_name: "post-config"
