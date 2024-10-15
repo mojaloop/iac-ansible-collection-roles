@@ -239,7 +239,7 @@ argocd_default:
           external_load_balancer_dns: "dns.name"
           dns_public_subdomain: "x.y.z"
           dns_private_subdomain: "x.y.internal"
-          ext_dns_cloud_policy: "arn:blah"
+          external_dns_cloud_role: "arn:blah"
           dns_cloud_api_region: "none"
           letsencrypt_server: "https://acme-v02.api.letsencrypt.org/directory"
           letsencrypt_email: "none@example.com"
