@@ -326,7 +326,7 @@ argocd_default:
           setup_key_secret_name: "netbird-ansible-output"
           gw_setup_key_secret_key: "gw-setup-key"
           build_setup_key_secret_key: "build-setup-key"
-          internal_k8s_cidr: "127.0.0.1/32"
+          cc_vpc_cidr: "127.0.0.1/32"
           ansible_collection_tag: "vexp-cck8s19"
           netbird_tf_provider_version: "99.99.99"
     nexus:
