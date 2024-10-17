@@ -292,6 +292,10 @@ argocd_default:
           zitadel_db_name: "zitadel"
           zitadel_db_user: "zitadel"
           rdbms_provider: "percona"
+          dbdeploy_name_prefix: "zitadel-db"
+          db_provider_cloud_region: "eu-west-1"
+          rds_postgres_instance_size: "small"
+          rds_postgres_storage_size: "20"
         postgres:
           app_name: "postgres-db"
           replicas: "'1'"
