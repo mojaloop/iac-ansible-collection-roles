@@ -521,9 +521,9 @@ argocd_default:
           compactor_replica_count: "'1'"
           store_gateway_replica_count: "'3'"
           
-          mimir_ingester_storage_size: "30Gi"
-          mimir_compactor_storage_size: "30Gi"
-          mimir_store_gateway_storage_size: "30Gi"
+          ingester_storage_size: "30Gi"
+          compactor_storage_size: "30Gi"
+          store_gateway_storage_size: "30Gi"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
