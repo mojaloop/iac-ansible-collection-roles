@@ -24,6 +24,12 @@
     src: "../templates/credentials.j2"
     dest: "/root/.aws/credentials"
 
+
+- name: "copy auth configmap template"
+  template:
+    src: "../templates/aws-auth-configmap.j2"
+    dest: "/tmp/aws-auth-configmap.yaml"
+
 - name: "create directory for kubeconfig"
   file:
     path: "{{ kubeconfig_location }}"
