@@ -24,12 +24,6 @@
     src: "../templates/credentials.j2"
     dest: "/root/.aws/credentials"
 
-
-# - name: "copy auth configmap template"
-#   template:
-#     src: "../templates/aws-auth-configmap.j2"
-#     dest: "/tmp/aws-auth-configmap.yaml"
-
 - name: "create directory for kubeconfig"
   file:
     path: "{{ kubeconfig_location }}"
@@ -46,14 +40,14 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-- name: Save configmap
-  copy:
-    content: "{{ eks_post_install_config_map }}"
-    dest: /tmp/configmap.yaml
+# - name: Save configmap
+#   copy:
+#     content: "{{ eks_post_install_config_map }}"
+#     dest: /tmp/configmap.yaml
 
-- name: install nodegroup configmap
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+# - name: install nodegroup configmap
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
 
 - name: Fetch kubeconfig
   fetch:
