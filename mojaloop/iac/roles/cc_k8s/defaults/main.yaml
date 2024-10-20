@@ -292,6 +292,8 @@ argocd_default:
           zitadel_db_name: "zitadel"
           zitadel_db_user: "zitadel"
           rdbms_provider: "percona"
+          rdbms_subnet_list: "[]"
+          vpc_cidr: "0.0.0.0/0"
           dbdeploy_name_prefix: "zitadel-db"
           db_provider_cloud_region: "eu-west-1"
           zitadel_postgres_instance_size: "small"
