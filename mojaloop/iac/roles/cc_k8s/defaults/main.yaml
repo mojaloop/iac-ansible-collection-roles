@@ -292,6 +292,10 @@ argocd_default:
           zitadel_db_name: "zitadel"
           zitadel_db_user: "zitadel"
           rdbms_provider: "percona"
+          dbdeploy_name_prefix: "zitadel-db"
+          db_provider_cloud_region: "eu-west-1"
+          zitadel_postgres_instance_size: "small"
+          zitadel_postgres_storage_size: "'20'"
         postgres:
           app_name: "postgres-db"
           replicas: "'1'"
@@ -521,11 +525,10 @@ argocd_default:
           querier_replica_count: "'2'"
           query_frontend_replica_count: "'1'"
           compactor_replica_count: "'1'"
-          store_gateway_replica_count: "'3'"
-
-          mimir_ingester_storage_size: "30Gi"
-          mimir_compactor_storage_size: "30Gi"
-          mimir_store_gateway_storage_size: "30Gi"
+          store_gateway_replica_count: "'3'"          
+          ingester_storage_size: "30Gi"
+          compactor_storage_size: "30Gi"
+          store_gateway_storage_size: "30Gi"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later

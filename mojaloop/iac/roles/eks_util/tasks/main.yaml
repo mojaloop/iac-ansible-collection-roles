@@ -40,14 +40,14 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-- name: Save configmap
-  copy:
-    content: "{{ eks_post_install_config_map }}"
-    dest: /tmp/configmap.yaml
+# - name: Save configmap
+#   copy:
+#     content: "{{ eks_post_install_config_map }}"
+#     dest: /tmp/configmap.yaml
 
-- name: install nodegroup configmap
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+# - name: install nodegroup configmap
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
 
 - name: Fetch kubeconfig
   fetch:
