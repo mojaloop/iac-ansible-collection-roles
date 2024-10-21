@@ -28,6 +28,10 @@
     kubectl get appset --no-headers -o custom-columns=":metadata.name"
   register: existing_appsets
 
+- name: Display existing app sets string
+  debug:
+    var: existing_appsets
+
 - name: Convert the existing app sets to a list
   set_fact:
     existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
