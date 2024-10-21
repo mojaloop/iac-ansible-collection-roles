@@ -24,12 +24,6 @@
     src: "../templates/credentials.j2"
     dest: "/root/.aws/credentials"
 
-- name: "copy aws auth configmap file"
-  template:
-    src: "../templates/aws-auth-configmap.j2"
-    dest: "/tmp/aws-auth-configmap.yaml"
-
-
 - name: "create directory for kubeconfig"
   file:
     path: "{{ kubeconfig_location }}"
@@ -46,22 +40,27 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-# - name: create kubeconfig
-#   shell: |
-#     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
-
 - name: Save configmap
   copy:
     content: "{{ eks_post_install_config_map }}"
     dest: /tmp/configmap.yaml
 
-# - name: install nodegroup configmap
-#   shell: |
-#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
-
 - name: install nodegroup configmap
   shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/aws-auth-configmap.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+
+- name: "copy aws auth configmap patch"
+  template:
+    src: "../templates/aws-auth-patch.yaml.j2"
+    dest: "/tmp/aws-auth-patch.yaml"
+
+# - name: Patch nodegroup configmap
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig patch configmap aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yaml)" --type merge
+
+# - name: Update kubeconfig
+#   shell: |
+#     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
 - name: Fetch kubeconfig
   fetch:
