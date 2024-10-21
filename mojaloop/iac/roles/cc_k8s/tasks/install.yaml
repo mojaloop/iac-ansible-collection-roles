@@ -46,9 +46,9 @@
   set_fact:
     input_appset_list: "{{ fact_environment_list | map('regex_replace', '^(.*)$', '\\1-env-onboard') }}"
 
-- name: Find the difference between fact_environment_list and existing_appsets_list
+- name: Find the difference between input_appset_list and existing_appsets_list
   set_fact:
-    fact_appsets_to_delete: "{{ existing_appsets_list | difference(fact_environment_list) }}"
+    fact_appsets_to_delete: "{{ existing_appsets_list | difference(input_appset_list) }}"
 
 - name: Display app sets to delete
   debug:
@@ -62,7 +62,7 @@
 
 - name: Find the apps to create
   set_fact:
-    fact_appset_to_create: "{{ fact_environment_list | difference(existing_appsets_list) }}"
+    fact_appset_to_create: "{{ input_appset_list | difference(existing_appsets_list) }}"
 
 - name: Display app sets to create  
   debug:
