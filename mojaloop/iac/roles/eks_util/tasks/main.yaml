@@ -4,6 +4,10 @@
       - unzip
 
 - name: Install yq
+  ansible.builtin.get_url:
+    url: "{{ yq_download_url }}"
+    dest: /usr/bin/yq
+    mode: o=rwx,g=rx,o=rx
   
 - name: download awscli
   ansible.builtin.unarchive:
