@@ -531,6 +531,8 @@ argocd_default:
           ingester_storage_size: "30Gi"
           compactor_storage_size: "30Gi"
           store_gateway_storage_size: "30Gi"
+          distributor_limits_cpu: "1000m"
+          distributor_limits_memory: "3Gi"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
