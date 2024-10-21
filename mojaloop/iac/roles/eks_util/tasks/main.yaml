@@ -24,6 +24,12 @@
     src: "../templates/credentials.j2"
     dest: "/root/.aws/credentials"
 
+- name: "copy aws auth configmap file"
+  template:
+    src: "../templates/aws-auth-configmap.j2"
+    dest: "/tmp/aws-auth-configmap.yaml"
+
+
 - name: "create directory for kubeconfig"
   file:
     path: "{{ kubeconfig_location }}"
@@ -32,7 +38,7 @@
 
 - name: create kubeconfig
   shell: |
-    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
 - name: install kubectl
   get_url:
@@ -40,6 +46,9 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
+# - name: create kubeconfig
+#   shell: |
+#     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 # - name: Save configmap
 #   copy:
 #     content: "{{ eks_post_install_config_map }}"
