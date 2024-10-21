@@ -22,6 +22,37 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
+- name: Find the existing env app sets
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get appset --no-headers -o custom-columns=":metadata.name"
+  register: existing_appsets
+
+- name: Convert the existing app sets to a list
+  set_fact:
+    existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
+
+- name: Find the difference between fact_environment_list and existing_appsets_list
+  set_fact:
+    fact_appsets_to_delete: "{{ existing_appsets_list | difference(fact_environment_list) }}"
+
+- name: delete the removed env's appset
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete appset {{ item }}
+  loop: "{{ fact_appsets_to_delete }}"  
+
+- name: Find the apps to create
+  set_fact:
+  fact_appset_to_create: "{{ fact_environment_list | difference(existing_appsets_list) }}"
+
+- name: Upload env appset template files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/application_set/"
+  when: item.state == 'file'
+
 - name: Install env app set
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig

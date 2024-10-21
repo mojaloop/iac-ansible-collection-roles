@@ -1,4 +1,4 @@
-{% for env_name in fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(",") %}
+{% for env_name in fact_appset_to_create %}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
