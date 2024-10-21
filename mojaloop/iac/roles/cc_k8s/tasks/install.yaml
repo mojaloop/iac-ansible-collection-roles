@@ -23,9 +23,7 @@
     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
 - name: Find the existing env app sets
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get appset --no-headers -o custom-columns=":metadata.name"
+  shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
   register: existing_appsets
 
 - name: Display existing app sets string
