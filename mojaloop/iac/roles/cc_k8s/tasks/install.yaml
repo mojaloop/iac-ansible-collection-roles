@@ -44,7 +44,7 @@
 
 - name: Find the apps to create
   set_fact:
-  fact_appset_to_create: "{{ fact_environment_list | difference(existing_appsets_list) }}"
+    fact_appset_to_create: "{{ fact_environment_list | difference(existing_appsets_list) }}"
 
 - name: Upload env appset template files
   template:
