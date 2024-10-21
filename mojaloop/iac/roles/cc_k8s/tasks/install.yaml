@@ -42,6 +42,10 @@
   debug:
     var: fact_environment_list
 
+- name: Convert env list to appset list
+  set_fact:
+    input_appset_list: "{{ fact_environment_list | map('regex_replace', '^(.*)$', '\\1-env-onboard') }}"
+
 - name: Find the difference between fact_environment_list and existing_appsets_list
   set_fact:
     fact_appsets_to_delete: "{{ existing_appsets_list | difference(fact_environment_list) }}"
