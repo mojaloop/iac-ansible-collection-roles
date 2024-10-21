@@ -26,7 +26,7 @@
     fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
     fact_kubernetes_oidc_groups_claim: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_grant_prefix }}"
     fact_netbird_management_url: "https://netbird.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}:443"
-    fact_environment_list: fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(",")
+    fact_environment_list: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(',') }}"
 
 - name: set gitlab domain to public
   set_fact:
