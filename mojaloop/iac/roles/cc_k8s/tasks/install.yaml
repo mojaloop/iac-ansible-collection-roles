@@ -38,6 +38,10 @@
   debug:
     var: existing_appsets_list
 
+- name: Display the envs in the fact_environment_list
+  debug:
+    var: fact_environment_list
+
 - name: Find the difference between fact_environment_list and existing_appsets_list
   set_fact:
     fact_appsets_to_delete: "{{ existing_appsets_list | difference(fact_environment_list) }}"
