@@ -62,7 +62,7 @@
 
 - name: Patch nodegroup configmap
   shell: |
-    kubectl get configmap -n kube-system aws-auth -o yaml | yq eval '(.data.mapRoles) += "\n- rolearn: {{ eks_access_role_arn }}\n  username: cluster-admin\n  groups:\n    - system:masters"' | kubectl apply -f -
+    kubectl  --kubeconfig {{ kubeconfig_location }}/kubeconfig get configmap -n kube-system aws-auth -o yaml | yq eval '(.data.mapRoles) += "\n- rolearn: {{ eks_access_role_arn }}\n  username: cluster-admin\n  groups:\n    - system:masters"' | kubectl  --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f -
 
 - name: Update kubeconfig
   shell: |
