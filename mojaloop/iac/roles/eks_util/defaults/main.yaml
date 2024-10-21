@@ -2,3 +2,5 @@ kubeconfig_local_location: "/tmp"
 kubeconfig_location: "/root/.kube"
 awscli_version: "2.18.10"
 kubectl_version: "1.30.0"
+yq_version: 4.44.2
+yq_download_url: "https://github.com/mikefarah/yq/releases/download/v{{ yq_version }}/yq_linux_amd64"
