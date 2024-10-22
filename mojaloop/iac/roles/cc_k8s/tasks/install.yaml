@@ -55,9 +55,9 @@
   debug:
     var: fact_appsets_to_delete
 
-# - name: Delete the removed env's appset
-#   shell: kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-#   loop: "{{ fact_appsets_to_delete }}" 
+- name: Delete the removed env's appset
+  shell: kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+  loop: "{{ fact_appsets_to_delete }}" 
 
 - name: Find the apps to create
   set_fact:
@@ -74,10 +74,10 @@
   with_filetree: "{{role_path}}/templates/application_set/"
   when: item.state == 'file'
 
-# - name: Install env app set
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
+- name: Install env app set
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
