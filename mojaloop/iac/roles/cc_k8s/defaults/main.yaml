@@ -298,6 +298,7 @@ argocd_default:
           db_provider_cloud_region: "eu-west-1"
           zitadel_postgres_instance_size: "small"
           zitadel_postgres_storage_size: "'20'"
+          zitadel_externalservice_name: "zitadel-db-external"
         postgres:
           app_name: "postgres-db"
           replicas: "'1'"
