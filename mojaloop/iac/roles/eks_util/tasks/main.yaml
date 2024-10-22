@@ -3,12 +3,6 @@
     name:
       - unzip
 
-- name: Install yq
-  ansible.builtin.get_url:
-    url: "{{ yq_download_url }}"
-    dest: /usr/bin/yq
-    mode: o=rwx,g=rx,o=rx
-  
 - name: download awscli
   ansible.builtin.unarchive:
     src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ awscli_version }}.zip
@@ -54,14 +48,6 @@
 - name: install nodegroup configmap
   shell: |
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
-
-- name: Patch nodegroup configmap
-  shell: |
-    kubectl  --kubeconfig {{ kubeconfig_location }}/kubeconfig get configmap -n kube-system aws-auth -o yaml | yq eval '(.data.mapRoles) += "\n- rolearn: {{ eks_access_role_arn }}\n  username: cluster-admin\n  groups:\n    - system:masters"' | kubectl  --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f -
-
-- name: Update kubeconfig
-  shell: |
-    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
 - name: Fetch kubeconfig
   fetch:
