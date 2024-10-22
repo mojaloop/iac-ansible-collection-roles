@@ -64,7 +64,7 @@
   set_fact:
     fact_appset_to_create: "{{ input_appset_list }}"
 
-- name: Display app sets to create  
+- name: Display app sets to create or modify 
   debug:
     var: fact_appset_to_create
 
