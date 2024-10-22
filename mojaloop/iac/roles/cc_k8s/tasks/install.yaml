@@ -34,9 +34,6 @@
   set_fact:
     existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
 
-- name: Display existing app sets
-  debug:
-    var: existing_appsets_list
 
 - name: Display the envs in the fact_environment_list
   debug:
@@ -45,6 +42,10 @@
 - name: Convert existing app set to remove onboard name
   set_fact:
     existing_appsets_conv_list: "{{ existing_appsets_list | map('regex_replace', '-env-onboard$', '') | list }}"
+
+- name: Display existing app sets
+  debug:
+    var: existing_appsets_conv_list
 
 - name: Find the difference between input_appset_list and existing_appsets_list
   set_fact:
