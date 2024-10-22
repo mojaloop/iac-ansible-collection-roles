@@ -42,25 +42,25 @@
   debug:
     var: fact_environment_list
 
-- name: Convert env list to appset list
+- name: Convert existing app set to remove onboard name
   set_fact:
-    input_appset_list: "{{ fact_environment_list | map('regex_replace', '^(.*)$', '\\1-env-onboard') }}"
+    existing_appsets_conv_list: "{{ existing_appsets_list | map('regex_replace', '-env-onboard$', '') | list }}"
 
 - name: Find the difference between input_appset_list and existing_appsets_list
   set_fact:
-    fact_appsets_to_delete: "{{ existing_appsets_list | difference(input_appset_list) }}"
+    fact_appsets_to_delete: "{{ existing_appsets_conv_list | difference(fact_environment_list) }}"
 
 - name: Display app sets to delete
   debug:
     var: fact_appsets_to_delete
 
-- name: Delete the removed env's appset
-  shell: kubectl delete appset {{ item }} --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-  loop: "{{ fact_appsets_to_delete }}" 
+# - name: Delete the removed env's appset
+#   shell: kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+#   loop: "{{ fact_appsets_to_delete }}" 
 
 - name: Find the apps to create
   set_fact:
-    fact_appset_to_create: "{{ input_appset_list }}"
+    fact_appset_to_create: "{{ fact_environment_list }}"
 
 - name: Display app sets to create or modify 
   debug:
@@ -73,10 +73,10 @@
   with_filetree: "{{role_path}}/templates/application_set/"
   when: item.state == 'file'
 
-- name: Install env app set
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
+# - name: Install env app set
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
