@@ -533,7 +533,17 @@ argocd_default:
           compactor_storage_size: "30Gi"
           store_gateway_storage_size: "30Gi"
           distributor_limits_cpu: "1000m"
-          distributor_limits_memory: "3Gi"
+          distributor_limits_memory: "1Gi"
+          ingester_limits_cpu: "1000m"
+          ingester_limits_memory: "1Gi"
+          querier_limits_cpu: "1000m"
+          querier_limits_memory: "1Gi"
+          query_frontend_limits_cpu: "1000m"
+          query_frontend_limits_memory: "1Gi"
+          compactor_limits_cpu: "1000m"
+          compactor_limits_memory: "1Gi"
+          store_gateway_limits_cpu: "1000m"
+          store_gateway_limits_memory: "1Gi"
         prometheus:
           pvc_size: "100Gi"
           retention_period: "1d" # TODO: increase to 10d later
