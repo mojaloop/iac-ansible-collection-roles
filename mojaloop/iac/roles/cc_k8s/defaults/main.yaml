@@ -305,7 +305,7 @@ argocd_default:
           rbac_user_group: "techops-users"
           preconfig_output_secret: "netbird-management"
           stunner_system_namespace: "stunner-system"
-          stunner_gateway_operator_helm_version: "0.19.0"
+          stunner_gateway_operator_helm_version: "0.21.0"
           stunner_nodeport_port: "'31821'"
           stunner_impl_namespace: stunner-impl
           stunner_auth_secret: stunner-auth-secret
