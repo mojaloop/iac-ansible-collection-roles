@@ -34,6 +34,7 @@
 - name: create kubeconfig
   shell: |
     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+  when: not (pipeline_executor | bool)
 
 - name: install kubectl
   get_url:
@@ -51,12 +52,16 @@
     src: "../templates/aws-auth-configmap.j2"
     dest: "/tmp/aws-auth-configmap.yaml"
 
-# - name: install nodegroup configmap
-#   shell: |
-#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+- name: install nodegroup configmap
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/aws-auth-configmap.yaml
 
-# - name: Fetch kubeconfig
-#   fetch:
-#     src: "{{ kubeconfig_location }}/kubeconfig"
-#     dest: "{{ kubeconfig_local_location }}/kubeconfig"
-#     flat: yes
+- name: Update kubeconfig
+  shell: |
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+
+- name: Fetch kubeconfig
+  fetch:
+    src: "{{ kubeconfig_location }}/kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/kubeconfig"
+    flat: yes
