@@ -6,7 +6,7 @@ metadata:
 data:
   mapRoles: |
     - rolearn: arn:aws:iam::{{ root_account_id }}:role/{{ eks_cluster_name }}-master-generic
-      username: system:node:{{ "{{ EC2PrivateDNSName }}" }}
+      username: system:node:{{ "{{EC2PrivateDNSName}}" }}
       groups:
         - system:bootstrappers
         - system:nodes
