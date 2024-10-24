@@ -41,24 +41,12 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-- name: Save configmap
-  copy:
-    content: "{{ eks_post_install_config_map }}"
-    dest: /tmp/configmap.yaml
+# - name: Save configmap
+#   copy:
+#     content: "{{ eks_post_install_config_map }}"
+#     dest: /tmp/configmap.yaml
 
-- name: Extract node rolearn from configmap
-  shell: cat /tmp/configmap.yaml | jq -r '.data.mapRoles | match("rolearn: (?<rolearn>arn:[^\\n]+)").captures[0].string'
-  register: configmap_content
-
-- name: Parse nodes rolearn from configmap content
-  set_fact:
-    eks_nodes_rolearn: "{{ configmap_content.stdout | regex_search('rolearn: (arn:aws:iam:[^\\n]+)', '\\1') }}"
-  
-- name: Debug extracted rolearn
-  debug:
-    msg: "Extracted rolearn: {{ eks_nodes_rolearn }}"
-
-- name: "Copy patched aws auth configmap file"
+- name: "Copy aws auth configmap"
   template:
     src: "../templates/aws-auth-configmap.j2"
     dest: "/tmp/aws-auth-configmap.yaml"
