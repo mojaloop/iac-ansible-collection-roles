@@ -32,7 +32,6 @@
 
 - name: create kubeconfig
   shell: |
-    #aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
 
 - name: install kubectl
@@ -41,8 +40,17 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
-- name: Fetch kubeconfig
-  fetch:
-    src: "{{ kubeconfig_location }}/kubeconfig"
-    dest: "{{ kubeconfig_local_location }}/kubeconfig"
-    flat: yes
+- name: Save configmap
+  copy:
+    content: "{{ eks_post_install_config_map }}"
+    dest: /tmp/configmap.yaml
+
+# - name: install nodegroup configmap
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
+
+# - name: Fetch kubeconfig
+#   fetch:
+#     src: "{{ kubeconfig_location }}/kubeconfig"
+#     dest: "{{ kubeconfig_local_location }}/kubeconfig"
+#     flat: yes
