@@ -9,12 +9,12 @@
   roles:
     - mojaloop.iac.eks_util_cc
     - geerlingguy.k8s.helm
-    - mojaloop.iac.cc_k8s
+    # - mojaloop.iac.cc_k8s
     
-- hosts: bastion
-  become: true
-  roles:
-    - role: mojaloop.iac.netbird_client
-      vars:
-        netbird_api_host: "{{ hostvars[groups['bastion'][0]]['fact_netbird_management_url'] }}"
-        netbird_setup_key: "{{ hostvars[groups['bastion'][0]]['fact_bastion_netbird_setup_key'] }}"
+# - hosts: bastion
+#   become: true
+#   roles:
+#     - role: mojaloop.iac.netbird_client
+#       vars:
+#         netbird_api_host: "{{ hostvars[groups['bastion'][0]]['fact_netbird_management_url'] }}"
+#         netbird_setup_key: "{{ hostvars[groups['bastion'][0]]['fact_bastion_netbird_setup_key'] }}"
