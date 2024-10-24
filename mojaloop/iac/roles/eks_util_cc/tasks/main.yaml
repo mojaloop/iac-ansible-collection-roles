@@ -2,6 +2,7 @@
   package:
     name:
       - unzip
+      - jq
 
 - name: download awscli
   ansible.builtin.unarchive:
@@ -46,7 +47,7 @@
     dest: /tmp/configmap.yaml
 
 - name: Extract node rolearn from configmap
-  command: cat /tmp/configmap.yaml
+  shell: cat /tmp/configmap.yaml | jq -r '.data.mapRoles | match("rolearn: (?<rolearn>arn:[^\\n]+)").captures[0].string'
   register: configmap_content
 
 - name: Parse nodes rolearn from configmap content
