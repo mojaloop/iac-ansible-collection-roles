@@ -51,7 +51,7 @@
 
 - name: Parse nodes rolearn from configmap content
   set_fact:
-    eks_nodes_rolearn: "{{ configmap_content.stdout | regex_search('rolearn: (arn:[^\\n]+)', '\\1') }}"
+    eks_nodes_rolearn: "{{ configmap_content.stdout | regex_search('rolearn: (arn:aws:iam:[^\\n]+)', '\\1') }}"
   
 - name: Debug extracted rolearn
   debug:
