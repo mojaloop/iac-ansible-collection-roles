@@ -45,6 +45,23 @@
     content: "{{ eks_post_install_config_map }}"
     dest: /tmp/configmap.yaml
 
+- name: Extract node rolearn from configmap
+  command: cat /tmp/configmap.yaml
+  register: configmap_content
+
+- name: Parse nodes rolearn from configmap content
+  set_fact:
+    eks_nodes_rolearn: "{{ configmap_content.stdout | regex_search('rolearn: (arn:[^\\n]+)', '\\1') }}"
+  
+- name: Debug extracted rolearn
+  debug:
+    msg: "Extracted rolearn: {{ eks_nodes_rolearn }}"
+
+- name: "Copy patched aws auth configmap file"
+  template:
+    src: "../templates/aws-auth-configmap.j2"
+    dest: "/tmp/aws-auth-configmap.yaml"
+
 # - name: install nodegroup configmap
 #   shell: |
 #     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
