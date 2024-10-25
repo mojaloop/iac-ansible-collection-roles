@@ -2,3 +2,5 @@ kubeconfig_local_location: "/tmp"
 kubeconfig_location: "/root/.kube"
 awscli_version: "2.18.10"
 kubectl_version: "1.30.0"
+pipeline_executor: false
+eks_access_role_arn: "none"
