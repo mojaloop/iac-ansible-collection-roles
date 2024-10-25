@@ -15,6 +15,7 @@ data:
     requestedScopes: ["openid", "profile", "email", "read_api"]
   application.instanceLabelKey: argocd.argoproj.io/instance
   kustomize.buildOptions: --enable-helm
+  statusbadge.enabled: 'true'
   ui.bannercontent: "argocd application install"
   ui.bannerpermanent: "true"
   resource.customizations: |
@@ -77,4 +78,4 @@ data:
 
         hs.status = "Progressing"
         hs.message = "Waiting for VaultSecret"
-        return hs        
+        return hs
