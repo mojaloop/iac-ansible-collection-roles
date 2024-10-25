@@ -7,7 +7,7 @@
 - hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
-    - mojaloop.iac.eks_util_cc
+    - mojaloop.iac.eks_util
     - geerlingguy.k8s.helm
     - mojaloop.iac.cc_k8s
     
