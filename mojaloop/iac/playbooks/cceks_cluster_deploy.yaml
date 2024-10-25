@@ -8,8 +8,8 @@
   become: true
   roles:
     - mojaloop.iac.eks_util_cc
-    # - geerlingguy.k8s.helm
-    # - mojaloop.iac.cc_k8s
+    - geerlingguy.k8s.helm
+    - mojaloop.iac.cc_k8s
     
 # - hosts: bastion
 #   become: true

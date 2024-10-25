@@ -49,6 +49,10 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f /tmp/configmap.yaml
 
+- name: Update kubeconfig
+  shell: |
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --role-arn {{ eks_access_role_arn }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+
 - name: Fetch kubeconfig
   fetch:
     src: "{{ kubeconfig_location }}/kubeconfig"
