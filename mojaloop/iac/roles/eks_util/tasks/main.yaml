@@ -30,9 +30,15 @@
     state: directory
     recurse: yes
 
-- name: create kubeconfig
+- name: create kubeconfig without assume role arn
   shell: |
     aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+  when: "(not (pipeline_executor | bool) or (eks_access_role_arn == 'none'))"
+
+- name: create kubeconfig with assume role arn
+  shell: |
+    aws eks update-kubeconfig --region {{ eks_aws_region }} --name {{ eks_cluster_name }} --kubeconfig {{ kubeconfig_location }}/kubeconfig
+  when: "((pipeline_executor | bool) and (eks_access_role_arn != 'none'))"
 
 - name: install kubectl
   get_url:
