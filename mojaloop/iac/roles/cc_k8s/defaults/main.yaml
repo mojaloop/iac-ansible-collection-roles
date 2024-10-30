@@ -9,6 +9,7 @@ kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
 helm_version: "3.14.0"
 cluster_cloud_provider: "aws"
+netbird_build_server_client_version: "0.28.9"
 #argo
 argocd_override:
 argocd_default:
