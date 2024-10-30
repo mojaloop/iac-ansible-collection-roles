@@ -1,4 +1,4 @@
-- hosts: bastion
+- hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
     - role: geerlingguy.k8s.helm
