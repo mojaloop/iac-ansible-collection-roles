@@ -500,12 +500,12 @@ argocd_default:
           public_ingress_access_domain: "false"
           helm_version: "1.2.10" # test this config
           max_label_names_per_series: "'35'"
-          # config moved from here
           max_global_series_per_user: "'5000000'"
           ingestion_rate: "'200000'"
           ingestion_burst_size: "'500000'"
-          retention_period: "30d" # TODO: increase after testing that limit works
-          distributor_replica_count: "'2'" # TODO: take all mimir config in monitoring app to mimir's own app
+          retention_period: "30d"
+          compactor_deletion_delay: "12h"
+          distributor_replica_count: "'2'"
           ingester_replica_count: "'4'"
           querier_replica_count: "'2'"
           query_frontend_replica_count: "'1'"
