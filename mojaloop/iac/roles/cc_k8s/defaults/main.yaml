@@ -9,6 +9,7 @@ kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
 helm_version: "3.14.0"
 cluster_cloud_provider: "aws"
+netbird_build_server_client_version: "0.28.9"
 #argo
 argocd_override:
 argocd_default:
@@ -28,7 +29,7 @@ argocd_default:
       argocd_app_name: "utils"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-10'"
+      sync_wave: "'-11'"
       app_enabled: "true"
       sub_apps:
         argocd_helm:
@@ -41,8 +42,8 @@ argocd_default:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           helm_version: "1.14.5"
-          #rook_csi_kubelet_dir_path: "/var/snap/microk8s/common/var/lib/kubelet"
           rook_csi_kubelet_dir_path: "/var/lib/kubelet"
+          sync_wave: "'-10'"
           sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
@@ -104,6 +105,12 @@ argocd_default:
           namespace: "cert-manager"
           sub_app_enabled: "true"
           credentials_secret: "cert-manager-dns"
+        base_monitoring:
+          app_name: "base-monitoring"
+          grafana_crd_version_tag: "5.10.0"
+          prometheus_crd_version: "13.0.2"
+          grafana_operator_version: "4.4.12"
+          namespace: "monitoring"
         consul:
           app_name: "consul"
           sub_app_enabled: "true"
@@ -461,17 +468,14 @@ argocd_default:
       argocd_app_name: "monitoring"
       app_namespace: "argocd"
       app_enabled: "true"
-      application_gitrepo_tag: "development-cto2.3"
+      application_gitrepo_tag: "vexp-cck8sargoroot581"
       sync_wave: "'-8'"
       sub_apps:
         pre:
           app_name: "monitoring-pre"
-          grafana_crd_version_tag: "5.10.0"
-          prometheus_crd_version: "13.0.2"
-          grafana_operator_version: "4.4.12"
           namespace: "monitoring"
           sub_app_enabled: "true"
-          sync_wave: "'-10'"
+          sync_wave: "'-9'"
           mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
           mimir_bucket_storage_size: "50Gi"
@@ -486,7 +490,6 @@ argocd_default:
           ctrl_cntr_loki_ingester_max_chunk_age: "2h"
           alertmanager_enabled: "false"
           namespace: "monitoring"
-          sync_wave: "'-9'" #after rook is done
           cloudwatch_exporter_role_arn: "arn:aws:iam::<project_id>:role/<role_name>"
         grafana:
           public_ingress_access_domain: "false"
