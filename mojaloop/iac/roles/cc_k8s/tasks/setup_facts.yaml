@@ -1,0 +1,59 @@
+#Create a temporary directory for storing values files or other config
+- name: merge argo dictionaries
+  set_fact:
+    fact_argo_merged_config: "{{ argocd_default | ansible.builtin.combine(argocd_override, recursive=true) }}"
+
+- name: set argo facts
+  set_fact:
+    fact_argocd_helm_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].namespace }}"
+    fact_argocd_helm_release: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].app_name }}"
+    fact_argocd_helm_version: "{{ fact_argo_merged_config.apps['utils'].sub_apps['argocd_helm'].helm_version }}"
+    fact_dns_public_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}"
+    fact_dns_private_subdomain: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}"
+    fact_istio_external_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_gateway_namespace }}"
+    fact_istio_external_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_external_wildcard_gateway_name }}"
+    fact_istio_internal_gateway_namespace: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_gateway_namespace }}"
+    fact_istio_internal_wildcard_gateway_name: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].istio_internal_wildcard_gateway_name }}"
+    fact_netbird_version: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].image_version }}"
+    fact_netbird_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"
+    fact_netbird_setup_key_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].setup_key_secret_name }}"
+    fact_netbird_gw_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].gw_setup_key_secret_key }}"
+    fact_netbird_build_setup_key_secret_key: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].build_setup_key_secret_key }}"
+    fact_k8s_oidc_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_oidc_post_config_output_secret }}"
+    fact_k8s_oidc_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"
+    fact_gitlab_namespace: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
+    fact_gitlab_token_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_name }}"
+    fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
+    fact_kubernetes_oidc_groups_claim: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_grant_prefix }}"
+    fact_netbird_management_url: "https://netbird.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}:443"
+    fact_environment_list: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(',') }}"
+
+- name: set gitlab domain to public
+  set_fact:
+    fact_gitlab_fqdn: "gitlab.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].public_ingress_access_domain | bool
+
+- name: set gitlab domain fact
+  set_fact:
+    fact_gitlab_fqdn: "gitlab.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].public_ingress_access_domain | bool)
+
+- name: set zitadel domain to public
+  set_fact:
+    fact_zitadel_fqdn: "zitadel.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool
+
+- name: set zitadel domain fact
+  set_fact:
+    fact_zitadel_fqdn: "zitadel.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['security'].sub_apps['zitadel'].public_ingress_access_domain | bool)
+
+- name: set netbird domain to public
+  set_fact:
+    fact_netbird_fqdn: "netbird.{{ fact_dns_public_subdomain }}"
+  when: fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool
+
+- name: set netbird domain fact
+  set_fact:
+    fact_netbird_fqdn: "netbird.{{ fact_dns_private_subdomain }}"
+  when: not (fact_argo_merged_config.apps['security'].sub_apps['netbird'].public_ingress_access_domain | bool)
