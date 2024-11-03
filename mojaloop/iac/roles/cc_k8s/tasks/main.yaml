@@ -1,8 +1,8 @@
 - name: set facts
   import_tasks: setup_facts.yaml
-  
+
 - name: setup
-  import_tasks: setup.yaml
+  import_tasks: setup_prerequisites.yaml
   when: (not (teardown | bool))
 
 - name: install
