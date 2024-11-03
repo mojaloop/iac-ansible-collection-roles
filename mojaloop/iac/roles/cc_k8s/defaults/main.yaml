@@ -478,7 +478,7 @@ argocd_default:
           sync_wave: "'-9'"
           mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
-          mimir_bucket_storage_size: "50Gi"
+          mimir_bucket_storage_size: "100Gi"
           ctrl_cntr_loki_bucket_name: "control-center-loki-bucket"
           ctrl_cntr_loki_bucket_max_objects: "'1000000'"
           ctrl_cntr_loki_bucket_storage_size: "20Gi"
