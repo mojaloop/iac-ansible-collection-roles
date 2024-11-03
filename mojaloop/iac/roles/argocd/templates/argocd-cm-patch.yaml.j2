@@ -79,3 +79,35 @@ data:
         hs.status = "Progressing"
         hs.message = "Waiting for VaultSecret"
         return hs
+
+    batch/Job:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Failed" and condition.status == "True" then
+                hs.status = "Degraded"
+                if obj.metadata.name == "moja-ml-ttk-test-val-gp" or obj.metadata.name == "moja-ml-ttk-test-setup" then
+                  hs.status = "Healthy"
+                end
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Complete" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Suspended" then
+                hs.status = "Suspended"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+
+        hs.status = "Progressing"
+        hs.message = "Waiting for Job"
+        return hs
