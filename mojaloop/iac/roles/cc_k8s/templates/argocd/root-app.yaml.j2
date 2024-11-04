@@ -32,7 +32,7 @@ spec:
           - name: cluster_name
             value: {{ cluster_name }}
           - name: cloud_provider
-            value: {{ cluster_cloud_provider }}
+            value: {{ cluster_cloud_provider }}          
           - name: "argocd_repo_url"
             value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
           - name: "ansible_gitrepo_url"

@@ -22,6 +22,57 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
+- name: Find the existing env app sets
+  shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+  register: existing_appsets
+
+- name: Display existing app sets string
+  debug:
+    var: existing_appsets
+
+- name: Convert the existing app sets to a list
+  set_fact:
+    existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
+
+- name: Display the envs in the fact_environment_list
+  debug:
+    var: fact_environment_list
+
+- name: Convert existing app set to remove onboard name
+  set_fact:
+    existing_appsets_conv_list: "{{ existing_appsets_list | map('regex_replace', '-env-onboard$', '') | list }}"
+
+- name: Display existing app sets
+  debug:
+    var: existing_appsets_conv_list
+
+- name: Find the difference between input_appset_list and existing_appsets_list
+  set_fact:
+    fact_appsets_to_delete: "{{ existing_appsets_conv_list | difference(fact_environment_list) }}"
+
+- name: Display app sets to delete
+  debug:
+    var: fact_appsets_to_delete
+
+- name: Delete the removed env's appset
+  shell: kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+  loop: "{{ fact_appsets_to_delete }}"
+
+- name: Find the apps to create
+  set_fact:
+    fact_appset_to_create: "{{ fact_environment_list }}"
+
+- name: Display app sets to create or modify
+  debug:
+    var: fact_appset_to_create
+
+- name: Upload env appset template files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/application_set/"
+  when: item.state == 'file'
+
 - name: Install env app set
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -64,20 +115,21 @@
 - name: save build server setup key to temp
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_build_setup_key_secret_key }}}" | base64 -d > /tmp/build-server-setup-key
+    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_build_setup_key_secret_key }}}" | base64 -d
+  register: build_server_netbird_setup_key
 
-- name: fetch build server setup key
-  fetch:
-    src: /tmp/build-server-setup-key
-    dest: /tmp/
-    flat: yes
-  when: not (pipeline_executor | bool)
+- name: set build server netbird setup key fact
+  set_fact:
+    fact_build_server_netbird_setup_key: "{{ build_server_netbird_setup_key.stdout | trim }}"
 
-- name: join build server to netbird
-  shell: |
-    netbird service install || true
-    netbird service start || true
-    netbird up -m https://netbird.{{ fact_dns_public_subdomain }}:443 -k $(cat /tmp/build-server-setup-key)
+- name: import build server join to netbird role
+  ansible.builtin.import_role:
+    name: mojaloop.iac.netbird_client
+    tasks_from: install
+  vars:
+    netbird_version: "{{ netbird_build_server_client_version }}"
+    netbird_api_host: "https://netbird.{{ fact_dns_public_subdomain }}:443"
+    netbird_setup_key: "{{ fact_build_server_netbird_setup_key }}"
   delegate_to: localhost
   when: not (pipeline_executor | bool)
 

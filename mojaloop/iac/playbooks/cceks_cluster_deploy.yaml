@@ -1,0 +1,20 @@
+- hosts: bastion
+  become: true
+  roles:
+    - mojaloop.iac.bastion_common
+    - mojaloop.iac.docker
+
+- hosts: "{{ groups['bastion'] | sort | first }}"
+  become: true
+  roles:
+    - mojaloop.iac.eks_util
+    - geerlingguy.k8s.helm
+    - mojaloop.iac.cc_k8s
+    
+- hosts: bastion
+  become: true
+  roles:
+    - role: mojaloop.iac.netbird_client
+      vars:
+        netbird_api_host: "{{ hostvars[groups['bastion'][0]]['fact_netbird_management_url'] }}"
+        netbird_setup_key: "{{ hostvars[groups['bastion'][0]]['fact_bastion_netbird_setup_key'] }}"
