@@ -293,11 +293,23 @@ argocd_default:
           k8s_admin_rbac_group: "techops-admin"
           k8s_oidc_post_config_output_secret: "k8s-oidc-post-config-output"
           post_config_sync_wave: "'-1'"
-        cockroachdb:
-          app_name: "cockroach-db"
-          sub_app_enabled: "true"
-          helm_version: "13.0.2"
-          pvc_size: "5Gi"
+          zitadel_rdbms_provider: "percona"
+          zitadel_externalservice_name: "zitadel-db-external"
+          rds_provider:
+            rdbms_subnet_list: "[]"
+            vpc_cidr: "0.0.0.0/0"
+            dbdeploy_name_prefix: "zitadel-db"
+            db_provider_cloud_region: "eu-west-1"
+            zitadel_postgres_instance_size: "small"
+            zitadel_postgres_storage_size: "'20'"
+          percona_provider:
+            pgdb_helm_version: "2.4.3"
+            pvc_size: "10Gi"
+            pgbouncer_pvc_size: "2Gi"
+            proxy_replicas: "'1'"
+          cockroachdb_provider:
+            helm_version: "13.0.2"
+            pvc_size: "5Gi"
         netbird:
           app_name: "netbird"
           sub_app_enabled: "true"
