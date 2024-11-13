@@ -327,8 +327,8 @@ argocd_default:
           netbird_tf_provider_version: "99.99.99"
           datastore_encryption_key_secret: "db-enc-key-secret"
           datastore_encryption_key_secret_key: "key"
-          netbird_relay_secret: "relay-secret"
-          netbird_relay_secret_key: "key"
+          relay_secret: "relay-secret"
+          relay_secret_key: "key"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
