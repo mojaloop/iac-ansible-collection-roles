@@ -1,16 +1,16 @@
 - name: Tear down ceph cluster
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl config set-context --current --namespace {{ fact_argocd_helm_namespace }}
-    argocd app set --source-position 1  rook-ceph --sync-policy none
-    argocd app terminate-op root-deployer --grpc-web
-    argocd app terminate-op rook-ceph --grpc-web
+    kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    kubectl patch application -n {{ fact_argo_merged_config.namespace }} rook-ceph --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    kubectl config set-context --current --namespace {{ fact_argo_merged_config.namespace }}
     kubectl -n {{ fact_rook_ceph_namespace }} scale deployment rook-ceph-operator --replicas=0
-    for CRD in $(kubectl get crd -n {{ fact_rook_ceph_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_rook_ceph_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_rook_ceph_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}' --ignore-not-found=true;done
-    kubectl -n {{ fact_rook_ceph_namespace }} delete cephobjectstore ceph-objectstore cephfilesystem ceph-filesystem cephblockpool ceph-blockpool --ignore-not-found=true
-    kubectl -n {{ fact_rook_ceph_namespace }} delete cephcluster --ignore-not-found=true
+    for CRD in $(kubectl get crd -n {{ fact_rook_ceph_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_rook_ceph_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_rook_ceph_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}';done
+    # kubectl -n {{ fact_rook_ceph_namespace }} delete cephobjectstore ceph-objectstore cephfilesystem ceph-filesystem cephblockpool ceph-blockpool --ignore-not-found=true
+    # kubectl -n {{ fact_rook_ceph_namespace }} delete cephcluster --ignore-not-found=true
     kubectl get crd | grep rook.io | awk '{print $1}' | xargs kubectl delete crd --ignore-not-found=true
     kubectl get crd | grep objectbucket.io | awk '{print $1}' | xargs kubectl delete crd --ignore-not-found=true
+  ignore_errors: true
 
 - name: Delete resources before infra teardown
   shell: |
