@@ -295,24 +295,25 @@ argocd_default:
           post_config_sync_wave: "'-1'"
           zitadel_rdbms_provider: "percona"
           zitadel_externalservice_name: "zitadel-db-external"
-          rds_provider:
-            app_name: "zitadel-rds"
-            rdbms_subnet_list: "[]"
-            vpc_cidr: "0.0.0.0/0"
-            dbdeploy_name_prefix: "zitadel-db"
-            db_provider_cloud_region: "eu-west-1"
-            zitadel_postgres_instance_size: "small"
-            zitadel_postgres_storage_size: "'20'"
-          percona_provider:
-            app_name: "zitadel-percona"
-            pgdb_helm_version: "2.4.3"
-            pvc_size: "10Gi"
-            pgbouncer_pvc_size: "2Gi"
-            proxy_replicas: "'1'"
-          cockroachdb_provider:
-            app_name: "cockroachdb"
-            helm_version: "13.0.2"
-            pvc_size: "5Gi"
+          dbdeploy_name_prefix: "zitadel-db"
+        zitadel_percona_provider:
+          app_name: "zitadel-percona"
+          pgdb_helm_version: "2.4.3"
+          pvc_size: "10Gi"
+          pgbouncer_pvc_size: "2Gi"
+          postgres_replicas: "'1'"
+          proxy_replicas: "'1'"
+          postgres_storage_size: "20"
+        zitadel_rds_provider:
+          rdbms_subnet_list: "[]"
+          vpc_cidr: "0.0.0.0/0"
+          db_provider_cloud_region: "eu-west-1"
+          postgres_instance_size: "small"
+          postgres_storage_size: "'20'"          
+        zitadel_cockroachdb_provider:
+          app_name: "cockroachdb"
+          helm_version: "13.0.2"
+          pvc_size: "5Gi"
         netbird:
           app_name: "netbird"
           sub_app_enabled: "true"
