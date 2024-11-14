@@ -9,6 +9,9 @@
     for CRD in $(kubectl get crd -n {{ fact_rook_ceph_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_rook_ceph_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_rook_ceph_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}';done
     kubectl -n {{ fact_rook_ceph_namespace }} delete cephobjectstore ceph-objectstore cephfilesystem ceph-filesystem cephblockpool ceph-blockpool
     kubectl -n {{ fact_rook_ceph_namespace }} delete cephcluster
+    kubectl get crd | grep rook.io | awk '{print $1}' | xargs kubectl delete crd
+    kubectl get crd | grep objectbucket.io | awk '{print $1}' | xargs kubectl delete crd
+  ignore_errors: yes
 
 - name: Delete resources before infra teardown
   shell: |
