@@ -212,6 +212,7 @@ argocd_default:
           object_storage_secret_name: "velero-cloud-api-secret"
           object_storage_secret_key: "cloud"
           object_storage_bucket: "velero"
+          object_storage_default_name: "cloudprovider-objectstorage"
           plugin_version: "v1.10.1"
         pre:
           app_name: "pre"
