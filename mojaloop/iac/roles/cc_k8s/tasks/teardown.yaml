@@ -1,15 +1,17 @@
 - name: Tear down ceph cluster
-  shell: |
+  ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} rook-ceph --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    kubectl config set-context --current --namespace {{ fact_argo_merged_config.namespace }}
+    kubectl config set-context --current --namespace {{ fact_rook_ceph_namespace }}
     kubectl -n {{ fact_rook_ceph_namespace }} scale deployment rook-ceph-operator --replicas=0
     for CRD in $(kubectl get crd -n {{ fact_rook_ceph_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_rook_ceph_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_rook_ceph_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}';done
-    # kubectl -n {{ fact_rook_ceph_namespace }} delete cephobjectstore ceph-objectstore cephfilesystem ceph-filesystem cephblockpool ceph-blockpool --ignore-not-found=true
-    # kubectl -n {{ fact_rook_ceph_namespace }} delete cephcluster --ignore-not-found=true
-    kubectl get crd | grep rook.io | awk '{print $1}' | xargs kubectl delete crd --ignore-not-found=true
-    kubectl get crd | grep objectbucket.io | awk '{print $1}' | xargs kubectl delete crd --ignore-not-found=true
+    kubectl delete cephobjectstore ceph-objectstore --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
+    kubectl delete cephfilesystem ceph-filesystem --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
+    kubectl delete cephblockpool ceph-blockpool --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
+    kubectl delete cephcluster rook-ceph --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
+  args:
+    executable: /bin/bash
   ignore_errors: true
 
 - name: Delete resources before infra teardown
