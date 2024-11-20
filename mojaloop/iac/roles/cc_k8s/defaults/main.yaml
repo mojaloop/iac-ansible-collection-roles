@@ -299,6 +299,7 @@ argocd_default:
           zitadel_db_username: "zitadel"
           zitadel_dbdeploy_name_prefix: "zitadel-db"
           zitadel_db_secret: "zitadel-postgresql-credentials"
+          config_secret_name: "zitadel-config"
         zitadel_percona_provider:
           app_name: "zitadel-percona"
           pgdb_helm_version: "2.4.3"
