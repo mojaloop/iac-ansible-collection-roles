@@ -132,7 +132,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: coredns-nodecache
-        image: contentful/coredns-nodecache:{{ coredns_localcache_version }}
+        image: contentful/coredns-nodecache:v{{ coredns_localcache_version }}
         resources:
           limits:
             memory: 50Mi
@@ -265,7 +265,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: coredns-nodecache
-        image: contentful/coredns-nodecache:{{ coredns_localcache_version }}
+        image: contentful/coredns-nodecache:v{{ coredns_localcache_version }}
         resources:
           limits:
             memory: 50Mi
