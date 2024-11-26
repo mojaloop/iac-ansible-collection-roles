@@ -41,8 +41,14 @@ argocd_default:
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
-          helm_version: "1.14.5"
+          helm_version: "1.15.5"
           rook_csi_kubelet_dir_path: "/var/lib/kubelet"
+          mon_volumes_storage_class: "gp3"
+          mon_volume_size: "10Gi"
+          osd_volumes_storage_class: "gp3"
+          osd_count: "'3'"
+          volume_size_per_osd: "500Gi"
+          object_store_region: "us-east-1"
           sync_wave: "'-10'"
           sub_app_enabled: "true"
         reflector:
