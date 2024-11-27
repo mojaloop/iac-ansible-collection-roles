@@ -26,7 +26,10 @@
   args:
     executable: /bin/bash
   ignore_errors: true
-  
+
+- name: Pause for 2 minutes to delete pvc volumes
+  ansible.builtin.pause:
+    seconds: 120
 # - name: Wait for vault to be gone
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
