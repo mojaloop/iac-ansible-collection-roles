@@ -26,3 +26,6 @@ kubernetes_oidc_k8s_admin_group: none
 kubernetes_oidc_enabled: false
 kubernetes_oidc_issuer: none
 kubernetes_oidc_client_id: none
+install_coredns: true
+coredns_localcache_version: "1.11.3"
+dns_bind_address: "169.254.20.10"
