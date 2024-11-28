@@ -10,6 +10,7 @@
     kubectl delete workspaces.tf.upbound.io vault-post-config
     kubectl delete dbinstanceclaim -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
     kubectl delete dbinstanceclaim -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+    sleep 300  # Wait for 300 seconds
   args:
     executable: /bin/bash
   ignore_errors: true
@@ -31,6 +32,9 @@
     executable: /bin/bash
   ignore_errors: true
 
+# - name: Sleep for 300 seconds and continue with play
+#   ansible.builtin.wait_for:
+#     timeout: 300
 # - name: Pause to finish resources deletion
 #   ansible.builtin.pause:
 #     seconds: 300
