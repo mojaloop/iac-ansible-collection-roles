@@ -24,13 +24,14 @@
     kubectl delete cephblockpool ceph-blockpool --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl delete cephcluster rook-ceph --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl get crd | grep rook.io | awk '{print $1}' | xargs kubectl delete crd --ignore-not-found=true
+    sleep 120  # Wait for 120 seconds
   args:
     executable: /bin/bash
   ignore_errors: true
 
-- name: Pause to finish resources deletion
-  ansible.builtin.pause:
-    seconds: 300
+# - name: Pause to finish resources deletion
+#   ansible.builtin.pause:
+#     seconds: 300
 # - name: Wait for vault to be gone
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
