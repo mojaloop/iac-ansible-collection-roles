@@ -3,6 +3,12 @@
   register: argocdappexists
   ignore_errors: true
 
+- name: Install coredns-localcache
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/coredns-nodecache.yaml
+  when: install_coredns | bool
+
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig

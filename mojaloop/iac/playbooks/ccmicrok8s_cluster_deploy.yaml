@@ -25,6 +25,7 @@
         add_workers_to_hostfile: true
         microk8s_plugins:
           ingress: false # Ingress controller for external access
+          dns: false
           metrics-server: true # K8s Metrics Server for API access to service metrics
           rbac: true # Role-Based Access Control for authorisation
           hostpath-storage: true # Storage class; allocates storage from host directory

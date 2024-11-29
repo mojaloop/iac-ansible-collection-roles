@@ -68,3 +68,8 @@
     dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
   with_filetree: "{{role_path}}/templates/argocd"
   when: item.state == 'file'
+
+- name: Upload coredns-localcache template files
+  template:
+    src: "coredns-nodecache.yaml.j2"
+    dest: "{{ cctmpvalues.path }}/coredns-nodecache.yaml"
