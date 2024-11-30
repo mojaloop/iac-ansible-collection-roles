@@ -1,4 +1,4 @@
-argocd_version: "2.8.2"
+argocd_version: "2.13.1"
 argocd_lovely_plugin_version: "0.18.0"
 repo_url: "https://localhost/repo.git"
 repo_password: mypassword
@@ -26,3 +26,6 @@ kubernetes_oidc_k8s_admin_group: none
 kubernetes_oidc_enabled: false
 kubernetes_oidc_issuer: none
 kubernetes_oidc_client_id: none
+install_coredns: true
+coredns_localcache_version: "1.11.3"
+dns_bind_address: "169.254.20.10"

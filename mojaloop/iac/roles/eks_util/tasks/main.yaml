@@ -46,6 +46,14 @@
     dest: /usr/local/bin/kubectl
     mode: 0700
 
+- name: Remove eks coredns installation 
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl --namespace kube-system delete deployment coredns
+    kubectl --namespace kube-system annotate --overwrite service kube-dns meta.helm.sh/release-name=coredns
+    kubectl --namespace kube-system annotate --overwrite service kube-dns meta.helm.sh/release-namespace=kube-system
+    kubectl --namespace kube-system label --overwrite service kube-dns app.kubernetes.io/managed-by=Helm
+
 - name: Save configmap
   copy:
     content: "{{ eks_post_install_config_map }}"
