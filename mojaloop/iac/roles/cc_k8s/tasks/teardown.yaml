@@ -25,7 +25,7 @@
     kubectl delete cephfilesystem ceph-filesystem --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl delete cephblockpool ceph-blockpool --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl delete cephcluster rook-ceph --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
-    sleep 120  # Wait for 120 seconds
+    sleep 300  # Wait for 300 seconds
   args:
     executable: /bin/bash
   ignore_errors: true
