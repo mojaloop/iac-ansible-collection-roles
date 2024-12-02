@@ -52,8 +52,7 @@ argocd_default:
           osd_volumes_storage_class: "gp3"
           osd_count: "'3'"
           volume_size_per_osd: "500Gi"
-          object_store_region: "us-east-1"
-          volumes_provider: "host"
+          volumes_provider: "pvc"
           sync_wave: "'-10'"
           sub_app_enabled: "true"
         reflector:
