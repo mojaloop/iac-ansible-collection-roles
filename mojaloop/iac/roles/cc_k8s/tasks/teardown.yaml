@@ -8,8 +8,13 @@
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl delete workspaces.tf.upbound.io vault-{{ cluster_cloud_provider }}-post-config
     kubectl delete workspaces.tf.upbound.io vault-post-config
-    kubectl delete dbinstanceclaim -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-    kubectl delete dbinstanceclaim -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+    kubectl delete rdsauroradbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+    kubectl delete rdsaurorareplicaclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+    kubectl delete rdsdbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+
+    kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+    kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+    kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
   args:
     executable: /bin/bash
   ignore_errors: true
