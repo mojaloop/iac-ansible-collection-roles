@@ -15,7 +15,6 @@
     kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
     kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
     kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-    sleep 600
   args:
     executable: /bin/bash
   ignore_errors: true
@@ -31,7 +30,7 @@
     kubectl delete cephfilesystem ceph-filesystem --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl delete cephblockpool ceph-blockpool --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
     kubectl delete cephcluster rook-ceph --ignore-not-found=true -n {{ fact_rook_ceph_namespace }}
-    sleep 300  # Wait for 300 seconds
+    sleep 600  # Wait for 300 seconds
   args:
     executable: /bin/bash
   ignore_errors: true
