@@ -22,6 +22,6 @@
   include_tasks: configure-WORKERS.yml
   when: "groups[microk8s_group_WORKERS] is defined and groups[microk8s_group_WORKERS]|length>0 and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
 
-# - name: remove microk8s
-#   include_tasks: remove.yml
-#   when: (teardown | bool)
+- name: remove microk8s
+  include_tasks: remove.yml
+  when: (teardown | bool) and (cloud_platform == "baremetal")
