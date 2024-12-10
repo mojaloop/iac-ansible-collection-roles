@@ -1,7 +1,6 @@
 - name: Find argocd app install status
-  shell: true
-  register: argocdappexists
-  ignore_errors: true
+  set_fact:
+    argocdappexists: true
 
 - name: Install argocd
   shell: |
