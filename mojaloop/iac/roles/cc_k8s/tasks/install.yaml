@@ -1,5 +1,5 @@
 - name: Find argocd app install status
-  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig -n {{ fact_argocd_helm_namespace }} wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=1m application/{{ fact_argocd_helm_release }}
+  shell: true
   register: argocdappexists
   ignore_errors: true
 
