@@ -1,20 +1,3 @@
-- name: Find argocd app install status
-  set_fact:
-    argocdappexists: true
-
-- name: Install argocd
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add argo https://argoproj.github.io/argo-helm
-    helm repo update
-    helm upgrade --install {{ fact_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ fact_argocd_helm_namespace }} --version {{ fact_argocd_helm_version }} \
-      --set fullnameOverride={{ fact_argocd_helm_release }} \
-      --set applicationSet.enabled=false \
-      --set notifications.enabled=false \
-      --set dex.enabled=false \
-      --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
-    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
-  when: argocdappexists is failed
 
 - name: Install root app
   shell: |
