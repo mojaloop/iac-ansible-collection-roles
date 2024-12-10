@@ -24,4 +24,4 @@
 
 - name: remove microk8s
   include_tasks: remove.yml
-  when: (teardown | bool) and (cloud_platform == "baremetal")
+  when: (teardown | bool)
