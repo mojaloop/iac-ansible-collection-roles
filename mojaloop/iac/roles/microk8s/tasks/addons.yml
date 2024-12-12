@@ -40,4 +40,3 @@
   become: true
   command:
     cmd: microk8s.disable metrics-server
-  when: not microk8s_plugins.metrics-server
