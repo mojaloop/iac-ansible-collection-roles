@@ -14,7 +14,7 @@ microk8s_plugins:
   #dns: "{{ microk8s_dns_resolvers }}" # CoreDNS
   host-access: true # Allow Pods connecting to Host services smoothly
   ingress: false # Ingress controller for external access
-  metrics-server: true # K8s Metrics Server for API access to service metrics
+  metrics-server: false # K8s Metrics Server for API access to service metrics
   rbac: true # Role-Based Access Control for authorisation
   hostpath-storage: true # Storage class; allocates storage from host directory
   registry: "size={{ registry_size }}" # Private image registry exposed on localhost:32000
