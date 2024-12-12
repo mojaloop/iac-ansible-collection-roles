@@ -35,8 +35,3 @@
     - item.name in microk8s_plugins
     - item.name != 'dns'    
     - not microk8s_plugins[item.name]
-
-# - name: Ensure metrics-server is disabled
-#   become: true
-#   command:
-#     cmd: microk8s.disable metrics-server
