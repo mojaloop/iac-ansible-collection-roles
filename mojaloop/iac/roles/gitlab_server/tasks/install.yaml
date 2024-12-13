@@ -28,7 +28,7 @@
 
 - name: List Linux block devices
   ansible.builtin.shell:
-    cmd: "lsblk -o PATH,SERIAL | grep {{ backup_ebs_volume_id | replace('-', '') }} | cut -d' ' -f1"
+    cmd: "lsblk -o PATH,SERIAL | grep {{ backup_ebs_volume_id }} | cut -d' ' -f1"
   register: lsblk
 
 - name: Store EBS volume device name
