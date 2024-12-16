@@ -35,3 +35,4 @@
     - item.name in microk8s_plugins
     - item.name != 'dns'    
     - not microk8s_plugins[item.name]
+  ignore_errors: true
