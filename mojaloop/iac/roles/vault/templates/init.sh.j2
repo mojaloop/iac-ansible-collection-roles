@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-
+sleep 10
 export VAULT_SKIP_VERIFY=true
 if [ $(vault status -format=json | jq .initialized) == "false" ]
 then
