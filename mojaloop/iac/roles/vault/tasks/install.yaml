@@ -4,6 +4,18 @@
     state: directory
     recurse: yes
 
+- name: "create directory for Nginx and Certbot"
+  file:
+    path: "{{ vault_root_dir }}/nginx"
+    state: directory
+    recurse: yes
+
+- name: "create directory for certificates"
+  file:
+    path: "{{ vault_root_dir }}/certs"
+    state: directory
+    recurse: yes
+
 - name: "deploy vault Dockerfile"
   template:
     src: "../templates/Dockerfile.j2"
@@ -28,6 +40,11 @@
     src: "../templates/vault-config.hcl.j2"
     dest: "{{ vault_root_dir }}/vault-config.hcl"
   notify: Restart Vault
+
+- name: "deploy Nginx configuration file"
+  template:
+    src: "../templates/nginx.conf.j2"
+    dest: "{{ vault_root_dir }}/nginx/nginx.conf"
 
 - name: "deploy docker compose file"
   template:
