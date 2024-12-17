@@ -65,7 +65,7 @@
 
 - name: "obtain SSL certificate using Certbot"
   command: >
-    certbot certonly --webroot -w /var/www/certbot 
+    certbot certonly --webroot -w /var/www/html 
     -d "{{ vault_fqdn }}" --non-interactive --agree-tos 
     --email "admin@{{ vault_fqdn }}"
   when: certbot_auto_renew | default(false) == false
