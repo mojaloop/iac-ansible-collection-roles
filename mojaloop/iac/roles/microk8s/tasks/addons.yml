@@ -20,7 +20,8 @@
   when:
     - item.status == 'disabled'
     - item.name in microk8s_plugins
-    - item.name != 'dns'    
+    - item.name != 'dns'
+    - item.name != 'metrics-server'
     - microk8s_plugins[item.name]
 
 - name: disable addons
@@ -33,5 +34,6 @@
   when:
     - item.status == 'enabled'
     - item.name in microk8s_plugins
-    - item.name != 'dns'    
+    - item.name != 'dns'
+    - item.name != 'metrics-server'
     - not microk8s_plugins[item.name]
