@@ -60,26 +60,7 @@
 - name: "deploy Nginx HTTP configuration file"
   template:
     src: "../templates/nginx-http.conf.j2"
-    dest: "/etc/nginx/sites-available/default-http"
-  notify: Reload Nginx
-
-- name: "deploy Nginx HTTPS configuration file"
-  template:
-    src: "../templates/nginx-https.conf.j2"
-    dest: "/etc/nginx/sites-available/default-https"
-  notify: Reload Nginx
-
-- name: "create symlink for Nginx HTTP site"
-  command: ln -s /etc/nginx/sites-available/default-http /etc/nginx/sites-enabled/default-http
-  args:
-    removes: /etc/nginx/sites-enabled/default-http
-  notify: Reload Nginx
-
-
-- name: "create symlink for Nginx HTTPS site"
-  command: ln -s /etc/nginx/sites-available/default-https /etc/nginx/sites-enabled/default-https
-  args:
-    removes: /etc/nginx/sites-enabled/default-https
+    dest: "/etc/nginx/sites-available/default"
   notify: Reload Nginx
 
 - name: "obtain SSL certificate using Certbot"
@@ -97,6 +78,12 @@
     state: present
     hour: 3
     minute: 30
+
+- name: "deploy Nginx HTTPS configuration file"
+  template:
+    src: "../templates/nginx-https.conf.j2"
+    dest: "/etc/nginx/sites-available/default"
+  notify: Reload Nginx
 
 - name: "set Nginx to auto start"
   systemd:

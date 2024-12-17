@@ -1,4 +1,14 @@
 server {
+    listen 80;
+    server_name {{ vault_fqdn }};
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
+
+server {
     listen 443 ssl http2;
     server_name {{ vault_fqdn }};
 
