@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: velero-credentials
+  namespace: velero
+type: Opaque
+stringData:
+  aws: |
+    [default]
+    aws_access_key_id={{ iac_user_key_id }}
+    aws_secret_access_key={{ iac_user_key_secret }}

@@ -9,6 +9,10 @@
     kubectl apply -f {{ cctmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
 
+- name: Configure velero credentials
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/velero-creds.yaml
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig

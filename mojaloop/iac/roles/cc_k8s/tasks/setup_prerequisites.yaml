@@ -73,3 +73,8 @@
   template:
     src: "coredns-nodecache.yaml.j2"
     dest: "{{ cctmpvalues.path }}/coredns-nodecache.yaml"
+
+- name: Upload velero credentials
+  template:
+    src: "velero-creds.yaml.j2"
+    dest: "{{ cctmpvalues.path }}/velero-creds.yaml"
