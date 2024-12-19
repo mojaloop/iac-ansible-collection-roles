@@ -112,18 +112,18 @@ initialize_vault() {
 # Function to automatically unseal Vault if sealed
 auto_unseal() {
     while true; do
-        STATUS=$(curl -s http://vault-server:8200/v1/sys/seal-status | jq '.sealed')
+        STATUS=$(vault status -format=json | jq -r '.sealed')
 
         if [ "$STATUS" = "true" ]; then
             log "Vault is sealed. Attempting to unseal..."
 
-            # Use the UNSEAL_KEY_ENV environment variable directly (make sure it's set)
+           UNSEAL_KEY_ENV=$(jq -r .unseal_keys_b64[0] < /tmp/output.json)
             if [ -n "$UNSEAL_KEY_ENV" ]; then  
                 log "Unsealing Vault..."
                 retry vault operator unseal "$UNSEAL_KEY_ENV"
                 
                 # Check if unsealing was successful
-                STATUS=$(vault status | jq '.sealed')
+                STATUS=$(vault status -format=json | jq -r'.sealed')
                 if [ "$STATUS" = "false" ]; then
                     log "Vault successfully unsealed."
                 else
