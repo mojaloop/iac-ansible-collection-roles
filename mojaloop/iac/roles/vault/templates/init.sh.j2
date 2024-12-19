@@ -89,14 +89,14 @@ initialize_vault() {
         log "Initializing Vault..."
         
         # Initialize Vault and save output to JSON file
-        retry vault operator init -key-shares=1 -key-threshold=1 -format=json > /tmp/output.json
+        retry vault operator init -key-shares=1 -key-threshold=1 -format=json > /vault/vault_seal_key.json
         
         # Unseal Vault using the unseal key from output
-        UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /tmp/output.json)
+        UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
         retry vault operator unseal "$UNSEAL_KEY"
         
         # Store root token in GitLab using the new function
-        VAULT_ROOT_TOKEN=$(jq -r .root_token < /tmp/output.json)
+        VAULT_ROOT_TOKEN=$(jq -r .root_token < /vault/vault_seal_key.json)
         if [ -n "$VAULT_ROOT_TOKEN" ]; then
             store_in_gitlab "VAULT_ROOT_TOKEN" "$VAULT_ROOT_TOKEN"
             store_in_gitlab "UNSEAL_KEY" "$UNSEAL_KEY"
@@ -117,7 +117,7 @@ auto_unseal() {
         if [ "$STATUS" = "true" ]; then
             log "Vault is sealed. Attempting to unseal..."
 
-           UNSEAL_KEY_ENV=$(jq -r .unseal_keys_b64[0] < /tmp/output.json)
+           UNSEAL_KEY_ENV=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
             if [ -n "$UNSEAL_KEY_ENV" ]; then  
                 log "Unsealing Vault..."
                 retry vault operator unseal "$UNSEAL_KEY_ENV"
@@ -144,8 +144,8 @@ auto_unseal() {
 # Initialize Vault and then start the auto-unseal loop.
 initialize_vault
 # Store the unseal key in GitLab using the new function
-VAULT_ROOT_TOKEN=$(jq -r .root_token < /tmp/output.json)
-UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /tmp/output.json)
+VAULT_ROOT_TOKEN=$(jq -r .root_token < /vault/vault_seal_key.json)
+UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
 store_in_gitlab "VAULT_ROOT_TOKEN" "$VAULT_ROOT_TOKEN"
 store_in_gitlab "UNSEAL_KEY" "$UNSEAL_KEY"
 auto_unseal

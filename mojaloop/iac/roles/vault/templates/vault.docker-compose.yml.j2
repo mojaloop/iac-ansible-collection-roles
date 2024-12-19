@@ -29,6 +29,8 @@ services:
       VAULT_ADDR: "http://vault-server:{{ vault_listening_port }}"
       GITLAB_URL: "{{ vault_gitlab_url }}"
       GITLAB_TOKEN: "{{ vault_gitlab_token }}"
+    volumes:
+      - {{ vault_root_dir }}/vaultbuild:/vault
     networks:
       vault-network:
         ipv4_address: 172.21.0.20
