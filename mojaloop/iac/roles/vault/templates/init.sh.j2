@@ -123,7 +123,7 @@ auto_unseal() {
                 retry vault operator unseal "$UNSEAL_KEY_ENV"
                 
                 # Check if unsealing was successful
-                STATUS=$(vault status -format=json | jq -r'.sealed')
+                STATUS=$(vault status -format=json | jq -r '.sealed')
                 if [ "$STATUS" = "false" ]; then
                     log "Vault successfully unsealed."
                 else
