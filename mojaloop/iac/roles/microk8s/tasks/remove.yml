@@ -20,3 +20,9 @@
   ansible.builtin.file:
     state: absent
     path: "{{ longhorn_data_path }}"
+
+- name: Remove rook data
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: "{{ rook_data_path }}"
