@@ -72,6 +72,8 @@ teardown: false
 microk8s_root_path: /var/snap/microk8s/
 longhorn_data_path: /var/lib/longhorn/
 rook_data_path: /var/lib/rook
+rook_disk_vol: "/dev/sdb"
+enable_rook_disk_reset: false
 microk8s_apiserver_port: 16443
 microk8s_dev_skip: false
 dev_skip: false
