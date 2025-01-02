@@ -20,11 +20,26 @@
       - ca-certificates
       - postfix
 
-- name: Install boto3/botocore
-  pip:
-    name: 
+- name: Detect Ubuntu version
+  ansible.builtin.command:
+    cmd: lsb_release -rs
+  register: ubuntu_version
+
+- name: Install boto3 and botocore with break-system-packages (Ubuntu 24.04+)
+  ansible.builtin.pip:
+    name:
       - boto3>=1.18.0
       - botocore>=1.21.0
+    extra_args: --break-system-packages
+  when: "'24.04' in ubuntu_version.stdout"
+
+- name: Install boto3 and botocore (Ubuntu <24.04)
+  ansible.builtin.pip:
+    name:
+      - boto3>=1.18.0
+      - botocore>=1.21.0
+  when: "'24.04' not in ubuntu_version.stdout"
+
 
 - name: List Linux block devices
   ansible.builtin.shell:
