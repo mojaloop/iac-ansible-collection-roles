@@ -4,3 +4,4 @@ netbird_version:  "0.28.6"
 netbird_api_host: "https://netbird.cc50.ccnew.mojaloop.live"
 netbird_setup_key: "changeme"
 teardown: false
+migrate: false
