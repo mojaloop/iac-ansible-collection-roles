@@ -3,8 +3,8 @@ Description=netmaker docker-compose unit
 After=docker.service
 
 [Service]
-ExecStart=/usr/bin/docker-compose -f {{ netmaker_root_dir }}/netmaker-docker-compose.yml up
-ExecStop=/usr/bin/docker-compose -f {{ netmaker_root_dir }}/netmaker-docker-compose.yml down
+ExecStart=/usr/bin/docker compose -f {{ netmaker_root_dir }}/netmaker-docker-compose.yml up
+ExecStop=/usr/bin/docker compose -f {{ netmaker_root_dir }}/netmaker-docker-compose.yml down
 
 [Install]
 WantedBy=docker.service

@@ -5,7 +5,7 @@
   package:
     name:
       - docker.io
-      - docker-compose
+      - docker-compose-v2
 
 - name: enable service docker and ensure it is started
   service:
