@@ -14,7 +14,7 @@
     name:
       - netbird={{ netbird_version }}
 
-- name: unjoin the node from old netbird in case of migratinon
+- name: unjoin the node from old netbird in case of migration
   command: netbird down
   when: migrate
 
