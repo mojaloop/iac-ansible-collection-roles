@@ -4,6 +4,15 @@
     dest: "/root/.ssh/{{ base_domain }}.key"
     mode: "0600"
 
+- name: Remove existing netbird key file if it exists
+  ansible.builtin.file:
+    path: /usr/share/keyrings/netbird-archive-keyring.gpg
+    state: absent
+
+- name: Import netbird apt repo gpg key
+  shell: |
+    curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --yes --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
+
 - name: Update apt cache
   apt:
     update_cache: yes
