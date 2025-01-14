@@ -1,4 +1,5 @@
 teardown: false
+cc_restore: false
 pipeline_executor: false
 kubeconfig_location: "/root/.kube"
 kustomize_version: "5.4.2"
@@ -51,6 +52,8 @@ argocd_default:
           mon_volumes_size: "10Gi"
           osd_volumes_storage_class: "gp3"
           osd_count: "'3'"
+          objects_replica_count: "'3'"
+          csi_driver_replicas: "'2'"
           volume_size_per_osd: "500Gi"
           volumes_provider: "pvc"
           sync_wave: "'-10'"
@@ -58,12 +61,12 @@ argocd_default:
         reflector:
           app_name: "reflector"
           helm_version: "7.1.262"
-          namespace: "default"
+          namespace: "utils"
           sub_app_enabled: "true"
         reloader:
           app_name: "reloader"
           helm_version: "1.0.67"
-          namespace: "default"
+          namespace: "utils"
           sub_app_enabled: "true"
         crossplane:
           app_name: "crossplane"
@@ -85,7 +88,7 @@ argocd_default:
         kubernetes_secret_generator:
           app_name: "kubernetes-secret-generator"
           helm_version: "3.4.0"
-          namespace: "default"
+          namespace: "utils"
           sub_app_enabled: "true"
         external_secrets:
           app_name: "external-secrets"
@@ -211,7 +214,7 @@ argocd_default:
       sub_apps:
         velero:
           app_name: "velero"
-          helm_version: "7.2.1"
+          helm_version: "8.2.0"
           namespace: "velero"
           sub_app_enabled: "true"
           object_storage_cloud_role: "arn:blah"
@@ -222,7 +225,7 @@ argocd_default:
           object_storage_secret_name: "velero-cloud-api-secret"
           object_storage_secret_key: "cloud"
           object_storage_bucket: "velero"
-          plugin_version: "v1.10.1"
+          plugin_version: "v1.11.1"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
@@ -322,7 +325,7 @@ argocd_default:
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"
           postgres_instance_size: "small"
-          postgres_storage_size: "'20'"          
+          postgres_storage_size: "'20'"
         zitadel_cockroachdb_provider:
           app_name: "cockroachdb"
           helm_version: "13.0.2"
@@ -430,7 +433,7 @@ argocd_default:
           gitlab_registry_max_objects: "'1000000'"
           gitlab_registry_storage_size: "10Gi"
           gitlab_runner_cache_max_objects: "'1000000'"
-          gitlab_runner_cache_storage_size: "10Gi"          
+          gitlab_runner_cache_storage_size: "10Gi"
           redis_cluster_size: "'3'"
           redis_storage_size: "'2Gi'"
           gitlab_db_name: "gitlab"
@@ -441,8 +444,8 @@ argocd_default:
           praefect_dbdeploy_name_prefix: "praefect-db"
           rdbms_provider: "percona"
           gitlab_db_secret: "gitlab-postgresql-credentials"
-          praefect_db_secret: "praefect-postgresql-credentials"          
-        webdb_percona_provider:            
+          praefect_db_secret: "praefect-postgresql-credentials"
+        webdb_percona_provider:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
           postgres_storage_size: "100"
@@ -454,7 +457,7 @@ argocd_default:
           postgres_storage_size: "100"
           postgres_instance_size: "small"
           pgdb_helm_version: "2.4.0"
-        webdb_rds_provider:         
+        webdb_rds_provider:
           rdbms_subnet_list: "[]"
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"

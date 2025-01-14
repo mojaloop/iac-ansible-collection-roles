@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].app_name }}
+  namespace: {{ fact_argo_merged_config.namespace }}
+
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 20
+      backoff:
+        duration: 10s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: {{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].namespace }}
+
+  source:
+    repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+    targetRevision: {{ fact_argo_merged_config.apps['utils'].application_gitrepo_tag }}
+    path: gitops/applications/base/base-monitoring
+    plugin:
+      name: envsubst
+      env:
+        - name: "monitoring_namespace"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].namespace }}"
+
+        - name: "grafana_operator_version"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].grafana_operator_version }}"
+
+        - name: "prometheus_crd_version"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].prometheus_crd_version }}"
+
+        - name: "grafana_crd_version_tag"
+          value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['base_monitoring'].grafana_crd_version_tag }}"

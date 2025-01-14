@@ -3,12 +3,6 @@
   register: argocdappexists
   ignore_errors: true
 
-- name: Install coredns-localcache
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/coredns-nodecache.yaml
-  when: install_coredns | bool
-
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -26,7 +20,7 @@
 - name: Install root app
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/base-root-app.yaml
 
 - name: Find the existing env app sets
   shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd

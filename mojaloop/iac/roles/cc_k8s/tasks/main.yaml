@@ -5,9 +5,13 @@
   import_tasks: setup_prerequisites.yaml
   when: (not (teardown | bool))
 
+- name: install deps
+  import_tasks: install-deps.yaml
+  when: (not (teardown | bool))
+
 - name: install
   import_tasks: install.yaml
-  when: (not (teardown | bool))
+  when: (not (teardown | bool) and not (cc_restore | bool))
 
 - name: remove microk8s
   import_tasks: teardown.yaml
