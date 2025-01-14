@@ -6,6 +6,7 @@
   become: true
 
 - name: "create directory for microk8s config"
+  become: true
   ansible.builtin.file:
     path: /var/snap/microk8s/common/
     state: directory
@@ -62,6 +63,7 @@
   register: aliashelmout
 
 - name: "create directory for mirror registry configs"
+  become: true
   ansible.builtin.file:
     path: /var/snap/microk8s/current/args/certs.d/{{ item }}/
     state: directory
@@ -91,7 +93,7 @@
 
 - name: Create folder for microk8s certificates
   become: true
- ansible.builtin.file:
+  ansible.builtin.file:
     path: /usr/share/ca-certificates/extra
     state: directory
     mode: 0755
