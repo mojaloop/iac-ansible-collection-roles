@@ -1,15 +1,24 @@
 - name: Upload ssh key
-  copy:
+  ansible.builtin.copy:
     src: "{{ ansible_ssh_private_key_file }}"
     dest: "/root/.ssh/{{ base_domain }}.key"
     mode: "0600"
 
+- name: Remove existing netbird key file if it exists
+  ansible.builtin.file:
+    path: /usr/share/keyrings/netbird-archive-keyring.gpg
+    state: absent
+
+- name: Import netbird apt repo gpg key
+  ansible.builtin.shell: |
+    curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --yes --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
+
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: Install dependencies
-  package:
+  ansible.builtin.package:
     name:
       - python3
       - ca-certificates
