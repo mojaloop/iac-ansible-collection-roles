@@ -16,7 +16,7 @@
 
 - name: unjoin the node from old netbird in case of migration
   command: netbird down
-  when: migrate
+  when: (migrate | bool) 
 
 - name: join the node to netbird
   command:  netbird up -k {{ netbird_setup_key }} -m {{ netbird_api_host }}
