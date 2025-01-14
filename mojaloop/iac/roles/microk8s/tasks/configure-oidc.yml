@@ -9,7 +9,7 @@
 
 - name: Restart microk8s
   become: true
-  shell: |
+  ansible.builtin.shell: |
     snap restart microk8s
     microk8s.status --wait-ready
   when: kubernetes_oidc_enabled | bool and oidcconfig is changed

@@ -1,27 +1,27 @@
 ---
-- import_tasks: install.yml
+- ansible.builtin.include_tasks: install.yml
   when: (not (teardown | bool) and not (microk8s_dev_skip | bool))
 
 - name: configure users
-  include_tasks: configure-groups.yml
+  ansible.builtin.include_tasks: configure-groups.yml
   when: "users is defined and users not in ([], None, '', omit) and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
-
-- name: configure single node addons
-  include_tasks: addons.yml
-  when: not microk8s_enable_HA and (not (teardown | bool) and not (microk8s_dev_skip | bool))
-
+  
 - name: configure High Availability
-  include_tasks: configure-HA.yml
-  when: "microk8s_enable_HA and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
+  ansible.builtin.include_tasks: configure-ha.yml
+  when: "microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
 
 - name: fetch kubeconfig
-  include_tasks: fetch-kubeconfig.yml
+  ansible.builtin.include_tasks: fetch-kubeconfig.yml
   when: "not (teardown | bool)"
 
 - name: configure workers
-  include_tasks: configure-WORKERS.yml
-  when: "groups[microk8s_group_WORKERS] is defined and groups[microk8s_group_WORKERS]|length>0 and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
+  ansible.builtin.include_tasks: configure-workers.yml
+  when: "groups[microk8s_group_workers] is defined and groups[microk8s_group_workers]|length>0 and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
+
+- name: configure addons
+  ansible.builtin.include_tasks: configure-addons.yml
+  when: not microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))
 
 - name: remove microk8s
-  include_tasks: remove.yml
+  ansible.builtin.include_tasks: remove.yml
   when: (teardown | bool)
