@@ -28,7 +28,7 @@ microk8s_enable_ha: false
 microk8s_group_ha: "microk8s_ha"
 
 # regex to select IP address for joining nodes in HA setup
-microk8s_ip_regex_HA: "([0-9]{1,3}[\\.]){3}[0-9]{1,3}"
+microk8s_ip_regex_ha: "([0-9]{1,3}[\\.]){3}[0-9]{1,3}"
 
 # hostgroup whose members will act as worker nodes only (no control-plane components run here)
 microk8s_group_workers: "microk8s_workers"
