@@ -11,7 +11,7 @@
       changed_when: false
 
     - name: Get the microk8s join command from the microk8s master
-      ansible.builtin.shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex_HA }}'"
+      ansible.builtin.shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'"
       delegate_to: "{{ designated_host }}"
       delegate_facts: true
       changed_when: false
