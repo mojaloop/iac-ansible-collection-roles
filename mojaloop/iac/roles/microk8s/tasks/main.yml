@@ -20,7 +20,8 @@
 
 - name: configure addons
   ansible.builtin.include_tasks: configure-addons.yml
-  when: not microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))
+  run_once: true
+  when: "microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
 
 - name: remove microk8s
   ansible.builtin.include_tasks: remove.yml
