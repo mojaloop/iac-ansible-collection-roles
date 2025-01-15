@@ -10,10 +10,7 @@ microk8s_disable_snap_autoupdate: false
 # plugin configuration
 microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
 registry_size: 20Gi
-microk8s_plugins:
-  cert-manager: false
-  dns: false
-  rook-ceph: false
+microk8s_plugins: {}
 helm3_repositories:
   - name: stable
     url: https://charts.helm.sh/stable
