@@ -7,13 +7,6 @@
 - name: Update apt cache
   shell: apt update
 
-- apt_repository:
-    repo: "ppa:vbernat/haproxy-{{ haproxy_version }}"
-    state: present
-
-- name: Update apt cache
-  shell: apt update
-
 - name: Install haproxy
   package:
     name:

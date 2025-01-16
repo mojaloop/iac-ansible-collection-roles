@@ -1,0 +1,43 @@
+server {
+    listen 80;
+    server_name {{ vault_fqdn }};
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name {{ vault_fqdn }};
+
+    # SSL Configuration
+    ssl_certificate /etc/letsencrypt/live/{{ vault_fqdn }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ vault_fqdn }}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # HSTS (HTTP Strict Transport Security)
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    # Proxy Configuration for Vault
+    location / {
+        proxy_pass http://127.0.0.1:{{ vault_listening_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Timeouts for large responses
+        proxy_connect_timeout 60s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+    }
+
+    # Optional: Deny access to hidden files
+    location ~ /\. {
+        deny all;
+    }
+}

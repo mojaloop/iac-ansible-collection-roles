@@ -4,6 +4,14 @@
     state: directory
     recurse: yes
 
+- name: "create directory for certificates"
+  file:
+    path: "/var/www/certbot"
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+
 - name: "deploy vault Dockerfile"
   template:
     src: "../templates/Dockerfile.j2"
@@ -35,9 +43,64 @@
     dest: "{{ vault_root_dir }}/docker-compose.yml"
   notify: Restart Vault
 
-- name: "set to auto restart"
+- name: "install Nginx"
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: "install Certbot and plugin for Nginx"
+  apt:
+    name: 
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: yes
+
+- name: "deploy Nginx HTTP configuration file"
+  template:
+    src: "../templates/nginx-http.conf.j2"
+    dest: "/etc/nginx/sites-available/default"
+  notify: Reload Nginx
+
+- name: "obtain SSL certificate using Certbot"
+  command: >
+    certbot certonly --webroot -w /var/www/html 
+    -d "{{ vault_fqdn }}" --non-interactive --agree-tos 
+    --email "admin@{{ vault_fqdn }}"
+  when: certbot_auto_renew | default(false) == false
+  notify: Reload Nginx
+
+- name: "setup Certbot auto-renew cron job"
+  cron:
+    name: "Certbot Auto Renew"
+    job: "/usr/bin/certbot renew --quiet && systemctl reload nginx"
+    state: present
+    hour: 3
+    minute: 30
+
+- name: "deploy Nginx HTTPS configuration file"
+  template:
+    src: "../templates/nginx-https.conf.j2"
+    dest: "/etc/nginx/sites-available/default"
+  notify: Reload Nginx
+
+- name: "set Nginx to auto start"
+  systemd:
+    enabled: true
+    daemon_reload: true
+    name: "nginx"
+    state: started
+
+- name: "set Vault to auto restart"
   systemd:
     enabled: true
     daemon_reload: true
     name: "vault"
     state: started
+
+- name: "restart Nginx"
+  service:
+    name: nginx
+    state: restarted
+  notify: Reload Nginx
