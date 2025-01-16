@@ -18,13 +18,13 @@
     src: microk8s-config.yaml.j2
     dest: /var/snap/microk8s/common/.microk8s.yaml
 
-- name: Create oidc config file for mk8s
-  become: true
-  ansible.builtin.copy:
-    src: oidc.conf.yaml
-    dest: /var/snap/microk8s/common/.oidc_config.yaml
-    force: no
-  when: kubernetes_oidc_enabled | bool
+# - name: Create oidc config file for mk8s
+#   become: true
+#   ansible.builtin.copy:
+#     src: oidc.conf.yaml
+#     dest: /var/snap/microk8s/common/.oidc_config.yaml
+#     force: no
+#   when: kubernetes_oidc_enabled | bool
 
 - name: Install microk8s
   become: true
