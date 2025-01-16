@@ -9,6 +9,7 @@ kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
 helm_version: "3.14.0"
 cluster_cloud_provider: "aws"
+dynamic_secret_platform: "aws"
 netbird_build_server_client_version: "0.28.9"
 install_coredns: true
 coredns_localcache_version: "1.11.3"
@@ -322,7 +323,7 @@ argocd_default:
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"
           postgres_instance_size: "small"
-          postgres_storage_size: "'20'"          
+          postgres_storage_size: "'20'"
         zitadel_cockroachdb_provider:
           app_name: "cockroachdb"
           helm_version: "13.0.2"
@@ -430,7 +431,7 @@ argocd_default:
           gitlab_registry_max_objects: "'1000000'"
           gitlab_registry_storage_size: "10Gi"
           gitlab_runner_cache_max_objects: "'1000000'"
-          gitlab_runner_cache_storage_size: "10Gi"          
+          gitlab_runner_cache_storage_size: "10Gi"
           redis_cluster_size: "'3'"
           redis_storage_size: "'2Gi'"
           gitlab_db_name: "gitlab"
@@ -441,8 +442,8 @@ argocd_default:
           praefect_dbdeploy_name_prefix: "praefect-db"
           rdbms_provider: "percona"
           gitlab_db_secret: "gitlab-postgresql-credentials"
-          praefect_db_secret: "praefect-postgresql-credentials"          
-        webdb_percona_provider:            
+          praefect_db_secret: "praefect-postgresql-credentials"
+        webdb_percona_provider:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
           postgres_storage_size: "100"
@@ -454,7 +455,7 @@ argocd_default:
           postgres_storage_size: "100"
           postgres_instance_size: "small"
           pgdb_helm_version: "2.4.0"
-        webdb_rds_provider:         
+        webdb_rds_provider:
           rdbms_subnet_list: "[]"
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"

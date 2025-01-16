@@ -20,3 +20,17 @@
   ansible.builtin.file:
     state: absent
     path: "{{ longhorn_data_path }}"
+
+- name: Remove rook data
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: "{{ rook_data_path }}"
+
+- name: reset rook vol
+  become: true
+  shell: |
+    wipefs -a {{ rook_disk_vol }}
+    dd if=/dev/zero of="{{ rook_disk_vol }}" bs=1M count=100 oflag=direct,dsync
+    partprobe {{ rook_disk_vol }}
+  when: enable_rook_disk_reset | bool
