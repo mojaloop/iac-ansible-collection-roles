@@ -33,6 +33,7 @@
     classic: yes
     channel: "{{ microk8s_version }}"
 #requires 1.30 and above, if running 1.29 or below, need to add --feature-gates=StructuredAuthenticationConfiguration=true
+
 - name: add oidc config
   become: true
   ansible.builtin.blockinfile:
