@@ -59,7 +59,3 @@
 
   become: true
   when: (inventory_hostname in groups[microk8s_group_ha]) and (inventory_hostname != designated_host or groups[microk8s_group_ha] | length == 1)
-
-- name: configure addons
-  ansible.builtin.include_tasks: configure-addons.yml
-  when: inventory_hostname == designated_host
