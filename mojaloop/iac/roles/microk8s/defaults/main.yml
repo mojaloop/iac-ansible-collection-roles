@@ -8,23 +8,7 @@ microk8s_version: "1.31/stable"
 microk8s_disable_snap_autoupdate: false
 
 # plugin configuration
-microk8s_addons:
-  - name: dns
-    disable: true
-  - name: registry
-    disable: true
-  - name: metallb
-    disable: true
-  - name: cert-manager
-    disable: true
-  - name: metrics-server
-    disable: true
-  - name: dashboard
-    disable: true
-  - name: ingress
-    disable: true
-  - name: hostpath-storage
-    disable: true
+addons_to_disable: "dns,rook-ceph,metrics-server,dashboard,cert-manager,metallb,registry,hostpath-storage"
 
 microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
 registry_size: 20Gi

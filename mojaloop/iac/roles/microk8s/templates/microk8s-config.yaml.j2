@@ -5,9 +5,7 @@ extraKubeletArgs:
   --cluster-domain: cluster.local
   --cluster-dns: {{ dns_bind_address }}
 addons:
-  - name: dns
+{% for addon in addons_to_disable.split(',') %}
+  - name: {{ addon.strip() }}
     disable: true
-  - name: registry
-    disable: true
-  - name: rook-ceph
-    disable: true
+{% endfor %}
