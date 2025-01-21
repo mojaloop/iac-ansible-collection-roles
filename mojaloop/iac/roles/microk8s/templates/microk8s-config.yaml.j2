@@ -1,11 +1,11 @@
 # microk8s-config.yaml
 ---
 version: 0.1.0
-extraKubeletArgs:
-  --cluster-domain: cluster.local
-  --cluster-dns: {{ dns_bind_address }}
 addons:
 {% for addon in addons_to_disable.split(',') %}
   - name: {{ addon.strip() }}
     disable: true
 {% endfor %}
+extraKubeletArgs:
+  --cluster-domain: cluster.local
+  --cluster-dns: {{ dns_bind_address }}
