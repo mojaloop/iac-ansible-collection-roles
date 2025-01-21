@@ -34,6 +34,20 @@
     channel: "{{ microk8s_version }}"
 #requires 1.30 and above, if running 1.29 or below, need to add --feature-gates=StructuredAuthenticationConfiguration=true
 
+- name: Find default microk8s launch configuration
+  ansible.builtin.find:
+    paths: /snap/microk8s/
+    patterns: "microk8s.default.yaml"
+    recurse: yes
+  register: found_files
+
+- name: Remove the found file(s)
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ found_files.files }}"
+  when: found_files.matched > 0
+  
 - name: add oidc config
   become: true
   ansible.builtin.blockinfile:
