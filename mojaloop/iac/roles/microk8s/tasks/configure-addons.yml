@@ -1,8 +1,0 @@
----
-- name: Enable or disable MicroK8s addons
-  ansible.builtin.command: "microk8s {{ action }} {{ item.key }}"
-  vars:
-    action: "{{ 'enable' if item.value else 'disable' }}"
-  with_dict: "{{ microk8s_plugins }}"
-  when: microk8s_plugins is defined and microk8s_plugins | length > 0
-  register: addon_tasks

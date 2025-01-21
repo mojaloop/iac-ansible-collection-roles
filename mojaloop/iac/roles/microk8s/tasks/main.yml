@@ -10,11 +10,6 @@
   ansible.builtin.include_tasks: configure-ha.yml
   when: "microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
 
-# - name: configure addons
-#   ansible.builtin.include_tasks: configure-addons.yml
-#   run_once: true
-#   when: "microk8s_enable_ha and (not (teardown | bool) and not (microk8s_dev_skip | bool))"
-
 - name: fetch kubeconfig
   ansible.builtin.include_tasks: fetch-kubeconfig.yml
   when: "not (teardown | bool)"
