@@ -25,7 +25,6 @@
         microk8s_group_ha: "master"
         microk8s_group_workers: "agent"
         add_workers_to_hostfile: true
-        microk8s_plugins: {}
 
 - hosts: master
   become: true

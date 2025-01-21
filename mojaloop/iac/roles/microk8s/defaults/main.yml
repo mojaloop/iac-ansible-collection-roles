@@ -11,8 +11,6 @@ microk8s_disable_snap_autoupdate: false
 addons_to_disable: "dns,rook-ceph,metrics-server,dashboard,cert-manager,metallb,registry,hostpath-storage"
 
 microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
-registry_size: 20Gi
-microk8s_plugins: {}
 helm3_repositories:
   - name: stable
     url: https://charts.helm.sh/stable
