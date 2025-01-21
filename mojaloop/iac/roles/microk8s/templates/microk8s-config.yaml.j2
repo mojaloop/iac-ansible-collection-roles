@@ -5,12 +5,7 @@ extraKubeletArgs:
   --cluster-domain: cluster.local
   --cluster-dns: {{ dns_bind_address }}
 addons:
-{% for addon in microk8s_addons %}
-  - name: {{ addon.name }}
-    {% if addon.disable is defined and addon.disable %}
+  - name: dns
     disable: true
-    {% endif %}
-    {% if addon.args is defined %}
-    args: {{ addon.args }}
-    {% endif %}
-{% endfor %}
+  - name: registry
+    disable: true
