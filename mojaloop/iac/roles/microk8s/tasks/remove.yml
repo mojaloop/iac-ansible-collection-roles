@@ -1,12 +1,12 @@
 # for on premise installations
 - name: Reset microk8s
   become: true
-  command: "microk8s reset"
+  ansible.builtin.command: "microk8s reset"
   ignore_errors: true
 
 - name: Remove microk8s
   become: true
-  command: "snap remove --purge microk8s"
+  ansible.builtin.command: "snap remove --purge microk8s"
   ignore_errors: true
 
 - name: Remove microk8s data
