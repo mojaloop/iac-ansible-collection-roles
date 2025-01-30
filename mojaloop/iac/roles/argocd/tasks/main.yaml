@@ -81,7 +81,12 @@
 #     helm repo add coredns https://coredns.github.io/helm
 #     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install coredns coredns/coredns --version {{ coredns_version }} -n kube-system --create-namespace -f {{ argotmpvalues.path }}/coredns-values.yaml
 
-- name: Install coredns-nodecache  
+- name: Install kyverno
+  shell: |
+    helm repo add kyverno https://kyverno.github.io
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install kyverno kyverno/kyverno --version {{ kyverno_version }} -n {{ kyverno_namespace }} --create-namespace
+
+- name: Install coredns-nodecache
   shell: |
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
