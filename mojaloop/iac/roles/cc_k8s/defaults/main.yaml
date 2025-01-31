@@ -144,6 +144,10 @@ argocd_default:
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
+        kyverno:
+          app_name: "kyverno"
+          namespace: "kyverno"
+          helm_version: "3.3.4"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
