@@ -14,7 +14,6 @@ data:
     clientID: $argo-oidc:clientid
     clientSecret: $argo-oidc:clientsecret
     requestedScopes: ["openid", "profile", "email", "read_api"]
-  application.instanceLabelKey: argocd.argoproj.io/instance
   kustomize.buildOptions: --enable-helm
   statusbadge.enabled: 'true'
   ui.bannercontent: "argocd application install"
