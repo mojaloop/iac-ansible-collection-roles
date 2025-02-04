@@ -42,9 +42,9 @@
   lineinfile:
     path: /etc/netclient/config.yml
     regexp: '^endpointip:'
-    line: 'endpointip: {{ ansible_host }}'
+    line: "endpointip: {{ ansible_host }}"
     create: yes
-    state: present  
+    state: present
 
 - name: iptable accept on forward
   iptables:
