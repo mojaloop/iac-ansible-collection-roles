@@ -86,6 +86,10 @@
     helm repo add kyverno https://kyverno.github.io
     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install kyverno kyverno/kyverno --version {{ kyverno_version }} -n {{ kyverno_namespace }} --create-namespace
 
+- name: Apply kyverno image rewrite policy
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/image-rewrite-policy.yaml
+
 - name: Install coredns-nodecache
   shell: |
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/coredns-nodecache.yaml
