@@ -40,7 +40,7 @@
 
 - name: Update Netmaker client configuration with inbound IP
   lineinfile:
-    path: /etc/netclient/config.yml
+    path: /etc/netclient/netclient.yml
     regexp: '^endpointip:'
     line: "endpointip: {{ ansible_host }}"
     create: yes
