@@ -42,7 +42,7 @@
   lineinfile:
     path: /etc/netclient/config.yml
     regexp: '^endpointip:'
-    line: 'endpointip: {{ bastion_public_ip }}'
+    line: 'endpointip: {{ ansible_host }}'
     create: yes
     state: present  
 
