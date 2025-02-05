@@ -83,11 +83,6 @@ argocd_default:
           helm_version: "0.16.4"
           namespace: "redis"
           debug: "debug"
-        kubernetes_secret_generator:
-          app_name: "kubernetes-secret-generator"
-          helm_version: "3.4.0"
-          namespace: "default"
-          sub_app_enabled: "true"
         external_secrets:
           app_name: "external-secrets"
           helm_version: "0.9.20"
