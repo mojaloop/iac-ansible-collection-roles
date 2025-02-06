@@ -7,6 +7,7 @@ configs:
     url: http://argocd.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_private_subdomain }}
     exec.enabled: "true"
     kustomize.buildOptions: "--enable-helm --helm-kube-version 1.29-0 --load-restrictor LoadRestrictionsNone"
+    application.resourceTrackingMethod: annotation
 
     # DO NOT USE in production, this is only used to improve reconciliation in testing env.
     timeout.reconciliation: "10s"
@@ -332,6 +333,6 @@ repoServer:
         - name: custom-tools
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
-        
+
         - name: helm-working-dir
           mountPath: /helm-working-dir

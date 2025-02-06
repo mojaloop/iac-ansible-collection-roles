@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
 data:
+  application.resourceTrackingMethod: annotation
   url: https://argocd.{{ argocd_domain }}
   oidc.config: |
     name: Zitadel
@@ -13,7 +14,6 @@ data:
     clientID: $argo-oidc:clientid
     clientSecret: $argo-oidc:clientsecret
     requestedScopes: ["openid", "profile", "email", "read_api"]
-  application.instanceLabelKey: argocd.argoproj.io/instance
   kustomize.buildOptions: --enable-helm
   statusbadge.enabled: 'true'
   ui.bannercontent: "argocd application install"
@@ -114,7 +114,7 @@ data:
         return hs
 
     k8s.keycloak.org/Keycloak:
-      health.lua: |    
+      health.lua: |
         if obj.status == nil or obj.status.conditions == nil then
           -- no status info available yet
           return {
@@ -147,9 +147,9 @@ data:
           status = "Progressing",
           message = "",
         }
-          
+
     pxc.percona.com/PerconaXtraDBCluster:
-      health.lua: |      
+      health.lua: |
         local hs = {}
         if obj.status ~= nil then
 
