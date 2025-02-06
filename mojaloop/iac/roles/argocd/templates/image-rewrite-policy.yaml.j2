@@ -13,6 +13,11 @@ spec:
               operations:
                 - CREATE
                 - UPDATE
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - istio-ingress-ext
       mutate:
         foreach:
           - list: request.object.spec.containers[]
