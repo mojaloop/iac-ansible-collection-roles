@@ -15,7 +15,7 @@ cluster_name: envname
 kubeconfig_local_location: "/tmp"
 kustomize_version: "3.2.3"
 kubectl_version: "1.24.6"
-kyverno_verion: "3.3.4"
+kyverno_helm_version: "3.3.4"
 kyverno_namespace: kyverno
 coredns_version: "1.28.2"
 coredns_max_scale: 10
