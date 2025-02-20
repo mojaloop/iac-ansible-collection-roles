@@ -169,7 +169,7 @@ metadata:
   namespace: "{{ capi_cluster_namespace }}"
 spec:
   clusterName: "{{ capi_cluster_name }}"
-  replicas: "{{ capi_cluster_proxmox_worker_replicas }}"
+  replicas: {{ capi_cluster_proxmox_worker_replicas }}
   selector:
     matchLabels: {}
   template:
