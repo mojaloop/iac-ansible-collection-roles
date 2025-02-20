@@ -100,6 +100,13 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     clusterctl init --infrastructure={{ capi_infra_provider_name }}:v{{ capi_infra_provider_version }} --config https://raw.githubusercontent.com/k8s-proxmox/cluster-api-provider-proxmox/refs/tags/v{{ capi_infra_provider_version }}/clusterctl.yaml --bootstrap {{ capi_cp_provider_name }} --control-plane {{ capi_cp_provider_name }}
     kubectl apply -f {{ cctmpvalues.path }}/capi/cluster-{{ capi_infra_provider_name }}-{{ capi_cp_provider_name }}.yaml
+  register: capiinstall
+  until: capiinstall is not failed
+  retries: 10
+  delay: 30
+  ignore_errors: true
+  args:
+    executable: /bin/bash
 
 - name: wait for sc cluster
   shell: |
