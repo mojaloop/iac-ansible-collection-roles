@@ -153,7 +153,7 @@ spec:
           tag: "{{ capi_cluster_proxmox_host_vlan }}"
       network:
         ipConfig:
-          ip: "{{ capi_cluster_kubeapi_host }}"/{{ capi_cluster_network_subnet }}"
+          ip: "{{ capi_cluster_kubeapi_host }}/{{ capi_cluster_network_subnet }}"
           gateway: "{{ capi_cluster_network_gateway }}"
       image:
         checksum: c5eed826009c9f671bc5f7c9d5d63861aa2afe91aeff1c0d3a4cb5b28b2e35d6
@@ -298,7 +298,7 @@ kind: ClusterResourceSet
 metadata:
   labels:
     cluster.x-k8s.io/cluster-name: "{{ capi_cluster_name }}"
-  name: "{{ capi_cluster_name }}"-crs-0
+  name: "{{ capi_cluster_name }}-crs-0"
   namespace: "{{ capi_cluster_namespace }}"
 spec:
   clusterSelector:
