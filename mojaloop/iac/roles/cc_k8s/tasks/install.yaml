@@ -98,7 +98,7 @@
 - name: Add CAPI for SC Prereqs
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    clusterctl init --infrastructure={{ capi_infra_provider_name }}:v{{ capi_infra_provider_version }} --confighttps://raw.githubusercontent.com/k8s-proxmox/cluster-api-provider-proxmox/refs/tags/v{{ capi_infra_provider_version }}/templates/cluster-template.yaml --bootstrap {{ capi_cp_provider_name } --control-plane {{ capi_cp_provider_name }
+    clusterctl init --infrastructure={{ capi_infra_provider_name }}:v{{ capi_infra_provider_version }} --confighttps://raw.githubusercontent.com/k8s-proxmox/cluster-api-provider-proxmox/refs/tags/v{{ capi_infra_provider_version }}/templates/cluster-template.yaml --bootstrap {{ capi_cp_provider_name }} --control-plane {{ capi_cp_provider_name }}
     kubectl apply -f {{ cctmpvalues.path }}/capi/cluster-{{ capi_infra_provider_name }}-{{ capi_cp_provider_name }}.yaml
 
 - name: wait for netbird-management autosync
