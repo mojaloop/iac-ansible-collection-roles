@@ -144,13 +144,13 @@ spec:
             - curl -sSL "https://raw.githubusercontent.com/kubernetes/release/v0.15.1/cmd/kubepkg/templates/latest/deb/kubeadm/10-kubeadm.conf" | sed "s:/usr/bin:/usr/local/bin:g" | tee /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
             - "systemctl enable kubelet.service"
       hardware:
-        cpu: "{{ capi_cluster_proxmox_control_plane_cpu }}"
-        memory: "{{ capi_cluster_proxmox_control_plane_memory }}"
+        cpu: {{ capi_cluster_proxmox_control_plane_cpu }}
+        memory: {{ capi_cluster_proxmox_control_plane_memory }}
         networkDevice:
           bridge: "{{ capi_cluster_proxmox_host_net_interface }}"
           firewall: true
           model: virtio
-          tag: "{{ capi_cluster_proxmox_host_vlan }}"
+          tag: {{ capi_cluster_proxmox_host_vlan }}
       network:
         ipConfig:
           ip: "{{ capi_cluster_kubeapi_host }}/{{ capi_cluster_network_subnet }}"
@@ -216,13 +216,13 @@ spec:
   template:
     spec:
       hardware:
-        cpu: "{{ capi_cluster_proxmox_worker_cpu }}"
-        memory: "{{ capi_cluster_proxmox_worker_memory }}"
+        cpu: {{ capi_cluster_proxmox_worker_cpu }}
+        memory: {{ capi_cluster_proxmox_worker_memory }}
         networkDevice:
           bridge: "{{ capi_cluster_proxmox_host_net_interface }}"
           firewall: true
           model: virtio
-          tag: "{{ capi_cluster_proxmox_host_vlan }}"
+          tag: {{ capi_cluster_proxmox_host_vlan }}
       network:
         ipConfig:
           ip: dhcp
