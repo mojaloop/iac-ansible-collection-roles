@@ -10,6 +10,12 @@
     dest: /usr/local/bin/argocd
     mode: 0700
 
+- name: download clusterctl
+  get_url:
+    url: https://github.com/kubernetes-sigs/cluster-api/releases/download/v{{ clusterctl_version }}/clusterctl-linux-amd64
+    dest: /usr/local/bin/clusterctl
+    mode: 0700
+
 - name: setup netbird install
   shell: |
     curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --yes --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
