@@ -103,7 +103,6 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_admin_rbac_group }}"     
             - name: k8s_user_rbac_group
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_user_rbac_group }}"
-      sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/overlays/cloud_storage_provider/{{ '{{' }} .cloud_storage_provider {{ '}}'}}/deploy-env-onboard'
@@ -187,7 +186,91 @@ spec:
             - name: k8s_admin_rbac_group
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_admin_rbac_group }}"     
             - name: k8s_user_rbac_group
-              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_user_rbac_group }}"              
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_user_rbac_group }}"
+      - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+        targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
+        path: 'gitops/applications/overlays/object_storage_provider/{{ '{{' }} .object_storage_provider {{ '}}'}}/deploy-env-onboard'
+        plugin:
+          name: envsubst
+          env:
+            - name: "deploy_env_onboard_app_name"
+              value: "{{ env_name }}-env-onboard"
+            - name: "env_name"
+              value: "{{ env_name }}"
+            - name: "cluster_name"
+              value: "{{ cluster_name }}"              
+            - name: "deploy_env_onboard_app_namespace"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].namespace }}"
+            - name: "deploy_env_onboard_app_sync_wave"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sync_wave }}"  
+            - name: "deploy_env_onboard_terraform_modules_tag"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}"
+            - name: "zitadel_fqdn"
+              value: "{{ fact_zitadel_fqdn }}"
+            - name: "netbird_fqdn"
+              value: "{{ fact_netbird_fqdn }}"    
+            - name: "gitlab_fqdn"
+              value: "{{ fact_gitlab_fqdn }}"          
+            - name: "vault_namespace"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
+            - name: "gitlab_namespace"
+              value: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
+            - name: "netbird_namespace"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }}"
+            - name: "netbird_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].netbird_tf_provider_version }}"                
+            - name: "zitadel_namespace"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"                                
+            - name: "zitadel_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_tf_provider_version }}"
+            - name: "zitadel_post_config_output_secret"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_post_config_output_secret }}"
+            - name: "vault_admin_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].vault_admin_rbac_group }}"                         
+            - name: "grafana_admin_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].grafana_admin_rbac_group }}"
+            - name: "argocd_admin_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].argocd_admin_rbac_group }}" 
+            - name: "vault_user_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].vault_user_rbac_group }}"                         
+            - name: "grafana_user_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].grafana_user_rbac_group }}"
+            - name: "argocd_user_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].argocd_user_rbac_group }}" 
+            - name: "netbird_user_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].rbac_user_group }}"  
+            - name: "netbird_admin_rbac_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].rbac_admin_group }}"                                                                        
+            - name: "vault_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"  
+            - name: "vault_keys_secret"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_keys_secret }}"
+            - name: "vault_kv_secret"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_kv_secret }}" 
+            - name: "netbird_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].netbird_tf_provider_version }}"
+            - name: "vault_domain"
+              value: "{{ '{{' }} cat \"int.\" .env | nospace {{ '}}'}}"
+            - name: "argocd_domain"
+              value: "{{ '{{' }} cat \"int.\" .env | nospace {{ '}}'}}"
+            - name: "grafana_domain"
+              value: "{{ '{{' }} cat \"int.\" .env | nospace {{ '}}'}}"
+            - name: "domain"
+              value: "{{ '{{' }} .domain {{ '}}'}}"
+            - name: "env_cidr"
+              value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
+            - name: "managed_services_env_cidr"
+              value: "{{ '{{' }} .managed_vpc_cidr {{ '}}'}}"
+            - name: "managed_svc_enabled"
+              value: "{{ '{{' }} .managed_svc_enabled {{ '}}'}}"     
+            - name: "k8s_cluster_type"
+              value: "{{ '{{' }} .k8s_cluster_type {{ '}}'}}"   
+            - name: "argocd_namespace"
+              value: "argocd"
+            - name: k8s_admin_rbac_group
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_admin_rbac_group }}"     
+            - name: k8s_user_rbac_group
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_user_rbac_group }}"                            
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
