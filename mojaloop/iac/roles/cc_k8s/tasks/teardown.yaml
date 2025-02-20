@@ -19,6 +19,15 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: Delete sc cluster before infra teardown
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete cluster -n {{ capi_cluster_namespace }} {{ capi_cluster_name }} --ignore-not-found=true
+    sleep 60
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: Tear down ceph cluster
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
