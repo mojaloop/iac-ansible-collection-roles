@@ -396,8 +396,8 @@ data:
       config.yaml: |
         proxmox:
           url: https://{{ capi_cluster_proxmox_url }}/api2/json
-          user: root@pam
-          password: ILove!nfitx
+          user: "{{ capi_cluster_proxmox_user }}"
+          password: "{{ capi_cluster_proxmox_password }}"
           tokenID: ""
           secret: ""
 kind: ConfigMap
