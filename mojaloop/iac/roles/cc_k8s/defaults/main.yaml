@@ -145,6 +145,8 @@ argocd_default:
           namespace: "kyverno"
           helm_version: "3.3.4"
         capi:
+          app_name: "capi"
+          namespace: "capi"
           capi_operator_namespace: "proxmox-infrastructure-system"
           api_operator_version: "0.16.0"
           capi_infra_provider_name: "proxmox"
