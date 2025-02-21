@@ -28,6 +28,8 @@
     fact_netbird_management_url: "https://netbird.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}:443"
     fact_environment_list: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].environment_list.split(',') }}"
     fact_rook_ceph_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['rook_ceph'].namespace }}"
+    fact_capi_cluster_namespace: "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+    fact_capi_cluster_name: "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_name }}"
 
 - name: set gitlab domain to public
   set_fact:

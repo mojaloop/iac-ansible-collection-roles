@@ -95,24 +95,11 @@
   args:
     executable: /bin/bash
 
-# - name: Add CAPI for SC Prereqs
-#   shell: |
-#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     clusterctl init --infrastructure={{ capi_infra_provider_name }}:v{{ capi_infra_provider_version }} --config https://raw.githubusercontent.com/k8s-proxmox/cluster-api-provider-proxmox/refs/tags/v{{ capi_infra_provider_version }}/clusterctl.yaml --bootstrap {{ capi_cp_provider_name }} --control-plane {{ capi_cp_provider_name }}
-#     kubectl apply -f {{ cctmpvalues.path }}/capi/cluster-{{ capi_infra_provider_name }}-{{ capi_cp_provider_name }}.yaml
-#   register: capiinstall
-#   until: capiinstall is not failed
-#   retries: 10
-#   delay: 30
-#   ignore_errors: true
-#   args:
-#     executable: /bin/bash
-
 - name: wait for sc cluster
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get cluster -n {{ capi_cluster_namespace }} {{ capi_cluster_name }} -o jsonpath="{.status.phase}"
-    clusterctl get kubeconfig -n {{ capi_cluster_namespace }} {{ capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
+    kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
+    clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
   register: clusterstatus
   until: clusterstatus.stdout is not failed
@@ -125,7 +112,7 @@
 - name: Post config CAPI cluster
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    clusterctl get kubeconfig -n {{ capi_cluster_namespace }} {{ capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
+    clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
   register: capipostconfig
   until: capipostconfig is not failed
