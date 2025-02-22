@@ -161,7 +161,7 @@ argocd_default:
           capi_cluster_proxmox_url: "192.168.99.107:8006"
           capi_cluster_kube_version: "1.31.0"
           capi_cluster_proxmox_host_sshkey: "ssh-rsa AAA..."
-          capi_cluster_proxmox_host_password: "!Pass123#"
+          capi_cluster_proxmox_host_password: "Pass1234"
           capi_cluster_proxmox_host_vlan: "'127'"
           capi_cluster_proxmox_host_net_interface: "vmbr1"
           capi_cluster_proxmox_control_plane_cpu: "'2'"
@@ -170,7 +170,7 @@ argocd_default:
           capi_cluster_proxmox_worker_memory: "'8192'"
           capi_cluster_proxmox_worker_replicas: "'2'"
           capi_cluster_proxmox_user: "root@pam"
-          capi_cluster_proxmox_password: "!Pass123#"
+          capi_cluster_proxmox_password: "Pass1234"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
