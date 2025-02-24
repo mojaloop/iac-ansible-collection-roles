@@ -119,6 +119,8 @@ spec:
               value: "{{ cluster_name }}"              
             - name: "deploy_env_onboard_app_namespace"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].namespace }}"
+            - name: "terraform_modules_tag"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}"              
             - name: "vault_domain"
               value: "{{ '{{' }} cat \"int.\" .env | nospace {{ '}}'}}"
             - name: "argocd_domain"
