@@ -142,7 +142,15 @@ spec:
             - name: "aws_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"
             - name: "vault_kv_secret"
-              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_kv_secret }}"                             
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_kv_secret }}"
+            - name: "vault_namespace"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
+            - name: "vault_keys_secret"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_keys_secret }}"
+            - name: "vault_tf_provider_version"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"                             
+            - name: "crossplane_namespace"
+              value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"                                                                       
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/overlays/object_storage_provider/{{ '{{' }} .object_storage_provider {{ '}}'}}/deploy-env-onboard'
