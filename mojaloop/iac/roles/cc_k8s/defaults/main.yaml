@@ -169,7 +169,7 @@ argocd_default:
           capi_cluster_proxmox_control_plane_memory: "'8192'"
           capi_cluster_proxmox_worker_cpu: "'2'"
           capi_cluster_proxmox_worker_memory: "'8192'"
-          capi_cluster_proxmox_worker_replicas: "'2'"
+          capi_cluster_proxmox_worker_replicas: "'3'"
           capi_cluster_proxmox_user: "root@pam"
           capi_cluster_proxmox_password: "Pass1234"
           capi_cluster_storage_name: "pve-sdb"
