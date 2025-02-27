@@ -167,7 +167,7 @@ argocd_default:
           capi_cluster_proxmox_host_net_interface: "vmbr1"
           capi_cluster_proxmox_control_plane_cpu: "'2'"
           capi_cluster_proxmox_control_plane_memory: "'8192'"
-          capi_cluster_proxmox_worker_cpu: "'2'"
+          capi_cluster_proxmox_worker_cpu: "'4'"
           capi_cluster_proxmox_worker_memory: "'8192'"
           capi_cluster_proxmox_worker_replicas: "'3'"
           capi_cluster_proxmox_user: "root@pam"
