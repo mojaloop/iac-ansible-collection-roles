@@ -102,7 +102,7 @@
     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
   register: clusterstatus
-  until: clusterstatus.stdout is not failed
+  until: clusterstatus is not failed
   retries: 10
   delay: 30
   ignore_errors: true
