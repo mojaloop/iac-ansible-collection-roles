@@ -103,6 +103,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_admin_rbac_group }}"     
             - name: k8s_user_rbac_group
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_user_rbac_group }}"
+            - name: "ceph_max_objects"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_objects }}"
+            - name: "ceph_bucket_max_size"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_size }}"                
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/overlays/block_storage_provider/{{ '{{' }} .block_storage_provider {{ '}}'}}/deploy-env-onboard'
@@ -140,11 +144,7 @@ spec:
             - name: "cloud_region"
               value: "{{ '{{' }} .cloud_region {{ '}}'}}"        
             - name: "aws_tf_provider_version"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"
-            - name: "ceph_max_objects"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_objects }}"
-            - name: "ceph_bucket_max_size"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_size }}"                             
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"                           
             - name: "vault_kv_secret"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_kv_secret }}"
             - name: "vault_namespace"
