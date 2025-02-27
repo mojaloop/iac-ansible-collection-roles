@@ -147,6 +147,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"                           
             - name: "vault_kv_secret"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_kv_secret }}"
+            - name: "gitlab_namespace"
+              value: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"              
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
             - name: "vault_keys_secret"
