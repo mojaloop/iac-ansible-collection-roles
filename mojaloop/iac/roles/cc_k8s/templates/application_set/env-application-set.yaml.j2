@@ -142,7 +142,7 @@ spec:
             - name: "aws_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"
             - name: "ceph_max_objects"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_max_objects }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_objects }}"
             - name: "ceph_bucket_max_size"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_size }}"                             
             - name: "vault_kv_secret"
