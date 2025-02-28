@@ -633,9 +633,10 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8sargoroot581"
-      sync_wave: "'-10'"
+      sync_wave: "'-8'"
       sub_apps:
         metallb:
+          sync_wave: "'-11'"
           app_name: "metallb"
           namespace: "metallb-system"
           ip_range_begin: "10.10.127.10"
