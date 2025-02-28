@@ -75,12 +75,12 @@
   with_filetree: "{{role_path}}/templates/argocd"
   when: item.state == 'file'
 
-# - name: Upload capi template files
-#   template:
-#     src: "{{ item.src }}"
-#     dest: "{{ cctmpvalues.path }}/capi/{{ item.path | regex_replace('\\.j2$', '') }}"
-#   with_filetree: "{{role_path}}/templates/capi"
-#   when: item.state == 'file'
+- name: Upload capi template files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ cctmpvalues.path }}/capi/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: "{{role_path}}/templates/capi"
+  when: item.state == 'file'
 
 - name: Upload coredns-localcache template files
   template:
