@@ -640,7 +640,7 @@ argocd_default:
           ip_range_begin: "10.10.127.10"
           ip_range_end: "10.10.127.20"
           version: "0.14.9"
-        rook-ceph:
+        rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           version: "1.16.3"
