@@ -9,6 +9,11 @@
     kubectl apply -f {{ cctmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
 
+- name: Install env vars cm
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/argocd-env-vars-cm.yaml
+
 - name: Install argocd
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
