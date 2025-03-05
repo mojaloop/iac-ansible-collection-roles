@@ -55,7 +55,7 @@ argocd_default:
           osd_count: "'3'"
           volume_size_per_osd: "500Gi"
           volumes_provider: "pvc"
-          sync_wave: "'-10'"
+          sync_wave: "'-9'"
           sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
