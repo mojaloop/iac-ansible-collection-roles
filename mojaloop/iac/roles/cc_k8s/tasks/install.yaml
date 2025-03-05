@@ -128,11 +128,11 @@
   args:
     executable: /bin/bash
 
-- name: Post config CAPI cluster - set cm
+- name: Post config CAPI cluster - install root app
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
-    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f {{ cctmpvalues.path }}/capi/argocd-env-vars-cm.yaml
+    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f {{ cctmpvalues.path }}/capi/storage-cluster-root-app.yaml
   register: capipostconfig2
   until: capipostconfig2 is not failed
   retries: 10
