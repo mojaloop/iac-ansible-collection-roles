@@ -108,7 +108,7 @@
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
   register: clusterstatus
   until: clusterstatus is not failed
-  retries: 10
+  retries: 20
   delay: 30
   ignore_errors: true
   args:
