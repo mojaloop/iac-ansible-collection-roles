@@ -176,9 +176,7 @@ repoServer:
   #   requests:
   #     cpu: 250m
   #     memory: 512Mi
-  envFrom:
-    - configMapRef:
-        name: plugin-env-vars
+
   env:
     - name: HELM_CACHE_HOME
       value: /helm-working-dir
@@ -224,6 +222,9 @@ repoServer:
     - name: debug-tools
       image: quay.io/argoproj/argocd
       command: [sh, -c]
+      envFrom:
+        - configMapRef:
+            name: plugin-env-vars
       args:
         - while true; do echo "running"; sleep 300; done
       volumeMounts:
@@ -254,6 +255,9 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+      envFrom:
+        - configMapRef:
+            name: plugin-env-vars
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
@@ -279,6 +283,9 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+      envFrom:
+        - configMapRef:
+            name: plugin-env-vars
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
@@ -304,6 +311,9 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+      envFrom:
+        - configMapRef:
+            name: plugin-env-vars
       env:
         - name: HELM_CACHE_HOME
           value: /helm-working-dir
