@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ fact_argo_merged_config.namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plugin-env-vars
+  namespace: {{ fact_argo_merged_config.namespace }}
+  labels:
+    app.kubernetes.io/part-of: argocd
+data:
+  ARGOCD_ENV_cluster_name: {{ cluster_name }}
+  ARGOCD_ENV_cloud_provider: {{ cluster_cloud_provider }}
+  ARGOCD_ENV_dynamic_secret_platform: {{ dynamic_secret_platform }}
+  ARGOCD_ENV_argocd_repo_url: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+  ARGOCD_ENV_ansible_gitrepo_url: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.ansible_gitrepo }}.git#{{ fact_argo_merged_config.ansible_collection_path }}"
+  ARGOCD_ENV_helm_version: {{ helm_version }}
+  ARGOCD_ENV_helmfile_version: {{ helmfile_version }}
+{% for item in fact_argo_merged_config.apps | dict2items %}
+{% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
+  "ARGOCD_ENV_{{ item.key }}_{{ attr.key }}": {{ attr.value | to_yaml(default_style='\"') }}
+{% endfor %}
+{% for subapp in item.value['sub_apps'] | dict2items %}
+{% for subappvalue in subapp.value | dict2items%}
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_{{ subappvalue.key }}": {{ subappvalue.value | to_yaml(default_style='\"') }}
+{% if subappvalue.key  == 'public_ingress_access_domain' %}
+{% if subappvalue.value |default(false) | bool %}
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_dns_subdomain": "{{ fact_dns_public_subdomain }}"
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_istio_gateway_namespace": "{{ fact_istio_external_gateway_namespace }}"
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_istio_wildcard_gateway_name": "{{ fact_istio_external_wildcard_gateway_name }}"
+{% else %}
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_dns_subdomain": "{{ fact_dns_private_subdomain }}"
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_istio_gateway_namespace": "{{ fact_istio_internal_gateway_namespace }}"
+  "ARGOCD_ENV_{{ item.key }}_{{ subapp.key }}_istio_wildcard_gateway_name": "{{ fact_istio_internal_wildcard_gateway_name }}"
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
