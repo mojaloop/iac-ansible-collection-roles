@@ -119,9 +119,22 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f {{ cctmpvalues.path }}/capi/storage-cluster-root-app.yaml
+    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get ns argocd
   register: capipostconfig
   until: capipostconfig is not failed
+  retries: 10
+  delay: 30
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+- name: Post config CAPI cluster - set cm
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
+    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f {{ cctmpvalues.path }}/capi/argocd-env-vars-cm.yaml
+  register: capipostconfig2
+  until: capipostconfig2 is not failed
   retries: 10
   delay: 30
   ignore_errors: true
