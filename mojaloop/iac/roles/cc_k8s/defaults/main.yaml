@@ -57,6 +57,10 @@ argocd_default:
           volumes_provider: "pvc"
           sync_wave: "'-9'"
           sub_app_enabled: "true"
+        rook_ceph_post_config:
+          sync_wave: "'-8'"
+          app_name: "rook-ceph-post-config"
+          namespace: "rook-ceph-external"
         reflector:
           app_name: "reflector"
           helm_version: "7.1.262"
