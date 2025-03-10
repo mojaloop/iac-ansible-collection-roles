@@ -43,20 +43,20 @@ argocd_default:
           helm_version: "7.6.8"
           public_ingress_access_domain: "false"
           sub_app_enabled: "true"
-        rook_ceph:
-          app_name: "rook-ceph"
-          namespace: "rook-ceph"
-          helm_version: "1.15.5"
-          image_version: "v18.2.4"
-          rook_csi_kubelet_dir_path: "/var/lib/kubelet"
-          mon_volumes_storage_class: "gp3"
-          mon_volumes_size: "10Gi"
-          osd_volumes_storage_class: "gp3"
-          osd_count: "'3'"
-          volume_size_per_osd: "500Gi"
-          volumes_provider: "pvc"
-          sync_wave: "'-10'"
-          sub_app_enabled: "true"
+        # rook_ceph:
+        #   app_name: "rook-ceph"
+        #   namespace: "rook-ceph"
+        #   helm_version: "1.15.5"
+        #   image_version: "v18.2.4"
+        #   rook_csi_kubelet_dir_path: "/var/lib/kubelet"
+        #   mon_volumes_storage_class: "gp3"
+        #   mon_volumes_size: "10Gi"
+        #   osd_volumes_storage_class: "gp3"
+        #   osd_count: "'3'"
+        #   volume_size_per_osd: "500Gi"
+        #   volumes_provider: "pvc"
+        #   sync_wave: "'-10'"
+        #   sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
           helm_version: "7.1.262"
@@ -118,14 +118,6 @@ argocd_default:
           prometheus_crd_version: "13.0.2"
           grafana_operator_version: "4.4.12"
           namespace: "monitoring"
-        consul:
-          app_name: "consul"
-          sub_app_enabled: "true"
-          namespace: "consul"
-          helm_version: "1.4.0"
-          replicas: "'1'"
-          storage_size: 3Gi
-          sync_wave: "'-9'"
         post_config:
           app_name: "post-config"
           sync_wave: "'-9'"
@@ -173,6 +165,18 @@ argocd_default:
           capi_cluster_proxmox_user: "root@pam"
           capi_cluster_proxmox_password: "Pass1234"
           capi_cluster_storage_name: "pve-sdb"
+          capi_rook_ceph_helm_version: "1.15.5"
+          capi_rook_ceph_image_version: "v18.2.4"
+          capi_rook_ceph_rook_csi_kubelet_dir_path: "/var/lib/kubelet"
+          capi_rook_ceph_mon_volumes_storage_class: "gp3"
+          capi_rook_ceph_mon_volumes_size: "10Gi"
+          capi_rook_ceph_osd_volumes_storage_class: "gp3"
+          capi_rook_ceph_osd_count: "'3'"
+          capi_rook_ceph_volume_size_per_osd: "500Gi"
+          capi_rook_ceph_volumes_provider: "pvc"
+          capi_rook_ceph_sync_wave: "'-10'"
+        storage_private_cloud: {}
+        storage_aws: {}              
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
