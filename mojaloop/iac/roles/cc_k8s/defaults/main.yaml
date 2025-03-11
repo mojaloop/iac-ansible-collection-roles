@@ -162,16 +162,19 @@ argocd_default:
           capi_rook_ceph_post_config_sync_wave: "'-9'"
         storage:
           sync_wave: "'-8'"
-          app_name: "storage" 
+          app_name: "storage"
           namespace: "storage"
           application_gitrepo_tag: "vexp-cck8s19"
-          storage_class_name: "block-storage-sc"                  
+          storage_class_name: "block-storage-sc"
+          block_storage_class_name: "block"
         storage_private_cloud_provider:
           helm_version: "1.16.3"
           csi_kubelet_dir_path: "/var/lib/kubelet"
           post_config_sync_wave: "'-8'"
           post_config_app_name: "rook-ceph-post-config"
           post_config_namespace: "rook-ceph-external"
+          fs_storage_class_name: "filesystem"
+          object_storage_class_name: "bucket"
         storage_aws_provider:
           csi_kubelet_dir_path: "/var/lib/kubelet"
 
