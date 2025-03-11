@@ -170,8 +170,7 @@ argocd_default:
           helm_version: "1.16.3"
           csi_kubelet_dir_path: "/var/lib/kubelet"
           post_config_sync_wave: "'-8'"
-          post_config_app_name: "rook-ceph-post-config"
-          post_config_namespace: "rook-ceph-external"
+          post_config_app_name: "storage-post-config"
           fs_storage_class_name: "filesystem"
           object_storage_class_name: "bucket"
         storage_aws_provider:
