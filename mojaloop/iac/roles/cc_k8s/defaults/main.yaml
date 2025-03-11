@@ -160,6 +160,7 @@ argocd_default:
           capi_rook_ceph_rook_csi_kubelet_dir_path: "/var/lib/kubelet"
           capi_rook_ceph_post_config_app_name: "rook-ceph-post-config"
           capi_rook_ceph_post_config_sync_wave: "'-9'"
+          capi_rook_ceph_rbd_pool_replication_size: "'3'"
         storage:
           sync_wave: "'-8'"
           app_name: "storage"
