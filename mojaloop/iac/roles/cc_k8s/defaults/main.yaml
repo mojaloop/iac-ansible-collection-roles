@@ -15,6 +15,7 @@ netbird_build_server_client_version: "0.36.5"
 install_coredns: true
 coredns_localcache_version: "1.11.3"
 dns_bind_address: "169.254.20.10"
+block_storage_provider: "aws"
 #argo
 argocd_override:
 argocd_default:
@@ -159,10 +160,13 @@ argocd_default:
           capi_rook_ceph_rook_csi_kubelet_dir_path: "/var/lib/kubelet"
           capi_rook_ceph_post_config_app_name: "rook-ceph-post-config"
           capi_rook_ceph_post_config_sync_wave: "'-9'"
-        storage_private_cloud_provider:
+        storage:
           sync_wave: "'-9'"
-          app_name: "rook-ceph"
-          namespace: "rook-ceph"
+          app_name: "storage" 
+          namespace: "storage"
+          application_gitrepo_tag: "vexp-cck8s19"
+          storage_class_name: "block-storage-sc"                  
+        storage_private_cloud_provider:
           helm_version: "1.16.3"
           csi_kubelet_dir_path: "/var/lib/kubelet"
           post_config_sync_wave: "'-8'"
@@ -170,6 +174,7 @@ argocd_default:
           post_config_namespace: "rook-ceph-external"
         storage_aws_provider:
           csi_kubelet_dir_path: "/var/lib/kubelet"
+
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
