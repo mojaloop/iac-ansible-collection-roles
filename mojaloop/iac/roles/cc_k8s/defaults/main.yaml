@@ -125,6 +125,7 @@ argocd_default:
         capi:
           app_name: "capi"
           namespace: "capi"
+          app_namespace: "argocd"
           capi_operator_namespace: "proxmox-infrastructure-system"
           capi_operator_version: "0.16.0"
           post_sync_wave: "'-10'"
