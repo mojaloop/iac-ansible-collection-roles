@@ -12,7 +12,7 @@
 - name: Create argocd namespace
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl create namespace {{ fact_argocd_helm_namespace }}
+    kubectl get namespace {{ fact_argocd_helm_namespace }} || kubectl create namespace {{ fact_argocd_helm_namespace }}
 
 - name: Install env vars cm
   shell: |
