@@ -167,7 +167,6 @@ argocd_default:
           sync_wave: "'-8'"
           app_name: "storage"
           namespace: "storage"
-          application_gitrepo_tag: "vexp-cck8s19"
           block_storage_class_name: "block"
         storage_private_cloud_provider:
           helm_version: "1.16.3"
