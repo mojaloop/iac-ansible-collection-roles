@@ -130,6 +130,7 @@ argocd_default:
           capi_operator_version: "0.16.0"
           sync_wave: "'-9'"  
           post_sync_wave: "'-10'"
+          operator_sync_wave: "'-8'"
           capi_infra_provider_name: "proxmox"
           capi_infra_provider_version: "0.4.5"
           capi_cp_provider_name: "kubeadm"
