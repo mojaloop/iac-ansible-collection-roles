@@ -6,6 +6,7 @@
 
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} netbird-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl delete workspaces.tf.upbound.io vault-{{ dynamic_secret_platform }}-post-config
     # kubectl delete workspaces.tf.upbound.io vault-post-config
@@ -13,9 +14,15 @@
     # kubectl delete rdsauroradbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
     # kubectl delete rdsdbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
 
+    # kubectl delete s3bucketclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+
     # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
     # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
     # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+
+    # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
+    # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
+    # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
     # sleep 600
   args:
     executable: /bin/bash
