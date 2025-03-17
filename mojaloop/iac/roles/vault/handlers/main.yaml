@@ -2,3 +2,8 @@
   systemd:
     name: "vault"
     state: restarted
+
+- name: Reload Nginx
+  service:
+    name: "nginx"
+    state: reloaded

@@ -3,8 +3,8 @@ Description=vault docker-compose unit
 After=docker.service
 
 [Service]
-ExecStart=/usr/bin/docker-compose -f {{ vault_root_dir }}/docker-compose.yml up
-ExecStop=/usr/bin/docker-compose -f {{ vault_root_dir }}/docker-compose.yml down
+ExecStart=/usr/bin/docker compose -f {{ vault_root_dir }}/docker-compose.yml up
+ExecStop=/usr/bin/docker compose -f {{ vault_root_dir }}/docker-compose.yml down
 
 [Install]
 WantedBy=docker.service

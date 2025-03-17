@@ -1,37 +1,151 @@
 #!/bin/bash
-set -e
+
+# Function to log messages
+log() {
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1"
+}
+
+# Function to retry a command
+retry() {
+    local n=0
+    local max=5
+    local delay=5
+    local command="$@"
+
+    until [ "$n" -ge "$max" ]; do
+        $command && return 0
+        n=$((n + 1))
+        log "Command failed. Attempt $n/$max. Retrying in $delay seconds..."
+        sleep $delay
+    done
+
+    log "Command failed after $max attempts."
+    return 1
+}
+
+sleep 10 # Wait for Vault to start
 
 export VAULT_SKIP_VERIFY=true
-if [ $(vault status -format=json | jq .initialized) == "false" ]
-then
-    vault operator init -key-shares=1 -key-threshold=1 -format=json > /tmp/output.json
-    vault operator unseal $(cat /tmp/output.json | jq .unseal_keys_b64[0] | tr -d '"')
-    export VAULT_ROOT_TOKEN=$(cat /tmp/output.json | jq .root_token | tr -d '"')
-    if [ $VAULT_ROOT_TOKEN != "" ]
-    then
-        export VAULT_ROOT_TOKEN_FOUND=$(curl -sw '%{http_code}' --request GET "${GITLAB_URL}/{{ vault_root_token_key }}" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
-        if [ $VAULT_ROOT_TOKEN_FOUND == "404" ]
-        then
-            curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key={{ vault_root_token_key }}" --form "value=$VAULT_ROOT_TOKEN" --form "raw=true" --form "masked=true" -o /dev/null
+
+# Check if required environment variables are set
+if [ -z "$GITLAB_URL" ] || [ -z "$GITLAB_TOKEN" ]; then
+    log "GITLAB_URL and GITLAB_TOKEN must be set."
+    exit 1
+fi
+
+# Function to store a key in GitLab
+store_in_gitlab() {
+    local key="$1"
+    local value="$2"
+    
+    log "Checking if $key exists in GitLab..."
+    
+    # Prepare the GET command
+    local get_command="curl -sw '%{http_code}' --request GET '${GITLAB_URL}/${key}' --header 'Authorization: Bearer $GITLAB_TOKEN' -o /dev/null"
+    
+    # Log the command
+    log "Executing command: $get_command"
+    
+    # Execute the command and capture the response code
+    RESPONSE_CODE=$(eval $get_command)
+    
+    if [ "$RESPONSE_CODE" == "404" ]; then
+        # Key does not exist, so create it
+        log "$key does not exist. Creating it..."
+        local post_command="curl -s --request POST '$GITLAB_URL' --header 'Authorization: Bearer $GITLAB_TOKEN' --form 'key=$key' --form 'value=$value' --form 'raw=true' --form 'masked=true'"
+        
+        # Log the command
+        log "Executing command: $post_command"
+        
+        RESPONSE=$(retry eval $post_command)
+        log "Response from GitLab (POST): $RESPONSE"
+    else
+        # Key exists, so delete it first
+        log "$key already exists. Deleting it..."
+        local delete_command="curl -s --request DELETE '${GITLAB_URL}/${key}' --header 'Authorization: Bearer $GITLAB_TOKEN'"
+        
+        # Log the command
+        log "Executing command: $delete_command"
+        
+        retry eval $delete_command
+        
+        # Now create the new variable
+        log "Creating new $key..."
+        local post_command="curl -s --request POST '$GITLAB_URL' --header 'Authorization: Bearer $GITLAB_TOKEN' --form 'key=$key' --form 'value=$value' --form 'raw=true' --form 'masked=true'"
+        
+        # Log the command
+        log "Executing command: $post_command"
+        
+        RESPONSE=$(retry eval $post_command)
+        log "Response from GitLab (POST): $RESPONSE"
+    fi
+}
+# Function to initialize and unseal Vault
+initialize_vault() {
+    # Get the initialization status
+    INITIALIZED=$(vault status -format=json | jq -r .initialized)
+
+    if [ "$INITIALIZED" == "false" ]; then
+        log "Initializing Vault..."
+        
+        # Initialize Vault and save output to JSON file
+        retry vault operator init -key-shares=1 -key-threshold=1 -format=json > /vault/vault_seal_key.json
+        
+        # Unseal Vault using the unseal key from output
+        UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
+        retry vault operator unseal "$UNSEAL_KEY"
+        
+        # Store root token in GitLab using the new function
+        VAULT_ROOT_TOKEN=$(jq -r .root_token < /vault/vault_seal_key.json)
+        if [ -n "$VAULT_ROOT_TOKEN" ]; then
+            store_in_gitlab "VAULT_ROOT_TOKEN" "$VAULT_ROOT_TOKEN"
+            store_in_gitlab "UNSEAL_KEY" "$UNSEAL_KEY"
         else
-            echo "vault root token already present, updating code"
-            curl -s --request PUT "${GITLAB_URL}/{{ vault_root_token_key }}" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$VAULT_ROOT_TOKEN" -o /dev/null
+            log "VAULT_ROOT_TOKEN not parsed correctly, exiting"
+            exit 1
         fi
     else
-        echo "VAULT_ROOT_TOKEN not parsed correctly, exiting"
-        exit 1
+        log "Vault is already initialized."
     fi
-    
-    export UNSEAL_KEY=$(cat /tmp/output.json | jq .unseal_keys_b64[0] | tr -d '"')
-    export UNSEAL_KEY_FOUND=$(curl -sw '%{http_code}' --request GET "${GITLAB_URL}/UNSEAL_KEY" --header "Authorization: Bearer $GITLAB_TOKEN" -o /dev/null)
-    if [ $UNSEAL_KEY_FOUND == "404" ]
-    then
-        curl -s --request POST "$GITLAB_URL" --header "Authorization: Bearer $GITLAB_TOKEN" --form "key=UNSEAL_KEY" --form "value=$UNSEAL_KEY" --form "raw=true" --form "masked=true" -o /dev/null
-    else
-        echo "unseal key already present, updating code"
-        curl -s --request PUT "${GITLAB_URL}/UNSEAL_KEY" --header "Authorization: Bearer $GITLAB_TOKEN" --form "value=$UNSEAL_KEY" -o /dev/null
-    fi
+}
 
-else
-    echo "vault already initialized"
-fi
+# Function to automatically unseal Vault if sealed
+auto_unseal() {
+    while true; do
+        STATUS=$(vault status -format=json | jq -r '.sealed')
+
+        if [ "$STATUS" = "true" ]; then
+            log "Vault is sealed. Attempting to unseal..."
+
+           UNSEAL_KEY_ENV=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
+            if [ -n "$UNSEAL_KEY_ENV" ]; then  
+                log "Unsealing Vault..."
+                retry vault operator unseal "$UNSEAL_KEY_ENV"
+                
+                # Check if unsealing was successful
+                STATUS=$(vault status -format=json | jq -r '.sealed')
+                if [ "$STATUS" = "false" ]; then
+                    log "Vault successfully unsealed."
+                else
+                    log "Failed to unseal Vault."
+                fi
+            else
+                log "Unseal key environment variable (UNSEAL_KEY_ENV) is not set."
+            fi
+            
+        else
+            log "Vault is already unsealed."
+        fi
+
+        sleep 10 # Wait before checking again
+    done
+}
+
+# Initialize Vault and then start the auto-unseal loop.
+initialize_vault
+# Store the unseal key in GitLab using the new function
+VAULT_ROOT_TOKEN=$(jq -r .root_token < /vault/vault_seal_key.json)
+UNSEAL_KEY=$(jq -r .unseal_keys_b64[0] < /vault/vault_seal_key.json)
+store_in_gitlab "VAULT_ROOT_TOKEN" "$VAULT_ROOT_TOKEN"
+store_in_gitlab "UNSEAL_KEY" "$UNSEAL_KEY"
+auto_unseal

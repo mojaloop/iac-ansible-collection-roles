@@ -1,5 +1,3 @@
-version: '3.6'
-
 services:
   vault:
     image: hashicorp/vault:{{ vault_image_version }}
@@ -13,13 +11,14 @@ services:
       VAULT_ADDR: "http://0.0.0.0:{{ vault_listening_port }}"
     volumes:
       - vault-volume:/vault/file
-      - {{ vault_root_dir}}/vault-config.hcl:/vault/config/vault-config.hcl
+      - {{ vault_root_dir }}/vault-config.hcl:/vault/config/vault-config.hcl
     networks:
       vault-network:
         ipv4_address: 172.21.0.10
         aliases:
           - vault-server
     command: server
+
   vault-client:
     build: ./vaultbuild
     depends_on:
@@ -28,15 +27,19 @@ services:
       VAULT_ADDR: "http://vault-server:{{ vault_listening_port }}"
       GITLAB_URL: "{{ vault_gitlab_url }}"
       GITLAB_TOKEN: "{{ vault_gitlab_token }}"
+    volumes:
+      - {{ vault_root_dir }}/vaultbuild:/vault
     networks:
       vault-network:
         ipv4_address: 172.21.0.20
         aliases:
-          - vault-client      
+          - vault-client
+
 networks:
   vault-network:
     ipam:
       config:
         - subnet: 172.21.0.0/24
+
 volumes:
   vault-volume: {} # runtime data for vault
