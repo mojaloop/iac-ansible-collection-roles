@@ -32,6 +32,20 @@
   command: "netclient join -t {{ item }}"
   loop: "{{ netmaker_join_tokens }}"
 
+- name: Ensure Netmaker client configuration directory exists
+  file:
+    path: /etc/netclient
+    state: directory
+    mode: '0755'
+
+- name: Update Netmaker client configuration with inbound IP
+  lineinfile:
+    path: /etc/netclient/netclient.yml
+    regexp: '^endpointip:'
+    line: "endpointip: {{ ansible_host }}"
+    create: yes
+    state: present
+
 - name: iptable accept on forward
   iptables:
     chain: FORWARD
