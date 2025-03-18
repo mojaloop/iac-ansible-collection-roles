@@ -241,19 +241,19 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_dbdeploy_name_prefix }}"
 
             - name: "db_backup_retention_period"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].backup_retention_period}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].backup_retention_period }}"
 
             - name: "db_preferred_backup_window"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].preferred_backup_window}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].preferred_backup_window }}"
 
             - name: "db_storage_type"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].storage_type}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].storage_type }}"
 
             - name: "db_storage_iops"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].storage_iops}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].storage_iops }}"
 
             - name: "externalservice_name"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name }}"
 
             - name: max_prepared_statements
               value: "0"
