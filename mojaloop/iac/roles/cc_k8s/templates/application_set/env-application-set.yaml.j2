@@ -161,7 +161,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
       - repoURL: ${ARGOCD_ENV_argocd_repo_url}
         targetRevision: ${ARGOCD_ENV_gitlab_application_gitrepo_tag}
-        path: gitops/applications/overlays/rdbms_provider/${ARGOCD_ENV_gitlab_pre_rdbms_provider}/db
+        path: gitops/applications/overlays/rdbms_provider//{{ '{{' }} .rdbms_provider {{ '}}'}}/db
         plugin:
           name: envsubst
           env:
