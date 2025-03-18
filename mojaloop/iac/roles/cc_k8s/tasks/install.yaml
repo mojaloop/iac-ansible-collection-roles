@@ -77,17 +77,17 @@
   debug:
     var: fact_appset_to_create
 
-- name: Upload env appset template files
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "{{role_path}}/templates/application_set/"
-  when: item.state == 'file'
+# - name: Upload env appset template files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
+#   with_filetree: "{{role_path}}/templates/application_set/"
+#   when: item.state == 'file'
 
-- name: Install env app set
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
+# - name: Install env app set
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
