@@ -268,7 +268,7 @@ spec:
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_name }}"
 
             - name: "capi_cluster_namespace"
-              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].cluster_namespace }}"
+              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
