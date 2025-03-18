@@ -551,6 +551,17 @@ argocd_default:
           aws_tf_provider_version: "5.70.0"
           ceph_bucket_max_objects: "100"
           ceph_bucket_max_size: "10Gi"
+          common_platform_db_secret: "common-platformdb-credentials"
+          common_mojaloop_db: "common-mojaloopdb-credentials"
+          common_platform_db_name: "common-platform-db"
+          common_mojaloop_db_name: "common-mojaloop-db"
+          common_platform_db_username: "common-platform-user"
+          common_mojaloop_db_username: "common-mojaloop-user"
+          common_platform_dbdeploy_name_prefix: "common-platform"
+          common_mojaloop_dbdeploy_name_prefix: "common-mojaloop"
+          common_platform_externalservice_name: "common-platform-db-external"
+          common_mojaloop_externalservice_name: "common-mojaloop-db-external"
+
 
     monitoring:
       argocd_app_name: "monitoring"
