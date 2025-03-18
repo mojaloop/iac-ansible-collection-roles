@@ -132,6 +132,7 @@ argocd_default:
           post_sync_wave: "'-9'"
           operator_sync_wave: "'-11'"
           capi_infra_provider_name: "proxmox"
+          cloud_provider: "private-cloud"
           capi_infra_provider_version: "0.4.5"
           capi_cp_provider_name: "kubeadm"
           capi_cluster_namespace: "sc-cluster"
