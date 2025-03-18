@@ -166,7 +166,7 @@ spec:
           name: envsubst
           env:
             - name: "cluster_name"
-              value: "${ARGOCD_ENV_cluster_name}"
+              value: "{{ cluster_name }}"
 
             - name: "app_name"
               value: "{{ env_name }}-common-platform-db"
