@@ -175,13 +175,13 @@ spec:
               value: "{{ env_name }}"
 
             - name: "vault_k8s_admin_auth_path"
-              value: ""{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_auth_path }}"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_auth_path }}"
 
             - name: "vault_k8s_admin_role_name"
-              value: ""{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_role_name }}"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_role_name }}"
 
             - name: "vault_namespace"
-              value: ""{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
             - name: "postgres_replicas"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_percona_provider'].postgres_replicas }}"
