@@ -159,5 +159,16 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"
             - name: "crossplane_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'argocd'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
 ---
 {% endfor %}
