@@ -210,7 +210,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-8'"
+      sync_wave: "'-7'"
       sub_apps:
         vault:
           app_name: "vault"
