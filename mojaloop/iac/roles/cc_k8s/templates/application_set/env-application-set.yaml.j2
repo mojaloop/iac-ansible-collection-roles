@@ -238,7 +238,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_username }}"
 
             - name: "dbdeploy_name_prefix"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_dbdeploy_name_prefix }}"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_dbdeploy_name_prefix }}"
 
             - name: "db_backup_retention_period"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].backup_retention_period }}"
@@ -348,7 +348,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_username }}"
 
             - name: "dbdeploy_name_prefix"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_dbdeploy_name_prefix }}"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_dbdeploy_name_prefix }}"
 
             - name: "db_backup_retention_period"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].backup_retention_period }}"
