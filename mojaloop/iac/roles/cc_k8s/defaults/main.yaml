@@ -553,6 +553,7 @@ argocd_default:
           ceph_bucket_max_objects: "100"
           ceph_bucket_max_size: "10Gi"
           common_platform_db_secret: "common-platformdb-credentials"
+          common_mojaloop_db_secret: "common-mojaloopdb-credentials"
           common_mojaloop_db: "common-mojaloopdb-credentials"
           common_platform_db_name: "platform"
           common_mojaloop_db_name: "mojaloop"
