@@ -109,6 +109,14 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].ceph_bucket_max_size }}"
             - name: "cloud_region"
               value: "{{ '{{' }} .cloud_region {{ '}}'}}"
+            - name: "common_platform_db_secret_name"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
+            - name: "common_mojaloop_db_secret_name"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_secret }}"
+            - name: common_platform_db_external_name_service
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name }}"
+            - name: common_mojaloop_db_external_name_service
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_externalservice_name }}"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/overlays/cloud_provider/{{ '{{' }} .cloud_platform {{ '}}'}}/storage-provider/deploy-env-onboard'
