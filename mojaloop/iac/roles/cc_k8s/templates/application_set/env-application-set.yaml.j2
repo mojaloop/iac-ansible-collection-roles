@@ -159,7 +159,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"
             - name: "crossplane_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
-      - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+/*      - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: gitops/applications/overlays/rdbms_provider//{{ '{{' }} .rdbms_provider {{ '}}'}}/db
         plugin:
@@ -378,7 +378,7 @@ spec:
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_name }}"
 
             - name: "capi_cluster_namespace"
-              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"*/
 
       destination:
         server: https://kubernetes.default.svc
