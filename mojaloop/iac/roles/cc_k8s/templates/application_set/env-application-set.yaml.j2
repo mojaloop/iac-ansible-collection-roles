@@ -277,6 +277,9 @@ spec:
 
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+
+            - name: "db_port"
+              value: "3306"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: gitops/applications/overlays/rdbms_provider//{{ '{{' }} .rdbms_provider {{ '}}'}}/db
@@ -387,6 +390,9 @@ spec:
 
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+
+            - name: "db_port"
+              value: "3306"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
