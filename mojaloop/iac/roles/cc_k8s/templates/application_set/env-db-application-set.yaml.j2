@@ -1,4 +1,4 @@
-{% if env_rdbms_provider == 'rds' %}
+{% if fact_env_rdbms_provider == 'rds' %}
 {% for env_name in fact_appset_to_create %}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
