@@ -16,6 +16,8 @@ spec:
   template:
     metadata:
       name: '{{ env_name }}'
+      annotations:
+          argocd.argoproj.io/sync-wave: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sync_wave }}"
     spec:
       project: default
       sources:

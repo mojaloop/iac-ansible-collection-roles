@@ -17,6 +17,8 @@ spec:
   template:
     metadata:
       name: '{{ env_name }}-db'
+      annotations:
+          argocd.argoproj.io/sync-wave: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].db_sync_wave }}"
     spec:
       project: default
       sources:
@@ -45,25 +47,25 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
             - name: "rds_postgres_storage_size"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].postgres_storage_size }}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.allocated_storage {{ '}}'}}"
 
             - name: "rds_engine"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.engine {{ '}}'}}"
 
             - name: "rds_instance_class"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].postgres_instance_class }}"
+              value:  "{{ '{{' }} .common_platform_db.external_resource_config.instance_class {{ '}}'}}"
 
             - name: "rds_storage_encrypted"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].storage_encrypted }}"
+              value:  "{{ '{{' }} .common_platform_db.external_resource_config.storage_encrypted {{ '}}'}}"
 
             - name: "rds_engine_version"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].engine_version }}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.engine_version {{ '}}'}}"
 
             - name: "rds_replica_count"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].replica_count }}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.replicas {{ '}}'}}"
 
             - name: "rds_skip_final_snapshot"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].skip_final_snapshot }}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
             - name: "rds_vpc_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].rdbms_vpc_id }}"
@@ -90,16 +92,16 @@ spec:
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_dbdeploy_name_prefix }}"
 
             - name: "db_backup_retention_period"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].backup_retention_period }}"
+              value:  "{{ '{{' }} .common_platform_db.external_resource_config.backup_retention_period {{ '}}'}}"
 
             - name: "db_preferred_backup_window"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].preferred_backup_window }}"
+              value:  "{{ '{{' }} .common_platform_db.external_resource_config.backup_window {{ '}}'}}"
 
             - name: "db_storage_type"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].storage_type }}"
+              value:  "{{ '{{' }} .common_platform_db.external_resource_config.storage_type {{ '}}'}}"
 
             - name: "db_storage_iops"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].storage_iops }}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.storage_iops {{ '}}'}}"
 
             - name: "externalservice_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name }}"
@@ -123,7 +125,7 @@ spec:
               value: "3306"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/rdbms_provider//{{ '{{' }} .rdbms_provider {{ '}}'}}/db
+        path: gitops/applications/overlays/rdbms_provider/rds/db
         plugin:
           name: envsubst
           env:
@@ -145,38 +147,26 @@ spec:
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
-            - name: "postgres_replicas"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_percona_provider'].postgres_replicas }}"
-
-            - name: "postgres_proxy_replicas"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_percona_provider'].postgres_proxy_replicas }}"
-
-            - name: "postgres_storage_size"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_percona_provider'].postgres_storage_size }}"
-
-            - name: "pgdb_helm_version"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_percona_provider'].pgdb_helm_version }}"
-
             - name: "rds_postgres_storage_size"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].postgres_storage_size }}"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allocated_storage {{ '}}'}}"
 
             - name: "rds_engine"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].engine }}"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine {{ '}}'}}"
 
             - name: "rds_instance_class"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].postgres_instance_class }}"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.instance_class {{ '}}'}}"
 
             - name: "rds_storage_encrypted"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].storage_encrypted }}"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_encrypted {{ '}}'}}"
 
             - name: "rds_engine_version"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].engine_version }}"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine_version {{ '}}'}}"
 
             - name: "rds_replica_count"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].replica_count }}"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.replicas {{ '}}'}}"
 
             - name: "rds_skip_final_snapshot"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].skip_final_snapshot }}"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
             - name: "rds_vpc_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].rdbms_vpc_id }}"
@@ -205,14 +195,17 @@ spec:
             - name: "db_backup_retention_period"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].backup_retention_period }}"
 
+            - name: "db_backup_retention_period"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_retention_period {{ '}}'}}"
+
             - name: "db_preferred_backup_window"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].preferred_backup_window }}"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_window {{ '}}'}}"
 
             - name: "db_storage_type"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].storage_type }}"
+              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_type {{ '}}'}}"
 
             - name: "db_storage_iops"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].storage_iops }}"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_iops {{ '}}'}}"
 
             - name: "externalservice_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_externalservice_name }}"
