@@ -558,6 +558,7 @@ argocd_default:
           aws_tf_provider_version: "5.70.0"
           ceph_bucket_max_objects: "100"
           ceph_bucket_max_size: "10Gi"
+          rdbms_provider: "rds"
           common_platform_db_secret: "common-platformdb-credentials"
           common_mojaloop_db_secret: "common-mojaloopdb-credentials"
           common_mojaloop_db: "common-mojaloopdb-credentials"
