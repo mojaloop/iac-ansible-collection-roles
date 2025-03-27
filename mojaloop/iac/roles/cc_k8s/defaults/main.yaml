@@ -501,6 +501,8 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8sargoroot581"
           namespace: "gitlab"
           output_secret: "env-config"
+          ceph_bucket_max_objects: "100"
+          ceph_bucket_max_size: "10Gi"
         onboard:
           app_name: "deploy-env-onboard"
           sub_app_enabled: "true"
@@ -514,8 +516,6 @@ argocd_default:
           argocd_admin_rbac_group: "argocd_administrators"
           argocd_user_rbac_group: "argocd_users"
           aws_tf_provider_version: "5.70.0"
-          ceph_bucket_max_objects: "100"
-          ceph_bucket_max_size: "10Gi"                    
 
     monitoring:
       argocd_app_name: "monitoring"
