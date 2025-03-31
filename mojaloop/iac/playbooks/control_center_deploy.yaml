@@ -22,3 +22,8 @@
   become: true
   roles:
     - mojaloop.iac.gitlab_ci
+
+- hosts: coredns
+  become: true
+  roles:
+    - mojaloop.iac.coredns

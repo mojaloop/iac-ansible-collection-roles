@@ -1,0 +1,4 @@
+- name: restart coredns
+  service:
+    name: coredns
+    state: restarted
