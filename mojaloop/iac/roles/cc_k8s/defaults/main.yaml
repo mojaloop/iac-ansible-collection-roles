@@ -216,7 +216,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-7'"
+      sync_wave: "'-6'"
       sub_apps:
         vault:
           app_name: "vault"
@@ -239,7 +239,7 @@ argocd_default:
           helm_version: "0.8.28"
         post_config:
           app_name: "post-config"
-          sync_wave: "'-7'"
+          sync_wave: "'-6'"
           vault_read_all_kv_secrets_policy_name: "read-all-kv"
           vault_k8s_admin_auth_path: "admin-k8s"
           vault_k8s_admin_role_name: "admin-role"
