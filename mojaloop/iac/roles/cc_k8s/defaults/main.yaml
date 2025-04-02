@@ -168,6 +168,7 @@ argocd_default:
           capi_rook_ceph_post_config_app_name: "rook-ceph-post-config"
           capi_rook_ceph_post_config_sync_wave: "'-9'"
           capi_rook_ceph_rbd_pool_replication_size: "'3'"
+          capi_rook_ceph_rgw_external_ip: "10.10.127.10"
           capi_crossplane_providerconfig_name: "sc-kubernetes-provider"
         storage:
           sync_wave: "'-8'"
