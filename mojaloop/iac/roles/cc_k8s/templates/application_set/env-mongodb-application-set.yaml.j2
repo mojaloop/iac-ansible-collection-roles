@@ -18,7 +18,7 @@ spec:
     metadata:
       name: '{{ env_name }}-mongodb'
       annotations:
-          argocd.argoproj.io/sync-wave: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].mongodb_sync_wave }}"
+          argocd.argoproj.io/sync-wave: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].db_sync_wave }}"
     spec:
       project: default
       sources:
