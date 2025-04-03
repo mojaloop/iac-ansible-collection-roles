@@ -104,13 +104,13 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
 
             - name: "db_name"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_name }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_db_name }}"
 
             - name: "db_username"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_username }}"
 
             - name: "dbdeploy_name_prefix"
-              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_deploy_name_prefix }}"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_dbdeploy_name_prefix }}"
 
             - name: "storage_type"
               value:  "{{ '{{' }} .common_document_db.external_resource_config.storage_type {{ '}}'}}"
