@@ -109,6 +109,9 @@ spec:
             - name: "db_username"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_username }}"
 
+            - name: "delete_protection"
+              value: "{{ '{{' }} .common_document_db.external_resource_config.delete_protection {{ '}}'}}"
+
             - name: "dbdeploy_name_prefix"
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_dbdeploy_name_prefix }}"
 
