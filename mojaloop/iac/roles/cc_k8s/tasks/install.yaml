@@ -90,7 +90,6 @@
     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-db-application-set.yaml
 
-
 - name: Install utils and wait for argocd autosync
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -110,7 +109,7 @@
     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
   register: clusterstatus
   until: clusterstatus is not failed
-  retries: 10
+  retries: 20
   delay: 30
   ignore_errors: true
   args:
