@@ -89,16 +89,16 @@ spec:
               value: "{{ '{{' }} .common_document_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
             - name: "vpc_id"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_provider'].vpc_id }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].vpc_id }}"
 
             - name: "vpc_cidr"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_provider'].vpc_cidr }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].vpc_cidr }}"
 
             - name: "subnet_list"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_provider'].subnet_list }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].subnet_list }}"
 
             - name: "cloud_region"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_provider'].cloud_region }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].cloud_region }}"
 
             - name: "db_secret"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
