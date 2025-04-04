@@ -24,7 +24,7 @@ spec:
       sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/mongodb_provider/documentdb/db
+        path: gitops/applications/overlays/mongodb_provider/documentdb
         plugin:
           name: envsubst
           env:
