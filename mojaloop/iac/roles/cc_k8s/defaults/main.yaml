@@ -152,7 +152,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       namespace: "crossplane-system"
-      sync_wave: "'-7'"
+      sync_wave: "'-6'"
       cloud_provider: "aws"
       application_gitrepo_tag: "vexp-cck8s19"
       sub_apps: {}
@@ -510,6 +510,7 @@ argocd_default:
           sub_app_enabled: "true"
           namespace: "gitlab"
           sync_wave: "'5'"
+          db_sync_wave: "'6'"
           terraform_modules_tag: "vexp-cck8sargoroot581"
           grafana_admin_rbac_group: "grafana_administrators"
           grafana_user_rbac_group: "grafana_users"
@@ -517,6 +518,21 @@ argocd_default:
           vault_user_rbac_group: "vault_users"
           argocd_admin_rbac_group: "argocd_administrators"
           argocd_user_rbac_group: "argocd_users"
+          aws_tf_provider_version: "5.70.0"
+          ceph_bucket_max_objects: "100"
+          ceph_bucket_max_size: "10Gi"
+          rdbms_provider: "rds"
+          common_platform_db_secret: "common-platformdb-credentials"
+          common_mojaloop_db_secret: "common-mojaloopdb-credentials"
+          common_mojaloop_db: "common-mojaloopdb-credentials"
+          common_platform_db_name: "platform"
+          common_mojaloop_db_name: "mojaloop"
+          common_platform_db_username: "platform"
+          common_mojaloop_db_username: "mojaloop"
+          common_platform_dbdeploy_name_prefix: "common-platform"
+          common_mojaloop_dbdeploy_name_prefix: "common-mojaloop"
+          common_platform_externalservice_name: "common-platform-db-external"
+          common_mojaloop_externalservice_name: "common-mojaloop-db-external"
 
     monitoring:
       argocd_app_name: "monitoring"
@@ -599,3 +615,21 @@ argocd_default:
           namespace: "monitoring"
           terraform_modules_tag: "vexp-cck8sargoroot581"
           sync_wave: "'-1'" #after zitadel is done for oidc
+    sc:
+      argocd_app_name: "storage-cluster"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "vexp-cck8sargoroot581"
+      sync_wave: "'-8'"
+      sub_apps:
+        metallb:
+          sync_wave: "'-11'"
+          app_name: "metallb"
+          namespace: "metallb-system"
+          ip_range_begin: "10.10.127.10"
+          ip_range_end: "10.10.127.20"
+          version: "0.14.9"
+        rook_ceph:
+          app_name: "rook-ceph"
+          namespace: "rook-ceph"
+          version: "1.16.3"
