@@ -137,7 +137,7 @@ argocd_default:
           sync_wave: "'-11'"
           namespace: "crossplane-system"
           objectstores_version: "v17-14259904996-1"
-          utils_version: "v0.2.0"
+          utils_version: "v0.2.0-pr30-14318917212"
           sc_postgres_version: "v0.1.0-pr16-14261304175"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
