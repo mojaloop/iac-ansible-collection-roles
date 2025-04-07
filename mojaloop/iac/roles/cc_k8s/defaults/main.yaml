@@ -4,6 +4,7 @@ kubeconfig_location: "/root/.kube"
 kustomize_version: "5.4.2"
 kubectl_version: "1.31.0"
 argocd_cli_version: "2.11.3"
+clusterctl_version: "1.9.5"
 cluster_name: envname
 kubeconfig_local_location: "/tmp"
 helmfile_version: "0.165.0"
