@@ -211,7 +211,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       namespace: "crossplane-system"
-      sync_wave: "'-6'"
+      sync_wave: "'-7'"
       cloud_provider: "aws"
       application_gitrepo_tag: "vexp-cck8s19"
       sub_apps: {}
@@ -235,7 +235,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-8'"
+      sync_wave: "'-6'"
       sub_apps:
         vault:
           app_name: "vault"
@@ -258,7 +258,7 @@ argocd_default:
           helm_version: "0.8.28"
         post_config:
           app_name: "post-config"
-          sync_wave: "'-7'"
+          sync_wave: "'-6'"
           vault_read_all_kv_secrets_policy_name: "read-all-kv"
           vault_k8s_admin_auth_path: "admin-k8s"
           vault_k8s_admin_role_name: "admin-role"
@@ -562,8 +562,6 @@ argocd_default:
           terraform_modules_tag: "vexp-cck8sargoroot581"
           namespace: "gitlab"
           output_secret: "env-config"
-          ceph_bucket_max_objects: "'100'"
-          ceph_bucket_max_size: "10Gi"
         onboard:
           app_name: "deploy-env-onboard"
           sub_app_enabled: "true"
