@@ -34,7 +34,7 @@ argocd_default:
       argocd_app_name: "utils"
       app_namespace: "argocd"
       application_gitrepo_tag: "vexp-cck8s19"
-      sync_wave: "'-11'"
+      sync_wave: "'-13'"
       app_enabled: "true"
       sub_apps:
         argocd_helm:
@@ -43,33 +43,40 @@ argocd_default:
           helm_version: "7.6.8"
           public_ingress_access_domain: "false"
           sub_app_enabled: "true"
+        rook_ceph:
+          app_name: "rook-ceph"
+          namespace: "rook-ceph"
+          helm_version: "1.15.5"
+          image_version: "v18.2.4"
+          rook_csi_kubelet_dir_path: "/var/lib/kubelet"
+          mon_volumes_storage_class: "gp3"
+          mon_volumes_size: "10Gi"
+          osd_volumes_storage_class: "gp3"
+          osd_count: "'3'"
+          volume_size_per_osd: "500Gi"
+          volumes_provider: "pvc"
+          sync_wave: "'-10'"
+          sub_app_enabled: "true"
         reflector:
           app_name: "reflector"
           helm_version: "7.1.262"
-          namespace: "default"
+          namespace: "reflector"
           sub_app_enabled: "true"
         reloader:
           app_name: "reloader"
           helm_version: "1.0.67"
-          namespace: "default"
-          sub_app_enabled: "true"
-        crossplane:
-          app_name: "crossplane"
-          helm_version: "1.16.0"
-          namespace: "crossplane-system"
-          debug: "debug"
-          sub_app_enabled: "true"
-        percona:
-          app_name: "percona-postgresql-operator"
-          helm_version: "2.4.0"
-          namespace: "percona"
-          debug: "debug"
+          namespace: "reloader"
           sub_app_enabled: "true"
         redis:
           app_name: "redis-operator"
           helm_version: "0.16.4"
           namespace: "redis"
           debug: "debug"
+        percona:
+          app_name: "percona-postgresql-operator"
+          namespace: "percona"
+          debug: "debug"
+          helm_version: "2.6.0"
         external_secrets:
           app_name: "external-secrets"
           helm_version: "0.9.20"
@@ -104,21 +111,39 @@ argocd_default:
           prometheus_crd_version: "13.0.2"
           grafana_operator_version: "4.4.12"
           namespace: "monitoring"
-        post_config:
-          app_name: "post-config"
-          sync_wave: "'-9'"
-          vault_crossplane_provider_version: "1.0.0"
-          terraform_crossplane_provider_version: "0.16.0"
-          ansible_crossplane_provider_version: "0.6.0"
-          rds_crossplane_provider_version: "1.14.0"
-          ec2_crossplane_provider_version: "1.14.0"
-          crossplane_func_pat_version: "0.2.1"
-          crossplane_func_kcl_version: "0.11.2"
-          crossplane_func_go_templating_version: "0.8.0"
-          crossplane_packages_utils_version: "498-13954340193-1"
-          k8s_crossplane_provider_version: "0.11.4"
-
-          aws_crossplane_provider_version: "0.37.1"
+        crossplane:
+          app_name: "crossplane"
+          helm_version: "1.16.0"
+          namespace: "crossplane-system"
+          debug: "debug"
+          sub_app_enabled: "true"
+        crossplane_providers:
+          app_name: "crossplane-providers"
+          sync_wave: "'-12'"
+          namespace: "crossplane-system"
+          vault_version: "1.0.0"
+          terraform_version: "0.16.0"
+          ansible_version: "0.6.0"
+          k8s_version: "0.11.4"
+          netbird_version: "0.0.6"
+          aws_version: "0.49.2"
+          aws_s3_version: "1.21.0"
+          aws_iam_version: "1.21.0"
+        crossplane_functions:
+          app_name: "crossplane-functions"
+          sync_wave: "'-12'"
+          namespace: "crossplane-system"
+          patch_and_transform_version: "0.8.2"
+          go_templating_version: "0.8.0"
+          kcl_version: "0.11.3"
+          auto_ready_version: "0.4.2"
+        crossplane_packages:
+          app_name: "crossplane-packages"
+          sync_wave: "'-11'"
+          namespace: "crossplane-system"
+          objectstores_version: "v17-14259904996-1"
+          utils_version: "v0.2.0-pr30-14318917212"
+          sc_postgres_version: "v0.1.0-pr16-14261304175"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
@@ -185,7 +210,6 @@ argocd_default:
           object_storage_class_name: "bucket"
         storage_aws_provider:
           csi_kubelet_dir_path: "/var/lib/kubelet"
-
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
@@ -346,7 +370,7 @@ argocd_default:
           k8s_admin_rbac_group: "techops-admin"
           k8s_oidc_post_config_output_secret: "k8s-oidc-post-config-output"
           post_config_sync_wave: "'-1'"
-          rdbms_provider: "percona"
+          rdbms_provider: "dbaas"
           externalservice_name: "zitadel-db-external"
           zitadel_db_name: "zitadel"
           zitadel_db_username: "zitadel"
@@ -401,7 +425,7 @@ argocd_default:
           datastore_encryption_key_secret_key: "key"
           relay_secret: "relay-secret"
           relay_secret_key: "key"
-          rdbms_provider: "percona"
+          rdbms_provider: "dbaas"
           db_name: "netbird"
           db_username: "netbird"
           dbdeploy_name_prefix: "netbird-db"
@@ -500,7 +524,7 @@ argocd_default:
           praefect_db_username: "praefect"
           gitlab_dbdeploy_name_prefix: "gitlab-db"
           praefect_dbdeploy_name_prefix: "praefect-db"
-          rdbms_provider: "percona"
+          rdbms_provider: "dbaas"
           gitlab_db_secret: "gitlab-postgresql-credentials"
           praefect_db_secret: "praefect-postgresql-credentials"
         webdb_percona_provider:
@@ -572,7 +596,6 @@ argocd_default:
           common_mojaloop_dbdeploy_name_prefix: "common-mojaloop"
           common_platform_externalservice_name: "common-platform-db-external"
           common_mojaloop_externalservice_name: "common-mojaloop-db-external"
-
 
     monitoring:
       argocd_app_name: "monitoring"
