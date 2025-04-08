@@ -72,6 +72,11 @@ argocd_default:
           helm_version: "0.16.4"
           namespace: "redis"
           debug: "debug"
+        percona:
+          app_name: "percona-postgresql-operator"
+          namespace: "percona"
+          debug: "debug"
+          helm_version: "2.6.0"
         external_secrets:
           app_name: "external-secrets"
           helm_version: "0.9.20"
