@@ -40,14 +40,14 @@ argocd_default:
         argocd_helm:
           app_name: "argocd"
           namespace: "argocd"
-          helm_version: "7.6.8"
+          helm_version: "7.6.8" #7.8.23
           public_ingress_access_domain: "false"
           sub_app_enabled: "true"
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
-          helm_version: "1.15.5"
-          image_version: "v18.2.4"
+          helm_version: "1.15.5" # 1.16.6
+          image_version: "v18.2.4" # TODO
           rook_csi_kubelet_dir_path: "/var/lib/kubelet"
           mon_volumes_storage_class: "gp3"
           mon_volumes_size: "10Gi"
@@ -57,17 +57,17 @@ argocd_default:
           volumes_provider: "pvc"
           sync_wave: "'-10'"
           sub_app_enabled: "true"
-        reflector:
+        reflector: # TODO replace with object-syncer
           app_name: "reflector"
-          helm_version: "7.1.262"
+          helm_version: "9.0.322" #"7.1.262"
           namespace: "reflector"
           sub_app_enabled: "true"
-        reloader:
+        reloader: # TODO replace with kyverno policy
           app_name: "reloader"
-          helm_version: "1.0.67"
+          helm_version: "1.4.0" #"1.0.67"
           namespace: "reloader"
           sub_app_enabled: "true"
-        redis:
+        redis: # TODO not used?
           app_name: "redis-operator"
           helm_version: "0.16.4"
           namespace: "redis"
@@ -79,7 +79,7 @@ argocd_default:
           helm_version: "2.6.0"
         external_secrets:
           app_name: "external-secrets"
-          helm_version: "0.9.20"
+          helm_version: "0.15.1" #0.9.20
           namespace: "external-secrets"
           sub_app_enabled: "true"
         istio:
@@ -87,7 +87,7 @@ argocd_default:
           sub_app_enabled: "true"
           proxy_log_level: "debug"
           namespace: "istio-system"
-          helm_version: "1.22.1"
+          helm_version: "1.22.1" # 1.13.6
           external_ingress_https_port: "'32443'"
           external_ingress_http_port: "'32080'"
           external_ingress_health_port: "'32081'"
@@ -101,7 +101,7 @@ argocd_default:
           gw_sync_wave: "'-9'" # hack to start gw after istiod
         cert_manager:
           app_name: "cert-manager"
-          helm_version: "1.15.0"
+          helm_version: "1.17.1" #"1.15.0"
           namespace: "cert-manager"
           sub_app_enabled: "true"
           credentials_secret: "cert-manager-dns"
@@ -113,7 +113,7 @@ argocd_default:
           namespace: "monitoring"
         crossplane:
           app_name: "crossplane"
-          helm_version: "1.16.0"
+          helm_version: "1.19.1" #"1.16.0"
           namespace: "crossplane-system"
           debug: "debug"
           sub_app_enabled: "true"
@@ -150,7 +150,7 @@ argocd_default:
         kyverno:
           app_name: "kyverno"
           namespace: "kyverno"
-          helm_version: "3.3.4"
+          helm_version: "3.3.7"
         capi:
           app_name: "capi"
           namespace: "capi"
