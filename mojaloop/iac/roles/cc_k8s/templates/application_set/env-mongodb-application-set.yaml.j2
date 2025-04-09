@@ -104,10 +104,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
 
             - name: "db_name"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_db_name }}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.db_name {{ '}}'}}"
 
             - name: "db_username"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_username }}"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.username {{ '}}'}}"
 
             - name: "delete_protection"
               value: "{{ '{{' }} .common_mongodb.external_resource_config.delete_protection {{ '}}'}}"
