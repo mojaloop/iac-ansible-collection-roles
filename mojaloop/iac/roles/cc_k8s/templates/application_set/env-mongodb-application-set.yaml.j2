@@ -47,46 +47,46 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
             - name: "allow_major_version_upgrade"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
 
             - name: "apply_immediately"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.apply_immediately {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.apply_immediately {{ '}}'}}"
 
             - name: "backup_retention_period"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.backup_retention_period {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
 
             - name: "engine"
-              value:  "{{ '{{' }} .common_document_db.external_resource_config.engine {{ '}}'}}"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.engine {{ '}}'}}"
 
             - name: "family"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.family {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.family {{ '}}'}}"
 
             - name: "port"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.port {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.port {{ '}}'}}"
 
             - name: "preferred_backup_window"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.backup_window {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_window {{ '}}'}}"
 
             - name: "preferred_maintenance_window"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.maintenance_window {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.maintenance_window {{ '}}'}}"
 
             - name: "final_snapshot_identifier"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.final_snapshot_identifier {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.final_snapshot_identifier {{ '}}'}}"
 
             - name: "instance_class"
-              value:  "{{ '{{' }} .common_document_db.external_resource_config.instance_class {{ '}}'}}"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.instance_class {{ '}}'}}"
 
             - name: "storage_encrypted"
-              value:  "{{ '{{' }} .common_document_db.external_resource_config.storage_encrypted {{ '}}'}}"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.storage_encrypted {{ '}}'}}"
 
             - name: "engine_version"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.engine_version {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.engine_version {{ '}}'}}"
 
             - name: "instance_count"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.replicas {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.replicas {{ '}}'}}"
 
             - name: "skip_final_snapshot"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
             - name: "vpc_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].vpc_id }}"
@@ -110,13 +110,13 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_username }}"
 
             - name: "delete_protection"
-              value: "{{ '{{' }} .common_document_db.external_resource_config.delete_protection {{ '}}'}}"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.delete_protection {{ '}}'}}"
 
             - name: "dbdeploy_name_prefix"
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_dbdeploy_name_prefix }}"
 
             - name: "storage_type"
-              value:  "{{ '{{' }} .common_document_db.external_resource_config.storage_type {{ '}}'}}"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.storage_type {{ '}}'}}"
 
             - name: "externalservice_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
