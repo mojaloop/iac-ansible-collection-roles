@@ -145,7 +145,7 @@ argocd_default:
           objectstores_version: "v17-14259904996-1"
           utils_version: "v0.2.0-pr30-14318917212"
           sc_postgres_version: "v0.1.0-pr16-14261304175"
-          sc_bootstrap_version: "v0.1.0-pr41-14388264354"
+          sc_bootstrap_version: "v0.1.0-pr41-14389059831"
           sc_nboperatorinstall_version: "v0.1.0-pr37-14360885310"
           nb_config_version: "v0.1.0-pr38-14361249221"
         rook_ceph_bucket_config:
