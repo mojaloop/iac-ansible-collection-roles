@@ -125,7 +125,7 @@ argocd_default:
           terraform_version: "0.16.0"
           ansible_version: "0.6.0"
           k8s_version: "0.11.4"
-          netbird_version: "0.0.7"
+          netbird_version: "0.0.9"
           aws_version: "0.49.2"
           aws_s3_version: "1.21.0"
           aws_iam_version: "1.21.0"
