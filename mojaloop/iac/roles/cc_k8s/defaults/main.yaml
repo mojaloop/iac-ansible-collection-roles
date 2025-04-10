@@ -159,7 +159,7 @@ argocd_default:
           app_name: "capi"
           namespace: "capi"
           app_namespace: "argocd"
-          capi_operator_namespace: "capi-system"
+          capi_operator_namespace: "capi-operator"
           capi_operator_version: "0.16.0"
           sync_wave: "'-10'"
           post_sync_wave: "'-9'"
