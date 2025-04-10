@@ -64,7 +64,7 @@ argocd_default:
           sub_app_enabled: "true"
         reloader: # TODO replace with kyverno policy
           app_name: "reloader"
-          helm_version: "1.0.67"
+          helm_version: "2.0.0"
           namespace: "reloader"
           sub_app_enabled: "true"
         redis: # TODO not used?
