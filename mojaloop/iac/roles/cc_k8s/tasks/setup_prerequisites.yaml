@@ -28,7 +28,7 @@
 - name: Install Netbird CLI
   package:
     name:
-    - netbird=0.36.5
+    - netbird=0.40.1
     # TODO - netbird={{ fact_netbird_version }}
 
 - name: Create temporary directory for cc boot
