@@ -614,15 +614,15 @@ argocd_default:
           mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
           mimir_bucket_storage_size: "100Gi"
-          ctrl_cntr_loki_bucket_name: "control-center-loki-bucket"
-          ctrl_cntr_loki_bucket_max_objects: "'1000000'"
-          ctrl_cntr_loki_bucket_storage_size: "20Gi"
+          loki_bucket_name: "control-center-loki-bucket"
+          loki_bucket_max_objects: "'1000000'"
+          loki_bucket_storage_size: "20Gi"
         monitoring:
           app_name: "monitoring"
           kube_prometheus_helm_version: "9.5.10"
-          ctrl_cntr_loki_helm_version: "2.13.0"
-          ctrl_cntr_loki_retention_period: "3d" #TODO: increase after testing that limit works
-          ctrl_cntr_loki_ingester_max_chunk_age: "2h"
+          loki_helm_version: "2.13.0"
+          loki_retention_period: "3d" #TODO: increase after testing that limit works
+          loki_ingester_max_chunk_age: "2h"
           alertmanager_enabled: "false"
           namespace: "monitoring"
           cloudwatch_exporter_role_arn: "arn:aws:iam::<project_id>:role/<role_name>"
