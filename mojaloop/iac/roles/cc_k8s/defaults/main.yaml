@@ -130,6 +130,8 @@ argocd_default:
           aws_version: "0.49.2"
           aws_s3_version: "1.21.0"
           aws_iam_version: "1.21.0"
+          aws_ec2_version: "1.21.0"
+          aws_docdb_version: "1.21.0"
         crossplane_functions:
           app_name: "crossplane-functions"
           sync_wave: "'-12'"
