@@ -598,6 +598,12 @@ argocd_default:
           common_mojaloop_dbdeploy_name_prefix: "common-mojaloop"
           common_platform_externalservice_name: "common-platform-db-external"
           common_mojaloop_externalservice_name: "common-mojaloop-db-external"
+          mongodb_provider: "documentdb"
+          common_mongodb_secret: "common-mongodb-credentials"
+          common_mongodb_dbdeploy_name_prefix: "common-mongodb"
+          common_mongodb_externalservice_name: "common-mongodb-db-external"
+
+
 
     monitoring:
       argocd_app_name: "monitoring"
