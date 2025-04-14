@@ -615,13 +615,13 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8sargoroot581"
-      sync_wave: "'-8'"
+      sync_wave: "'-5'"
       sub_apps:
         pre:
           app_name: "monitoring-pre"
           namespace: "monitoring"
           sub_app_enabled: "true"
-          sync_wave: "'-9'"
+          sync_wave: "'-6'"
           mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
           mimir_bucket_storage_size: "100Gi"
