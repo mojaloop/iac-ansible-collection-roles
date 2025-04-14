@@ -125,10 +125,13 @@ argocd_default:
           terraform_version: "0.16.0"
           ansible_version: "0.6.0"
           k8s_version: "0.11.4"
+          helm_version: "0.20.4"
           netbird_version: "0.0.9"
           aws_version: "0.49.2"
           aws_s3_version: "1.21.0"
           aws_iam_version: "1.21.0"
+          aws_ec2_version: "1.21.0"
+          aws_docdb_version: "1.21.0"
         crossplane_functions:
           app_name: "crossplane-functions"
           sync_wave: "'-12'"
@@ -144,6 +147,7 @@ argocd_default:
           objectstores_version: "v17-14259904996-1"
           utils_version: "v0.2.0-pr30-14318917212"
           sc_postgres_version: "v0.1.0-pr16-14261304175"
+          sc_bootstrap_version: "v0.1.0-pr41-14390737656"
           sc_nboperatorinstall_version: "v0.1.0-pr37-14360885310"
           nb_config_version: "v0.1.0-pr38-14361249221"
         rook_ceph_bucket_config:
@@ -157,7 +161,7 @@ argocd_default:
           app_name: "capi"
           namespace: "capi"
           app_namespace: "argocd"
-          capi_operator_namespace: "proxmox-infrastructure-system"
+          capi_operator_namespace: "capi-operator-system"
           capi_operator_version: "0.16.0"
           sync_wave: "'-10'"
           post_sync_wave: "'-9'"
@@ -196,7 +200,8 @@ argocd_default:
           capi_rook_ceph_post_config_sync_wave: "'-9'"
           capi_rook_ceph_rbd_pool_replication_size: "'3'"
           capi_rook_ceph_rgw_external_ip: "10.10.127.10"
-          capi_crossplane_providerconfig_name: "sc-kubernetes-provider"
+          capi_crossplane_k8s_providerconfig_name: "sc-kubernetes-provider"
+          capi_crossplane_helm_providerconfig_name: "sc-helm-provider"
         storage:
           sync_wave: "'-8'"
           app_name: "storage"
@@ -379,6 +384,7 @@ argocd_default:
           zitadel_dbdeploy_name_prefix: "zitadel-db"
           zitadel_db_secret: "zitadel-postgresql-credentials"
           config_secret_name: "zitadel-config"
+
         zitadel_percona_provider:
           app_name: "zitadel-percona"
           pgdb_helm_version: "2.4.3"
@@ -386,6 +392,7 @@ argocd_default:
           postgres_replicas: "'1'"
           proxy_replicas: "'1'"
           postgres_storage_size: "20"
+
         zitadel_rds_provider:
           rdbms_subnet_list: "[]"
           vpc_cidr: "0.0.0.0/0"
@@ -610,13 +617,13 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       application_gitrepo_tag: "vexp-cck8sargoroot581"
-      sync_wave: "'-8'"
+      sync_wave: "'-5'"
       sub_apps:
         pre:
           app_name: "monitoring-pre"
           namespace: "monitoring"
           sub_app_enabled: "true"
-          sync_wave: "'-9'"
+          sync_wave: "'-6'"
           mimir_bucket_name: "mimir-bucket"
           mimir_bucket_max_objects: "'1000000'"
           mimir_bucket_storage_size: "100Gi"
