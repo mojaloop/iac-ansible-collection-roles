@@ -34,7 +34,7 @@
     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
 
 - name: Find the existing env app sets
-  shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+  shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd | grep -v '\-db\-' | grep -v '\-mongodb\-' || true
   register: existing_appsets
 
 - name: Display existing app sets string
@@ -66,7 +66,11 @@
     var: fact_appsets_to_delete
 
 - name: Delete the removed env's appset
-  shell: kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+  shell: |
+    kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+    kubectl delete appset {{ item }}-db-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+    kubectl delete appset {{ item }}-mongodb-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+
   loop: "{{ fact_appsets_to_delete }}"
 
 - name: Find the apps to create
@@ -89,6 +93,7 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-db-application-set.yaml
+    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-mongodb-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |

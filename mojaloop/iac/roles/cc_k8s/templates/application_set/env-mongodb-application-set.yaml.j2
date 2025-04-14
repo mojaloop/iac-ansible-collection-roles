@@ -1,0 +1,149 @@
+{% if fact_env_mongodb_provider == 'documentdb' %}
+{% for env_name in fact_appset_to_create %}
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ env_name }}-mongodb-env-onboard
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
+      revision: HEAD
+      files:
+      - path: merged-config/mojaloop-stateful-resources-ccdriven-aws-databases.yaml
+  template:
+    metadata:
+      name: '{{ env_name }}-mongodb'
+      annotations:
+          argocd.argoproj.io/sync-wave: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].db_sync_wave }}"
+    spec:
+      project: default
+      sources:
+      - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
+        targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
+        path: gitops/applications/overlays/mongodb_provider/documentdb
+        plugin:
+          name: envsubst
+          env:
+            - name: "cluster_name"
+              value: "{{ cluster_name }}"
+
+            - name: "app_name"
+              value: "{{ env_name }}-common-document-db"
+
+            - name: "namespace"
+              value: "{{ env_name }}"
+
+            - name: "vault_k8s_admin_auth_path"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_auth_path }}"
+
+            - name: "vault_k8s_admin_role_name"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_role_name }}"
+
+            - name: "vault_namespace"
+              value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
+
+            - name: "allow_major_version_upgrade"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
+
+            - name: "apply_immediately"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.apply_immediately {{ '}}'}}"
+
+            - name: "backup_retention_period"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
+
+            - name: "engine"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.engine {{ '}}'}}"
+
+            - name: "family"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.family {{ '}}'}}"
+
+            - name: "port"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.port {{ '}}'}}"
+
+            - name: "preferred_backup_window"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_window {{ '}}'}}"
+
+            - name: "preferred_maintenance_window"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.maintenance_window {{ '}}'}}"
+
+            - name: "final_snapshot_identifier"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.final_snapshot_identifier {{ '}}'}}"
+
+            - name: "instance_class"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.instance_class {{ '}}'}}"
+
+            - name: "storage_encrypted"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.storage_encrypted {{ '}}'}}"
+
+            - name: "engine_version"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.engine_version {{ '}}'}}"
+
+            - name: "instance_count"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.replicas {{ '}}'}}"
+
+            - name: "skip_final_snapshot"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.skip_final_snapshot {{ '}}'}}"
+
+            - name: "vpc_id"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].vpc_id }}"
+
+            - name: "vpc_cidr"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].vpc_cidr }}"
+
+            - name: "subnet_list"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].subnet_list }}"
+
+            - name: "cloud_region"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].cloud_region }}"
+
+            - name: "db_secret"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
+
+            - name: "db_name"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.db_name {{ '}}'}}"
+
+            - name: "db_username"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.username {{ '}}'}}"
+
+            - name: "delete_protection"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.delete_protection {{ '}}'}}"
+
+            - name: "dbdeploy_name_prefix"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_dbdeploy_name_prefix }}"
+
+            - name: "storage_type"
+              value:  "{{ '{{' }} .common_mongodb.external_resource_config.storage_type {{ '}}'}}"
+
+            - name: "externalservice_name"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
+
+            - name: "sc_dbaas_gitrepo_tag"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}"
+
+            - name: "sc_argocd_repo_url"
+              value: "{{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git"
+
+            - name: "capi_cluster_name"
+              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_name }}"
+
+            - name: "capi_cluster_namespace"
+              value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'argocd'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+---
+{% endfor %}
+{% endif %}
