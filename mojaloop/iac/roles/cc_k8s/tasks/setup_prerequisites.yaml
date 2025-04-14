@@ -29,8 +29,6 @@
   package:
     name:
       - netbird={{ fact_netbird_version }}
-    state: present
-    force: yes
 
 - name: Create temporary directory for cc boot
   tempfile:
