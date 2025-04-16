@@ -1,4 +1,3 @@
-{% if fact_env_rdbms_provider == 'rds' %}
 {% for env_name in fact_appset_to_create %}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -24,7 +23,7 @@ spec:
       sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/rdbms_provider/rds/db
+        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .rdbms_provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
@@ -46,34 +45,43 @@ spec:
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
-            - name: "rds_postgres_storage_size"
+            - name: "allow_major_version_upgrade"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
+
+            - name: "apply_immediately"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.apply_immediately {{ '}}'}}"
+
+            - name: "backup_retention_period"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
+
+            - name: "postgres_storage_size"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.allocated_storage {{ '}}'}}"
 
-            - name: "rds_engine"
+            - name: "engine"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.engine {{ '}}'}}"
 
-            - name: "rds_instance_class"
+            - name: "instance_class"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.instance_class {{ '}}'}}"
 
-            - name: "rds_storage_encrypted"
+            - name: "storage_encrypted"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.storage_encrypted {{ '}}'}}"
 
-            - name: "rds_engine_version"
+            - name: "engine_version"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.engine_version {{ '}}'}}"
 
-            - name: "rds_replica_count"
+            - name: "replica_count"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.replicas {{ '}}'}}"
 
-            - name: "rds_skip_final_snapshot"
+            - name: "skip_final_snapshot"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
-            - name: "rds_vpc_id"
+            - name: "vpc_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].rdbms_vpc_id }}"
 
             - name: "vpc_cidr"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].vpc_cidr }}"
 
-            - name: "rds_subnet_list"
+            - name: "subnet_list"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
@@ -125,7 +133,7 @@ spec:
               value: "3306"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/rdbms_provider/rds/db
+        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .rdbms_provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
@@ -147,34 +155,34 @@ spec:
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
-            - name: "rds_postgres_storage_size"
+            - name: "allocated_storage"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allocated_storage {{ '}}'}}"
 
-            - name: "rds_engine"
+            - name: "engine"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine {{ '}}'}}"
 
-            - name: "rds_instance_class"
+            - name: "instance_class"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.instance_class {{ '}}'}}"
 
-            - name: "rds_storage_encrypted"
+            - name: "storage_encrypted"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_encrypted {{ '}}'}}"
 
-            - name: "rds_engine_version"
+            - name: "engine_version"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine_version {{ '}}'}}"
 
-            - name: "rds_replica_count"
+            - name: "replica_count"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.replicas {{ '}}'}}"
 
-            - name: "rds_skip_final_snapshot"
+            - name: "skip_final_snapshot"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.skip_final_snapshot {{ '}}'}}"
 
-            - name: "rds_vpc_id"
+            - name: "vpc_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].rdbms_vpc_id }}"
 
             - name: "vpc_cidr"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].vpc_cidr }}"
 
-            - name: "rds_subnet_list"
+            - name: "subnet_list"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
@@ -237,4 +245,3 @@ spec:
         - PruneLast=true
 ---
 {% endfor %}
-{% endif %}
