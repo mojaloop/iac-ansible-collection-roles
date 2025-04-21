@@ -136,7 +136,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: 'gitops/applications/overlays/cloud_provider/{{ fact_cloud_platform }}/storage-provider/deploy-env-onboard'
+        path: 'gitops/applications/overlays/cloud_provider/{{ '{{' }} .cloud_platform {{ '}}'}}/storage-provider/deploy-env-onboard'
         plugin:
           name: envsubst
           env:
