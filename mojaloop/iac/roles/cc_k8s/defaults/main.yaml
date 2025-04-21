@@ -443,6 +443,10 @@ argocd_default:
           dsn_secret_name: "netbird-dsn-config"
           dsn_secret_key: "value"
           externalservice_name: "netbird-db-external"
+          operator_namespace: "netbird"
+          operator_helm_version: "0.1.8"
+          operator_kubeapi_group: "cc-k8s"
+          operator_release_name: "cc-nb-operator"
         netbird_percona_provider:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
@@ -615,8 +619,6 @@ argocd_default:
           common_mongodb_secret: "common-mongodb-credentials"
           common_mongodb_dbdeploy_name_prefix: "common-mongodb"
           common_mongodb_externalservice_name: "common-mongodb-db-external"
-
-
 
     monitoring:
       argocd_app_name: "monitoring"
