@@ -121,7 +121,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
 
             - name: "cloud_region"
-              value: "{{ '{{' }} .cloud_region {{ '}}'}}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
             - name: "common_platform_db_secret_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
             - name: "common_mojaloop_db_secret_name"
@@ -169,7 +169,7 @@ spec:
             - name: "argocd_namespace"
               value: "argocd"
             - name: "cloud_region"
-              value: "{{ fact_cloud_region }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
             - name: "aws_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"
             - name: "vault_kv_secret"
