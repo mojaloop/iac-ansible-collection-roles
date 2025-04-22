@@ -1,4 +1,3 @@
-{% if fact_env_mongodb_provider == 'documentdb' %}
 {% for env_name in fact_appset_to_create %}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -24,7 +23,7 @@ spec:
       sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/mongodb_provider/documentdb
+        path: gitops/applications/overlays/mongodb_provider/{{ '{{' }} .mongodb_provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
@@ -146,4 +145,3 @@ spec:
         - PruneLast=true
 ---
 {% endfor %}
-{% endif %}
