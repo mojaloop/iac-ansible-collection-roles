@@ -106,20 +106,20 @@
   args:
     executable: /bin/bash
 
-- name: wait for sc cluster
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
-    clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
-    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
-  register: clusterstatus
-  until: clusterstatus is not failed
-  retries: 20
-  delay: 30
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: fact_cloud_provider == 'private-cloud'
+# - name: wait for sc cluster
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
+#     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
+#     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
+#   register: clusterstatus
+#   until: clusterstatus is not failed
+#   retries: 20
+#   delay: 30
+#   ignore_errors: true
+#   args:
+#     executable: /bin/bash
+#   when: fact_cloud_provider == 'private-cloud'
 
 - name: wait for netbird-management autosync
   shell: |
