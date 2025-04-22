@@ -12,7 +12,7 @@ spec:
       repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
       revision: HEAD
       files:
-      - path: merged-config/mojaloop-stateful-resources-ccdriven-aws-databases.yaml
+      - path: merged-config/mojaloop-stateful-resources-ccdriven-databases.yaml
   template:
     metadata:
       name: '{{ env_name }}-db'
