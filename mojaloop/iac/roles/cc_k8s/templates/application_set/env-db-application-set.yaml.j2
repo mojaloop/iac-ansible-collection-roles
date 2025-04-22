@@ -54,8 +54,11 @@ spec:
             - name: "backup_retention_period"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.backup_retention_period {{ '}}'}}"
 
-            - name: "postgres_storage_size"
-              value: "{{ '{{' }} .common_platform_db.external_resource_config.allocated_storage {{ '}}'}}"
+            - name: "allocated_storage"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allocated_storage {{ '}}'}}"
+
+            - name: "delete_protection"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.deletion_protection {{ '}}'}}"
 
             - name: "engine"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.engine {{ '}}'}}"
@@ -173,6 +176,9 @@ spec:
 
             - name: "backup_retention_period"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_retention_period {{ '}}'}}"
+
+            - name: "delete_protection"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.deletion_protection {{ '}}'}}"
 
             - name: "allocated_storage"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allocated_storage {{ '}}'}}"
