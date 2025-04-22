@@ -12,7 +12,7 @@ spec:
       repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
       revision: HEAD
       files:
-      - path: custom-config/cluster-config.yaml
+      - path: merged-config/cluster-config.yaml
   template:
     metadata:
       name: '{{ env_name }}'
