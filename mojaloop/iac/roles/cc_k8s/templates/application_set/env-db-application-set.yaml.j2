@@ -46,19 +46,34 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
             - name: "allow_major_version_upgrade"
-              value: "{{ '{{' }} .common_mongodb.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
 
             - name: "apply_immediately"
-              value: "{{ '{{' }} .common_mongodb.external_resource_config.apply_immediately {{ '}}'}}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.apply_immediately {{ '}}'}}"
 
             - name: "backup_retention_period"
-              value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.backup_retention_period {{ '}}'}}"
 
             - name: "postgres_storage_size"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.allocated_storage {{ '}}'}}"
 
             - name: "engine"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.engine {{ '}}'}}"
+
+            - name: "family"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.family {{ '}}'}}"
+
+            - name: "port"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.port {{ '}}'}}"
+
+            - name: "preferred_backup_window"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.backup_window {{ '}}'}}"
+
+            - name: "preferred_maintenance_window"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.maintenance_window {{ '}}'}}"
+
+            - name: "final_snapshot_identifier"
+              value: "{{ '{{' }} .common_platform_db.external_resource_config.final_snapshot_identifier {{ '}}'}}"
 
             - name: "instance_class"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.instance_class {{ '}}'}}"
@@ -69,7 +84,7 @@ spec:
             - name: "engine_version"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.engine_version {{ '}}'}}"
 
-            - name: "replica_count"
+            - name: "instance_count"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.replicas {{ '}}'}}"
 
             - name: "skip_final_snapshot"
@@ -99,16 +114,13 @@ spec:
             - name: "dbdeploy_name_prefix"
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_dbdeploy_name_prefix }}"
 
-            - name: "db_backup_retention_period"
+            - name: "backup_retention_period"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.backup_retention_period {{ '}}'}}"
 
-            - name: "db_preferred_backup_window"
-              value:  "{{ '{{' }} .common_platform_db.external_resource_config.backup_window {{ '}}'}}"
-
-            - name: "db_storage_type"
+            - name: "storage_type"
               value:  "{{ '{{' }} .common_platform_db.external_resource_config.storage_type {{ '}}'}}"
 
-            - name: "db_storage_iops"
+            - name: "storage_iops"
               value: "{{ '{{' }} .common_platform_db.external_resource_config.storage_iops {{ '}}'}}"
 
             - name: "externalservice_name"
@@ -129,8 +141,6 @@ spec:
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
 
-            - name: "db_port"
-              value: "3306"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .rdbms_provider {{ '}}'}}/deploy-env-onboard
@@ -155,11 +165,35 @@ spec:
             - name: "vault_namespace"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
 
+            - name: "allow_major_version_upgrade"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allow_major_version_upgrade {{ '}}'}}"
+
+            - name: "apply_immediately"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.apply_immediately {{ '}}'}}"
+
+            - name: "backup_retention_period"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_retention_period {{ '}}'}}"
+
             - name: "allocated_storage"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.allocated_storage {{ '}}'}}"
 
             - name: "engine"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine {{ '}}'}}"
+
+            - name: "family"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.family {{ '}}'}}"
+
+            - name: "port"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.port {{ '}}'}}"
+
+            - name: "preferred_backup_window"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_window {{ '}}'}}"
+
+            - name: "preferred_maintenance_window"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.maintenance_window {{ '}}'}}"
+
+            - name: "final_snapshot_identifier"
+              value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.final_snapshot_identifier {{ '}}'}}"
 
             - name: "instance_class"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.instance_class {{ '}}'}}"
@@ -170,7 +204,7 @@ spec:
             - name: "engine_version"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.engine_version {{ '}}'}}"
 
-            - name: "replica_count"
+            - name: "instance_count"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.replicas {{ '}}'}}"
 
             - name: "skip_final_snapshot"
@@ -200,16 +234,13 @@ spec:
             - name: "dbdeploy_name_prefix"
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_dbdeploy_name_prefix }}"
 
-            - name: "db_backup_retention_period"
+            - name: "backup_retention_period"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_retention_period {{ '}}'}}"
 
-            - name: "db_preferred_backup_window"
-              value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.backup_window {{ '}}'}}"
-
-            - name: "db_storage_type"
+            - name: "storage_type"
               value:  "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_type {{ '}}'}}"
 
-            - name: "db_storage_iops"
+            - name: "storage_iops"
               value: "{{ '{{' }} .common_mojaloop_db.external_resource_config.storage_iops {{ '}}'}}"
 
             - name: "externalservice_name"
@@ -229,9 +260,6 @@ spec:
 
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
-
-            - name: "db_port"
-              value: "3306"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'

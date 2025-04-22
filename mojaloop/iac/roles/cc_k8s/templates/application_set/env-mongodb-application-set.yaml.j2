@@ -54,6 +54,9 @@ spec:
             - name: "backup_retention_period"
               value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
 
+            - name: "delete_protection"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.deletion_protection {{ '}}'}}"
+
             - name: "engine"
               value:  "{{ '{{' }} .common_mongodb.external_resource_config.engine {{ '}}'}}"
 
