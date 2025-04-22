@@ -443,7 +443,7 @@ argocd_default:
           dsn_secret_name: "netbird-dsn-config"
           dsn_secret_key: "value"
           externalservice_name: "netbird-db-external"
-          operator_namespace: "netbird"
+          operator_namespace: "netbird-op"
           operator_helm_version: "0.1.8"
           operator_kubeapi_group: "cc-k8s"
           operator_release_name: "cc-nb-operator"
