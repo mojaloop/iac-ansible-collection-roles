@@ -447,6 +447,7 @@ argocd_default:
           operator_helm_version: "0.1.8"
           operator_kubeapi_group: "cc-k8s"
           operator_release_name: "cc-nb-operator"
+          operator_sync_wave: "'3'"
         netbird_percona_provider:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
