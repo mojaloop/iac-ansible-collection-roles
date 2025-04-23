@@ -23,7 +23,7 @@ spec:
       sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .rdbms_provider {{ '}}'}}/deploy-env-onboard
+        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .common_platform_db.provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
@@ -146,7 +146,7 @@ spec:
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .rdbms_provider {{ '}}'}}/deploy-env-onboard
+        path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .common_mojaloop_db.provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
