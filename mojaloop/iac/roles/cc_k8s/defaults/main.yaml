@@ -444,11 +444,6 @@ argocd_default:
           dsn_secret_name: "netbird-dsn-config"
           dsn_secret_key: "value"
           externalservice_name: "netbird-db-external"
-          operator_namespace: "netbird-op"
-          operator_helm_version: "0.1.8"
-          operator_kubeapi_group: "cc-k8s"
-          operator_release_name: "cc-nb-operator"
-          operator_sync_wave: "'3'"
         netbird_percona_provider:
           postgres_replicas: "'1'"
           postgres_proxy_replicas: "'1'"
@@ -459,6 +454,13 @@ argocd_default:
           rdbms_subnet_list: "[]"
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"
+        netbird_operator:
+          app_name: "netbird-operator"
+          namespace: "netbird-op"
+          helm_version: "0.1.8"
+          kubeapi_group: "cc-k8s"
+          release_name: "cc-nb-operator"
+          sync_wave: "'3'"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
