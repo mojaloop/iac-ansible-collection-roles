@@ -32,6 +32,7 @@
     fact_capi_cluster_name: "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_name }}"
     fact_cloud_platform: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_platform }}"
     fact_cloud_region: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+    fact_cloud_provider: "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].cloud_provider }}"
 
 - name: set gitlab domain to public
   set_fact:
