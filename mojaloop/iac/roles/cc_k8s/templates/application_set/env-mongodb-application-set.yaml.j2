@@ -12,7 +12,7 @@ spec:
       repoURL: https://{{ fact_gitlab_fqdn }}/iac/{{ env_name }}.git
       revision: HEAD
       files:
-      - path: merged-config/mojaloop-stateful-resources-ccdriven-aws-databases.yaml
+      - path: merged-config/mojaloop-stateful-resources-ccdriven-databases.yaml
   template:
     metadata:
       name: '{{ env_name }}-mongodb'
@@ -23,7 +23,7 @@ spec:
       sources:
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: gitops/applications/overlays/mongodb_provider/{{ '{{' }} .mongodb_provider {{ '}}'}}/deploy-env-onboard
+        path: gitops/applications/overlays/mongodb_provider/{{ '{{' }} .common_mongodb.provider {{ '}}'}}/deploy-env-onboard
         plugin:
           name: envsubst
           env:
@@ -53,6 +53,9 @@ spec:
 
             - name: "backup_retention_period"
               value: "{{ '{{' }} .common_mongodb.external_resource_config.backup_retention_period {{ '}}'}}"
+
+            - name: "deletion_protection"
+              value: "{{ '{{' }} .common_mongodb.external_resource_config.deletion_protection {{ '}}'}}"
 
             - name: "engine"
               value:  "{{ '{{' }} .common_mongodb.external_resource_config.engine {{ '}}'}}"
@@ -107,9 +110,6 @@ spec:
 
             - name: "db_username"
               value:  "{{ '{{' }} .common_mongodb.external_resource_config.username {{ '}}'}}"
-
-            - name: "delete_protection"
-              value: "{{ '{{' }} .common_mongodb.external_resource_config.delete_protection {{ '}}'}}"
 
             - name: "dbdeploy_name_prefix"
               value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_dbdeploy_name_prefix }}"
