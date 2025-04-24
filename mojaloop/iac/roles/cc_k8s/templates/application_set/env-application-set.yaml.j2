@@ -121,7 +121,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
 
             - name: "cloud_region"
-              value: "{{ '{{' }} .cloud_region {{ '}}'}}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
             - name: "common_platform_db_secret_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
             - name: "common_mojaloop_db_secret_name"
@@ -136,7 +136,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
-        path: 'gitops/applications/overlays/cloud_provider/{{ '{{' }} .cloud_platform {{ '}}'}}/storage-provider/deploy-env-onboard'
+        path: 'gitops/applications/overlays/cloud_provider/{{ fact_cloud_platform }}/storage-provider/deploy-env-onboard'
         plugin:
           name: envsubst
           env:
@@ -169,7 +169,7 @@ spec:
             - name: "argocd_namespace"
               value: "argocd"
             - name: "cloud_region"
-              value: "{{ '{{' }} .cloud_region {{ '}}'}}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
             - name: "aws_tf_provider_version"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].aws_tf_provider_version }}"
             - name: "vault_kv_secret"
@@ -184,6 +184,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].vault_tf_provider_version }}"
             - name: "crossplane_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
+            - name: "storage_namespace"
+              value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['storage'].namespace }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
