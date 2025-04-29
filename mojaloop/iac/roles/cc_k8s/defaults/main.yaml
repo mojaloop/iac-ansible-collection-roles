@@ -204,6 +204,9 @@ argocd_default:
           capi_rook_ceph_rgw_external_ip: "10.10.127.10"
           capi_crossplane_k8s_providerconfig_name: "sc-kubernetes-provider"
           capi_crossplane_helm_providerconfig_name: "sc-helm-provider"
+          capi_os_disk_size: "100G"
+          capi_rook_ceph_disk_size: "300G"
+
         storage:
           sync_wave: "'-10'"
           app_name: "storage"
