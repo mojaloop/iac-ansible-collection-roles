@@ -461,6 +461,7 @@ argocd_default:
           helm_version: "0.1.8"
           kubeapi_group: "cc-k8s"
           release_name: "cc-nb-operator"
+          network_resource_group: "cc-internal"
           sync_wave: "'3'"
     nexus:
       argocd_app_name: "nexus"
