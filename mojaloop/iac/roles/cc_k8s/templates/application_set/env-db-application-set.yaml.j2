@@ -211,7 +211,7 @@ spec:
               value: "{{ '{{' }} .common_platform_db.external_resource_config.perc_backup_image {{ '}}' }}"
 
             - name: "backup_verify_tls"
-              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}'
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
 
             - name: "backup_bucket_region"
               value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
@@ -415,7 +415,7 @@ spec:
               value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_image {{ '}}' }}"
 
             - name: "backup_verify_tls"
-              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_verify_tls {{ '}}'
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
 
             - name: "backup_bucket_region"
               value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
