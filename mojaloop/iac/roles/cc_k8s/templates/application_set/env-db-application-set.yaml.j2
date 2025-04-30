@@ -36,6 +36,9 @@ spec:
             - name: "namespace"
               value: "{{ env_name }}"
 
+            - name: "env_name"
+              value: "{{ env_name }}"
+
             - name: "vault_k8s_admin_auth_path"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_auth_path }}"
 
@@ -103,7 +106,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].db_provider_cloud_region }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "db_secret"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
@@ -208,16 +211,10 @@ spec:
               value: "{{ '{{' }} .common_platform_db.external_resource_config.perc_backup_image {{ '}}' }}"
 
             - name: "backup_verify_tls"
-              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
-
-            - name: "backup_bucket"
-              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_bucket {{ '}}' }}"
-
-            - name: "backup_credentials_secret"
-              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_credentials_secret {{ '}}' }}"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}'
 
             - name: "backup_bucket_region"
-              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_bucket_region {{ '}}' }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "backup_schedule_name"
               value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_schedule_name {{ '}}' }}"
@@ -241,6 +238,9 @@ spec:
               value: "{{ env_name }}-common-mojaloop-db"
 
             - name: "namespace"
+              value: "{{ env_name }}"
+
+            - name: "env_name"
               value: "{{ env_name }}"
 
             - name: "vault_k8s_admin_auth_path"
@@ -310,7 +310,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].db_provider_cloud_region }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "db_secret"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_secret }}"
@@ -415,16 +415,10 @@ spec:
               value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_image {{ '}}' }}"
 
             - name: "backup_verify_tls"
-              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
-
-            - name: "backup_bucket"
-              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_bucket {{ '}}' }}"
-
-            - name: "backup_credentials_secret"
-              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_credentials_secret {{ '}}' }}"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_verify_tls {{ '}}'
 
             - name: "backup_bucket_region"
-              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_bucket_region {{ '}}' }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "backup_schedule_name"
               value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_schedule_name {{ '}}' }}"
