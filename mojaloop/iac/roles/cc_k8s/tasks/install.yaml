@@ -106,30 +106,15 @@
   args:
     executable: /bin/bash
 
-- name: wait for sc cluster
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
-    clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
-    kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
-  register: clusterstatus
-  until: clusterstatus is not failed
-  retries: 20
-  delay: 30
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: fact_cloud_provider == 'private-cloud'
-
-# - name: Post config CAPI cluster
+# - name: wait for sc cluster
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
 #     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
-#     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-#     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml apply -f {{ cctmpvalues.path }}/capi/storage-cluster-root-app.yaml
-#   register: capipostconfig
-#   until: capipostconfig is not failed
-#   retries: 10
+#     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
+#   register: clusterstatus
+#   until: clusterstatus is not failed
+#   retries: 20
 #   delay: 30
 #   ignore_errors: true
 #   args:
@@ -149,20 +134,10 @@
   args:
     executable: /bin/bash
 
-- name: get bastion netbird setup key
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_gw_setup_key_secret_key }}}" | base64 -d
-  register: bastion_netbird_setup_key
-
-- name: set bastion netbird setup key fact
-  set_fact:
-    fact_bastion_netbird_setup_key: "{{ bastion_netbird_setup_key.stdout | trim }}"
-
 - name: save build server setup key to temp
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.{{ fact_netbird_build_setup_key_secret_key }}}" | base64 -d
+    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.password}" | base64 -d
   register: build_server_netbird_setup_key
 
 - name: set build server netbird setup key fact

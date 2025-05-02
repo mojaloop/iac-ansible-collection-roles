@@ -194,6 +194,7 @@ argocd_default:
           capi_cluster_proxmox_worker_replicas: "'3'"
           capi_cluster_proxmox_user: "root@pam"
           capi_cluster_proxmox_password: "Pass1234"
+          capi_cluster_proxmox_ceph_volume: "/dev/sdb"
           capi_cluster_storage_name: "pve-sdb"
           capi_rook_ceph_sync_wave: "'-12'"
           capi_rook_ceph_app_name: "rook-ceph"
@@ -207,9 +208,9 @@ argocd_default:
           capi_rook_ceph_rgw_external_ip: "10.10.127.10"
           capi_crossplane_k8s_providerconfig_name: "sc-kubernetes-provider"
           capi_crossplane_helm_providerconfig_name: "sc-helm-provider"
+          capi_cluster_cidr: "10.10.127.0/24"
           capi_os_disk_size: "100G"
           capi_rook_ceph_disk_size: "300G"
-
         storage:
           sync_wave: "'-10'"
           app_name: "storage"
@@ -460,6 +461,14 @@ argocd_default:
           rdbms_subnet_list: "[]"
           vpc_cidr: "0.0.0.0/0"
           db_provider_cloud_region: "eu-west-1"
+        netbird_operator:
+          app_name: "netbird-operator"
+          namespace: "netbird-op"
+          helm_version: "0.1.8"
+          kubeapi_group: "cc-k8s"
+          release_name: "cc-nb-operator"
+          network_resource_group: "cc-internal"
+          sync_wave: "'3'"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
@@ -622,8 +631,6 @@ argocd_default:
           common_mongodb_secret: "common-mongodb-credentials"
           common_mongodb_dbdeploy_name_prefix: "common-mongodb"
           common_mongodb_externalservice_name: "common-mongodb-db-external"
-
-
 
     monitoring:
       argocd_app_name: "monitoring"

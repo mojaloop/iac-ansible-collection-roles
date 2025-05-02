@@ -42,6 +42,13 @@
     content: "--authentication-config /var/snap/microk8s/common/.oidc_config.yaml"
   when: kubernetes_oidc_enabled | bool
 
+- name: add kubelet config
+  become: true
+  ansible.builtin.blockinfile:
+    dest: /var/snap/microk8s/current/args/kubelet
+    marker: "# {mark} ANSIBLE MANAGED: microk8s kubelet config"
+    content: "--allowed-unsafe-sysctls=net.ipv4.ip_forward"
+
 - name: Wait for microk8s to be ready
   become: true
   ansible.builtin.command: microk8s.status --wait-ready
@@ -106,7 +113,7 @@
     dest: /usr/share/ca-certificates/extra
     remote_src: yes
     force: yes
-    mode: '0644'
+    mode: "0644"
   loop:
     - /var/snap/microk8s/current/certs/ca.crt
     - /var/snap/microk8s/current/certs/front-proxy-ca.crt
