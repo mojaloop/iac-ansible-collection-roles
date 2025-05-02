@@ -458,7 +458,7 @@ argocd_default:
         netbird_operator:
           app_name: "netbird-operator"
           namespace: "netbird-op"
-          helm_version: "0.1.9"
+          helm_version: "0.1.8"
           kubeapi_group: "cc-k8s"
           release_name: "cc-nb-operator"
           network_resource_group: "cc-internal"
