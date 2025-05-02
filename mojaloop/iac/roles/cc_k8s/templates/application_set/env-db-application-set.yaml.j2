@@ -208,7 +208,7 @@ spec:
               value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_limits_cpu {{ '}}' }}"
 
             - name: "backup_image"
-              value: "{{ '{{' }} .common_platform_db.external_resource_config.perc_backup_image {{ '}}' }}"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_image {{ '}}' }}"
 
             - name: "backup_verify_tls"
               value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
