@@ -132,6 +132,129 @@ spec:
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
 
+            # dbaas inputs
+            - name: "cr_version"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.cr_version {{ '}}' }}"
+
+            - name: "image"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.image {{ '}}' }}"
+
+            # Backup inputs
+            - name: "backup_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_enabled {{ '}}' }}"
+
+            - name: "backup_image"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_image {{ '}}' }}"
+
+            - name: "backup_verify_tls"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
+
+            - name: "backup_bucket_region"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "backup_schedule_name"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_schedule_name {{ '}}' }}"
+
+            - name: "backup_cron_schedule"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_cron_schedule {{ '}}' }}"
+
+            - name: "backup_retention"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_retention {{ '}}' }}"
+
+            - name: "backup_schedule_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.schedule_enabled {{ '}}' }}"
+
+
+            # Replset inputs
+            - name: "replset_name"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_name {{ '}}' }}"
+
+            - name: "replset_size"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_size {{ '}}' }}"
+
+            - name: "replset_expose_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_expose_enabled {{ '}}' }}"
+
+            - name: "replset_expose_type"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_expose_type {{ '}}' }}"
+
+            - name: "replset_limits_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_limits_cpu {{ '}}' }}"
+
+            - name: "replset_limits_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_limits_memory {{ '}}' }}"
+
+            - name: "replset_requests_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_requests_cpu {{ '}}' }}"
+
+            - name: "replset_requests_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_requests_memory {{ '}}' }}"
+
+            - name: "replset_storage"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_storage {{ '}}' }}"
+
+            # Sharding inputs
+            - name: "sharding_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.sharding_enabled {{ '}}' }}"
+
+            - name: "configsvr_size"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_size {{ '}}' }}"
+
+            - name: "configsvr_expose_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_expose_enabled {{ '}}' }}"
+
+            - name: "configsvr_expose_type"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_expose_type {{ '}}' }}"
+
+            - name: "configsvr_max_unavailable"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_max_unavailable {{ '}}' }}"
+
+            - name: "configsvr_limits_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_limits_cpu {{ '}}' }}"
+
+            - name: "configsvr_limits_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_limits_memory {{ '}}' }}"
+
+            - name: "configsvr_requests_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_requests_cpu {{ '}}' }}"
+
+            - name: "configsvr_requests_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_requests_memory {{ '}}' }}"
+
+            - name: "configsvr_storage"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_storage {{ '}}' }}"
+
+            - name: "mongos_size"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_size {{ '}}' }}"
+
+            - name: "mongos_expose_enabled"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_expose_enabled {{ '}}' }}"
+
+            - name: "mongos_expose_type"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_expose_type {{ '}}' }}"
+
+            - name: "mongos_max_unavailable"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_max_unavailable {{ '}}' }}"
+
+            - name: "mongos_limits_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_limits_cpu {{ '}}' }}"
+
+            - name: "mongos_limits_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_limits_memory {{ '}}' }}"
+
+            - name: "mongos_requests_cpu"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_requests_cpu {{ '}}' }}"
+
+            - name: "mongos_requests_memory"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_requests_memory {{ '}}' }}"
+
+            - name: "region"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "zone_id"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dns_zone_id }}"
+
+
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
