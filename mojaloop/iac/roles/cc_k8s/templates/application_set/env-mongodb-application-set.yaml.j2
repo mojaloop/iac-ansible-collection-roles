@@ -172,12 +172,6 @@ spec:
             - name: "replset_size"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_size {{ '}}' }}"
 
-            - name: "replset_expose_enabled"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_expose_enabled {{ '}}' }}"
-
-            - name: "replset_expose_type"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_expose_type {{ '}}' }}"
-
             - name: "replset_limits_cpu"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.replset_limits_cpu {{ '}}' }}"
 
@@ -200,15 +194,6 @@ spec:
             - name: "configsvr_size"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_size {{ '}}' }}"
 
-            - name: "configsvr_expose_enabled"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_expose_enabled {{ '}}' }}"
-
-            - name: "configsvr_expose_type"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_expose_type {{ '}}' }}"
-
-            - name: "configsvr_max_unavailable"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_max_unavailable {{ '}}' }}"
-
             - name: "configsvr_limits_cpu"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.configsvr_limits_cpu {{ '}}' }}"
 
@@ -226,15 +211,6 @@ spec:
 
             - name: "mongos_size"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_size {{ '}}' }}"
-
-            - name: "mongos_expose_enabled"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_expose_enabled {{ '}}' }}"
-
-            - name: "mongos_expose_type"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_expose_type {{ '}}' }}"
-
-            - name: "mongos_max_unavailable"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_max_unavailable {{ '}}' }}"
 
             - name: "mongos_limits_cpu"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.mongos_limits_cpu {{ '}}' }}"
