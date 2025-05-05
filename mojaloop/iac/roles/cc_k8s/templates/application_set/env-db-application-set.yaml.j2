@@ -36,6 +36,9 @@ spec:
             - name: "namespace"
               value: "{{ env_name }}"
 
+            - name: "env_name"
+              value: "{{ env_name }}"
+
             - name: "vault_k8s_admin_auth_path"
               value: "{{ fact_argo_merged_config.apps['vault'].sub_apps['post_config'].vault_k8s_admin_auth_path }}"
 
@@ -103,7 +106,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_platform_db_rds_provider'].db_provider_cloud_region }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "db_secret"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
@@ -144,6 +147,93 @@ spec:
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
 
+            - name: "cr_version"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.cr_version {{ '}}' }}"
+
+            - name: "pxc_image"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.pxc_image {{ '}}' }}"
+
+            - name: "percona_cluster_name"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.cluster_name {{ '}}' }}"
+
+            - name: "mysql_storage_size"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_storage_size {{ '}}' }}"
+
+            - name: "mysql_replicas"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_replicas {{ '}}' }}"
+
+            - name: "mysql_requests_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_requests_memory {{ '}}' }}"
+
+            - name: "mysql_requests_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_requests_cpu {{ '}}' }}"
+
+            - name: "mysql_limits_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_limits_memory {{ '}}' }}"
+
+            - name: "mysql_limits_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_limits_cpu {{ '}}' }}"
+
+            - name: "haproxy_image"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_image {{ '}}' }}"
+
+            - name: "haproxy_expose"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_expose {{ '}}' }}"
+
+            - name: "haproxy_replicas"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_replicas {{ '}}' }}"
+
+            - name: "haproxy_requests_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_requests_memory {{ '}}' }}"
+
+            - name: "haproxy_requests_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_requests_cpu {{ '}}' }}"
+
+            - name: "haproxy_limits_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_limits_memory {{ '}}' }}"
+
+            - name: "haproxy_limits_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.haproxy_limits_cpu {{ '}}' }}"
+
+            - name: "logcollector_image"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_image {{ '}}' }}"
+
+            - name: "logcollector_requests_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_requests_memory {{ '}}' }}"
+
+            - name: "logcollector_requests_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_requests_cpu {{ '}}' }}"
+
+            - name: "logcollector_limits_memory"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_limits_memory {{ '}}' }}"
+
+            - name: "logcollector_limits_cpu"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.logcollector_limits_cpu {{ '}}' }}"
+
+            - name: "backup_image"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_image {{ '}}' }}"
+
+            - name: "backup_verify_tls"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
+
+            - name: "backup_bucket_region"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "backup_schedule_name"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_schedule_name {{ '}}' }}"
+
+            - name: "backup_cron_schedule"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_cron_schedule {{ '}}' }}"
+
+            - name: "backup_retention"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.backup_retention {{ '}}' }}"
+
+            - name: "region"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "zone_id"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dns_zone_id }}"
+
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: gitops/applications/overlays/rdbms_provider/{{ '{{' }} .common_mojaloop_db.provider {{ '}}'}}/deploy-env-onboard
@@ -157,6 +247,9 @@ spec:
               value: "{{ env_name }}-common-mojaloop-db"
 
             - name: "namespace"
+              value: "{{ env_name }}"
+
+            - name: "env_name"
               value: "{{ env_name }}"
 
             - name: "vault_k8s_admin_auth_path"
@@ -226,7 +319,7 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].rdbms_subnet_list }}"
 
             - name: "cloud_region"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mojaloop_db_rds_provider'].db_provider_cloud_region }}"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
 
             - name: "db_secret"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_secret }}"
@@ -266,6 +359,94 @@ spec:
 
             - name: "capi_cluster_namespace"
               value:  "{{ fact_argo_merged_config.apps['utils'].sub_apps['capi'].capi_cluster_namespace }}"
+
+            - name: "cr_version"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.cr_version {{ '}}' }}"
+
+            - name: "pxc_image"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.pxc_image {{ '}}' }}"
+
+            - name: "percona_cluster_name"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.cluster_name {{ '}}' }}"
+
+            - name: "mysql_storage_size"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_storage_size {{ '}}' }}"
+
+            - name: "mysql_replicas"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_replicas {{ '}}' }}"
+
+            - name: "mysql_requests_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_requests_memory {{ '}}' }}"
+
+            - name: "mysql_requests_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_requests_cpu {{ '}}' }}"
+
+            - name: "mysql_limits_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_limits_memory {{ '}}' }}"
+
+            - name: "mysql_limits_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_limits_cpu {{ '}}' }}"
+
+            - name: "haproxy_image"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_image {{ '}}' }}"
+
+            - name: "haproxy_expose"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_expose {{ '}}' }}"
+
+            - name: "haproxy_replicas"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_replicas {{ '}}' }}"
+
+            - name: "haproxy_requests_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_requests_memory {{ '}}' }}"
+
+            - name: "haproxy_requests_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_requests_cpu {{ '}}' }}"
+
+            - name: "haproxy_limits_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_limits_memory {{ '}}' }}"
+
+            - name: "haproxy_limits_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.haproxy_limits_cpu {{ '}}' }}"
+
+            - name: "logcollector_image"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.logcollector_image {{ '}}' }}"
+
+            - name: "logcollector_requests_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.logcollector_requests_memory {{ '}}' }}"
+
+            - name: "logcollector_requests_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.logcollector_requests_cpu {{ '}}' }}"
+
+            - name: "logcollector_limits_memory"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.logcollector_limits_memory {{ '}}' }}"
+
+            - name: "logcollector_limits_cpu"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.logcollector_limits_cpu {{ '}}' }}"
+
+            - name: "backup_image"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_image {{ '}}' }}"
+
+            - name: "backup_verify_tls"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_verify_tls {{ '}}' }}"
+
+            - name: "backup_bucket_region"
+              value:  "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "backup_schedule_name"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_schedule_name {{ '}}' }}"
+
+            - name: "backup_cron_schedule"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_cron_schedule {{ '}}' }}"
+
+            - name: "backup_retention"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.backup_retention {{ '}}' }}"
+
+            - name: "region"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+
+            - name: "zone_id"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dns_zone_id }}"
+
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
