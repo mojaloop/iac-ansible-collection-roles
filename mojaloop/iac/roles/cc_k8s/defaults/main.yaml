@@ -734,4 +734,4 @@ argocd_default:
         rook_ceph:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
-          version: "1.16.3"
+          version: "1.17.1"
