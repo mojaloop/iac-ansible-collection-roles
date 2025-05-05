@@ -139,6 +139,9 @@ spec:
             - name: "image"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.image {{ '}}' }}"
 
+            - name: "percona_cluster_name"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.cluster_name {{ '}}' }}"
+
             # Backup inputs
             - name: "backup_enabled"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_enabled {{ '}}' }}"
