@@ -153,6 +153,9 @@ spec:
             - name: "pxc_image"
               value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.pxc_image {{ '}}' }}"
 
+            - name: "cluster_name"
+              value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.cluster_name {{ '}}' }}"
+
             - name: "mysql_storage_size"
               value: "{{ '{{' }} .common_platform_db.dbaas_resource_config.mysql_storage_size {{ '}}' }}"
 
@@ -362,6 +365,9 @@ spec:
 
             - name: "pxc_image"
               value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.pxc_image {{ '}}' }}"
+
+            - name: "cluster_name"
+              value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.cluster_name {{ '}}' }}"
 
             - name: "mysql_storage_size"
               value: "{{ '{{' }} .common_mojaloop_db.dbaas_resource_config.mysql_storage_size {{ '}}' }}"
