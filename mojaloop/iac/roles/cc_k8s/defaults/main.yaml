@@ -726,8 +726,10 @@ argocd_default:
           sync_wave: "'-13'"
           app_name: "metallb"
           namespace: "metallb-system"
-          ip_range_begin: "10.10.127.10"
-          ip_range_end: "10.10.127.20"
+          sc_ip_range_begin: "10.10.127.10"
+          sc_ip_range_end: "10.10.127.20"
+          cc_envs_ip_range_begin: "10.10.127.21"
+          cc_envs_ip_range_end: "10.10.127.49"
           version: "0.14.9"
         rook_ceph:
           app_name: "rook-ceph"
