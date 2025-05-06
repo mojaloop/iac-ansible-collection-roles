@@ -152,7 +152,7 @@ argocd_default:
           objectstores_version: "v17-14259904996-1"
           utils_version: "v0.3.0"
           gitlab_version: "v0.1.0"
-          vault_config_version: "v0.1.0-pr56-14864374445"
+          vault_config_version: "v0.1.0-pr56-14866860009"
           sc_postgres_version: "v0.1.0-pr16-14261304175"
           sc_bootstrap_version: "v0.1.0"
           sc_nboperatorinstall_version: "v0.1.0-pr37-14360885310"
