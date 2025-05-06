@@ -1,17 +1,17 @@
 # for on premise installations
 - name: Leave microk8s cluster
   become: true
-  ansible.builtin.command: "microk8s leave || true"
-  ignore_errors: true
-
-- name: Stop microk8s
-  become: true
-  ansible.builtin.command: "microk8s stop || true"
+  ansible.builtin.shell: "microk8s leave || true"
   ignore_errors: true
 
 - name: Reset microk8s
   become: true
-  ansible.builtin.command: "microk8s reset --destroy-storage"
+  ansible.builtin.shell: "microk8s reset --destroy-storage"
+  ignore_errors: true
+
+- name: Stop microk8s
+  become: true
+  ansible.builtin.shell: "microk8s stop || true"
   ignore_errors: true
 
 - name: Remove microk8s
@@ -39,6 +39,7 @@
   become: true
   ansible.builtin.shell: |
     for intf in $(ip -o link | grep cali | awk -F': ' '{print $2}'); do  ip link delete $intf || true; done
+    sudo ip link delete nodecache
   ignore_errors: true
 
 - name: Remove longhorn data
