@@ -1,13 +1,13 @@
 # for on premise installations
-- name: Leave microk8s cluster
-  become: true
-  ansible.builtin.shell: "microk8s leave || true"
-  ignore_errors: true
+# - name: Leave microk8s cluster
+#   become: true
+#   ansible.builtin.shell: "microk8s leave || true"
+#   ignore_errors: true
 
-- name: Reset microk8s
-  become: true
-  ansible.builtin.shell: "microk8s reset --destroy-storage"
-  ignore_errors: true
+# - name: Reset microk8s
+#   become: true
+#   ansible.builtin.shell: "microk8s reset --destroy-storage"
+#   ignore_errors: true
 
 - name: Stop microk8s
   become: true
