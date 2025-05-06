@@ -26,6 +26,21 @@
     path: "{{ item }}"
   loop: "{{ microk8s_root_paths }}"
 
+- name: Flush iptables
+  become: true
+  ansible.builtin.shell: |
+    iptables -F
+    iptables -t nat -F
+    iptables -t mangle -F
+    iptables -X
+  ignore_errors: true
+
+- name: Delete all cali* interfaces
+  become: true
+  ansible.builtin.shell: |
+    for intf in $(ip -o link | grep cali | awk -F': ' '{print $2}'); do  ip link delete $intf || true; done
+  ignore_errors: true
+
 - name: Remove longhorn data
   become: true
   ansible.builtin.file:
