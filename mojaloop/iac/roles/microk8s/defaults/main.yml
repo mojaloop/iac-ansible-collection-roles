@@ -40,7 +40,12 @@ enable_registry_mirror: false
 registry_mirror_fqdn: example.com
 registry_mirror_port: 9000
 teardown: false
-microk8s_root_path: /var/snap/microk8s/
+microk8s_root_paths:
+  - /var/snap/microk8s
+  - /run/containerd
+  - /opt/cni
+  - /var/lib/cni
+  - /etc/cni/net.d
 longhorn_data_path: /var/lib/longhorn/
 rook_data_path: /var/lib/rook
 rook_disk_vol: "/dev/sdb"

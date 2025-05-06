@@ -70,6 +70,12 @@
   changed_when: false
   register: aliashelmout
 
+- name: Create ctr alias
+  become: true
+  ansible.builtin.command: "snap alias microk8s.ctr ctr"
+  changed_when: false
+  register: aliasctrout
+
 - name: "create directory for mirror registry configs"
   become: true
   ansible.builtin.file:

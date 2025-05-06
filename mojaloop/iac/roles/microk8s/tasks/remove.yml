@@ -1,7 +1,17 @@
 # for on premise installations
+- name: Leave microk8s cluster
+  become: true
+  ansible.builtin.command: "microk8s leave || true"
+  ignore_errors: true
+
+- name: Stop microk8s
+  become: true
+  ansible.builtin.command: "microk8s stop || true"
+  ignore_errors: true
+
 - name: Reset microk8s
   become: true
-  ansible.builtin.command: "microk8s reset"
+  ansible.builtin.command: "microk8s reset --destroy-storage"
   ignore_errors: true
 
 - name: Remove microk8s
@@ -9,11 +19,12 @@
   ansible.builtin.command: "snap remove --purge microk8s"
   ignore_errors: true
 
-- name: Remove microk8s data
+- name: Remove microk8s data directories
   become: true
   ansible.builtin.file:
     state: absent
-    path: "{{ microk8s_root_path }}"
+    path: "{{ item }}"
+  loop: "{{ microk8s_root_paths }}"
 
 - name: Remove longhorn data
   become: true
