@@ -235,7 +235,7 @@ argocd_default:
       app_namespace: "argocd"
       app_enabled: "true"
       namespace: "crossplane-system"
-      sync_wave: "'-9'"
+      sync_wave: "'-6'"
       cloud_provider: "aws"
       application_gitrepo_tag: "vexp-cck8s19"
       sub_apps: {}
