@@ -16,7 +16,7 @@
 
 - name: Remove microk8s
   become: true
-  ansible.builtin.command: "snap remove --purge microk8s"
+  ansible.builtin.shell: "snap remove --purge microk8s"
   ignore_errors: true
 
 - name: Remove microk8s data directories

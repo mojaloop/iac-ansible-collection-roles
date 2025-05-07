@@ -39,6 +39,8 @@
     kubectl -n {{ fact_storage_namespace }} scale deployment csi-rbdplugin-provisioner --replicas=0
     for CRD in $(kubectl get crd -n {{ fact_storage_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_storage_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_storage_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}';done
     kubectl delete cephcluster {{ fact_storage_namespace }} --ignore-not-found=true -n {{ fact_storage_namespace }}
+    kubectl -n {{ fact_storage_namespace }} delete daemonset csi-cephfsplugin
+    kubectl -n {{ fact_storage_namespace }} delete daemonset csi-rbdplugin
   args:
     executable: /bin/bash
   ignore_errors: true
