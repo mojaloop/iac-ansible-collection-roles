@@ -9,6 +9,7 @@
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} netbird-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    kubectl delete awsroute53record -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} ceph-objectstore-rgw --ignore-not-found=true --all
     # kubectl delete workspaces.tf.upbound.io vault-{{ dynamic_secret_platform }}-post-config
     # kubectl delete workspaces.tf.upbound.io vault-post-config
     # kubectl delete rdsaurorareplicaclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
