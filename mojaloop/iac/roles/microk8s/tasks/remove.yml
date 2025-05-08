@@ -11,8 +11,21 @@
 
 - name: Stop microk8s
   become: true
-  ansible.builtin.shell: "microk8s stop || true"
+  # ansible.builtin.shell: "microk8s stop || true"
+  ansible.builtin.shell: systemctl stop snap.microk8s.*
   ignore_errors: true
+
+- name: Force unmount all RBD-related mount paths
+  ansible.builtin.shell: |
+    mount | grep rbd | awk '{print $3}' | while read mp; do
+      echo "Unmounting $mp"
+      umount -l "$mp" || echo "Failed to unmount $mp"
+    done
+    rm -rf /var/snap/microk8s/common/var/lib/kubelet/plugins/kubernetes.io/csi/*ceph*
+    rm -rf /var/snap/microk8s/common/var/lib/kubelet/pods/*/volumes/kubernetes.io~csi/*
+  args:
+    executable: /bin/bash
+  when: cloud_platform == "private-cloud"
 
 - name: Remove microk8s
   become: true
