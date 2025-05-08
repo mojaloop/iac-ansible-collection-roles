@@ -25,7 +25,7 @@
     rm -rf /var/snap/microk8s/common/var/lib/kubelet/pods/*/volumes/kubernetes.io~csi/*
   args:
     executable: /bin/bash
-  when: cloud_platform == "private-cloud"
+  # when: cloud_platform == "private-cloud"
 
 - name: Remove microk8s
   become: true
