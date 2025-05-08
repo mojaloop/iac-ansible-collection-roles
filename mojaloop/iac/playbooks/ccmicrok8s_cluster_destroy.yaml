@@ -16,6 +16,7 @@
     - role: mojaloop.iac.microk8s
 
 - hosts: master
+  gather_facts: false
   become: true
   vars:
     teardown: true
