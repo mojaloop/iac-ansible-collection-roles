@@ -11,8 +11,8 @@
 
 - name: Stop microk8s
   become: true
-  ansible.builtin.shell: "microk8s stop || true"
-  # ansible.builtin.shell: systemctl stop snap.microk8s.*
+  # ansible.builtin.shell: "microk8s stop || true"
+  ansible.builtin.shell: systemctl stop snap.microk8s.*
   ignore_errors: true
 
 - name: Force unmount all RBD-related mount paths
