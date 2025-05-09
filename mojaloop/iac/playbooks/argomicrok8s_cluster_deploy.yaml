@@ -2,7 +2,6 @@
   become: true
   roles:
     - mojaloop.iac.bastion_common
-    - mojaloop.iac.netbird_client
 
 - hosts: master
   become: true

@@ -134,6 +134,13 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_externalservice_name }}"
             - name: common_mongodb_external_name_service
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
+            - name: netbird_preconfig_output_secret
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].preconfig_output_secret }}"
+            - name: "cc_network_resource_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
+            - name: "sc_network_resource_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].sc_network_resource_group }}"
+
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
         path: 'gitops/applications/overlays/cloud_provider/{{ fact_cloud_platform }}/storage-provider/deploy-env-onboard'
