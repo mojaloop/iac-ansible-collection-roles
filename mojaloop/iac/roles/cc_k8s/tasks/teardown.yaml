@@ -1,18 +1,19 @@
 - name: Delete resources before infra teardown
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    for app in capi-post-config capi vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring vault; do
-      kubectl patch application -n {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    done
+    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    # for app in capi-post-config capi vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring vault; do
+    #   kubectl patch application -n {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    # done
+
     # Delete apps
-    for app in gitlab nexus monitoring vault; do
-      kubectl delete application -n {{ fact_argo_merged_config.namespace }} $app --ignore-not-found=true
-    done
-    kubectl delete pvc --all -n monitoring --grace-period=0 --force --ignore-not-found=true
-    kubectl delete pvc --all -n gitlab --grace-period=0 --force --ignore-not-found=true
-    kubectl delete pvc --all -n nexus --grace-period=0 --force --ignore-not-found=true
-    kubectl delete pvc --all -n vault --grace-period=0 --force --ignore-not-found=true
+    # for app in gitlab nexus monitoring vault; do
+    #   kubectl delete application -n {{ fact_argo_merged_config.namespace }} $app --ignore-not-found=true
+    # done
+    # kubectl delete pvc --all -n monitoring --grace-period=0 --force --ignore-not-found=true
+    # kubectl delete pvc --all -n gitlab --grace-period=0 --force --ignore-not-found=true
+    # kubectl delete pvc --all -n nexus --grace-period=0 --force --ignore-not-found=true
+    # kubectl delete pvc --all -n vault --grace-period=0 --force --ignore-not-found=true
 
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
