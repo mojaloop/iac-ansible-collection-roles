@@ -9,6 +9,11 @@
     for app in gitlab nexus monitoring vault; do
       kubectl delete application -n {{ fact_argo_merged_config.namespace }} $app --ignore-not-found=true
     done
+    kubectl delete pvc --all -n monitoring --grace-period=0 --force --ignore-not-found=true
+    kubectl delete pvc --all -n gitlab --grace-period=0 --force --ignore-not-found=true
+    kubectl delete pvc --all -n nexus --grace-period=0 --force --ignore-not-found=true
+    kubectl delete pvc --all -n vault --grace-period=0 --force --ignore-not-found=true
+
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
