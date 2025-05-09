@@ -155,8 +155,8 @@ argocd_default:
           vault_config_version: "v0.1.0"
           sc_postgres_version: "v0.2.0"
           sc_bootstrap_version: "v0.3.0"
-          sc_nboperatorinstall_version: "v0.1.0-pr66-14878247009"
-          nb_config_version: "v0.1.0-pr66-14878247009"
+          sc_nboperatorinstall_version: "v0.1.0"
+          nb_config_version: "v0.1.0"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
