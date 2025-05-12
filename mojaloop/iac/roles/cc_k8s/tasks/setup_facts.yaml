@@ -22,6 +22,8 @@
     fact_k8s_oidc_secret_name: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].k8s_oidc_post_config_output_secret }}"
     fact_k8s_oidc_namespace: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }}"
     fact_gitlab_namespace: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }}"
+    fact_monitoring_namespace: "{{ fact_argo_merged_config.apps['monitoring'].sub_apps['monitoring'].namespace }}"
+    fact_vault_namespace: "{{ fact_argo_merged_config.apps['vault'].sub_apps['vault'].namespace }}"
     fact_gitlab_token_secret_name: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_name }}"
     fact_gitlab_token_secret_key: "{{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].root_token_secret_key }}"
     fact_kubernetes_oidc_groups_claim: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_grant_prefix }}"

@@ -1,46 +1,59 @@
 - name: Delete resources before infra teardown
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # for app in capi-post-config capi vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring vault; do
-    #   kubectl patch application -n {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # done
+    # Patch argo applications to remove syncPolicy
+    kubectl patch application -n  {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    for app in capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring; do
+      kubectl patch application -n  {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    done
 
-    # Delete apps
-    # for app in gitlab nexus monitoring vault; do
-    #   kubectl delete application -n {{ fact_argo_merged_config.namespace }} $app --ignore-not-found=true
-    # done
-    # kubectl delete pvc --all -n monitoring --grace-period=0 --force --ignore-not-found=true
-    # kubectl delete pvc --all -n gitlab --grace-period=0 --force --ignore-not-found=true
-    # kubectl delete pvc --all -n nexus --grace-period=0 --force --ignore-not-found=true
-    # kubectl delete pvc --all -n vault --grace-period=0 --force --ignore-not-found=true
+    # Delete crossplane MRs
+    kubectl delete awsroute53record -n {{ fact_gitlab_namespace }} ceph-objectstore-rgw --ignore-not-found=true
 
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    # Clean Gitlab PVC
+    for sts in redis-node gitlab-gitaly-default; do
+      kubectl patch statefulset redis-node -n {{ fact_gitlab_namespace }} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+    done
+    for pvc in $(kubectl get pvc -n {{ fact_gitlab_namespace }} -o name); do
+      kubectl patch "$pvc" -n {{ fact_gitlab_namespace }} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+      kubectl delete "$pvc" -n {{ fact_gitlab_namespace }} --ignore-not-found
+    done
 
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} netbird-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    # Clean Monitoring PVC
+    kubectl delete Prometheus -n {{ fact_monitoring_namespace }} prom-kube-prometheus-prometheus --ignore-not-found=true
+    monitoring_statefulsets=(
+      central-monitoring-grafana-mimir-ingester
+      central-monitoring-grafana-mimir-store-gateway
+      control-center-loki-grafana-loki-ingester
+      central-monitoring-grafana-mimir-alertmanager
+      central-monitoring-grafana-mimir-compactor
+      control-center-loki-grafana-loki-querier
+      prometheus-prom-kube-prometheus-prometheus
+    )
+    for sts in "${monitoring_statefulsets[@]}"; do
+      echo "Patching and deleting StatefulSet: $sts"
+      kubectl patch statefulset "$sts" -n {{ fact_monitoring_namespace }} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+      kubectl delete statefulset "$sts" -n {{ fact_monitoring_namespace }} --ignore-not-found=true
+    done
+    for pvc in $(kubectl get pvc -n {{ fact_monitoring_namespace }} -o name); do
+      kubectl patch "$pvc" -n {{ fact_monitoring_namespace }} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+      kubectl delete "$pvc" -n {{ fact_monitoring_namespace }} --ignore-not-found
+    done
 
-    kubectl delete awsroute53record -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} ceph-objectstore-rgw --ignore-not-found=true
-    # kubectl delete workspaces.tf.upbound.io vault-{{ dynamic_secret_platform }}-post-config
-    # kubectl delete workspaces.tf.upbound.io vault-post-config
-    # kubectl delete rdsaurorareplicaclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+    # Clean Nexus PVC
+    kubectl delete deployment nexus -n nexus --ignore-not-found=true
+    for pvc in $(kubectl get pvc -n nexus -o name); do
+      kubectl patch "$pvc" -n nexus -p '{"metadata":{"finalizers":null}}' --type=merge || true
+      kubectl delete "$pvc" -n nexus --ignore-not-found
+    done
 
-    # kubectl delete s3bucketclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-
-    # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-
-    # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # sleep 600
+    # Vault
+    kubectl patch statefulset vault -n {{ fact_vault_namespace }} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+    kubectl delete statefulset vault -n {{ fact_vault_namespace }} --ignore-not-found=true
+    for pvc in $(kubectl get pvc -n {{ fact_vault_namespace }} -o name); do
+      kubectl patch "$pvc" -n {{ fact_vault_namespace }} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+      kubectl delete "$pvc" -n {{ fact_vault_namespace }} --ignore-not-found
+    done
   args:
     executable: /bin/bash
   ignore_errors: true
