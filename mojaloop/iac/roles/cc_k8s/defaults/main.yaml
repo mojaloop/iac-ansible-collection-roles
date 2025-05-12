@@ -154,7 +154,7 @@ argocd_default:
           gitlab_version: "v0.3.0"
           vault_config_version: "v0.1.0"
           sc_postgres_version: "v0.2.0"
-          sc_bootstrap_version: "v0.3.0"
+          sc_bootstrap_version: "v0.3.0-pr70-14927767025"
           sc_nboperatorinstall_version: "v0.1.0"
           nb_config_version: "v0.1.0"
         rook_ceph_bucket_config:
