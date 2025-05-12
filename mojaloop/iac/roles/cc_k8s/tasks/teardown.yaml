@@ -3,7 +3,7 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     # Patch argo applications to remove syncPolicy
     kubectl patch application -n  {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    for app in capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring; do
+    for app in dns-utils capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring; do
       kubectl patch application -n  {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     done
 
