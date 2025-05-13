@@ -6,7 +6,7 @@
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
 
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    kubectl delete awsroute53record -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} ceph-objectstore-rgw --ignore-not-found=true
+    kubectl delete awsroute53record -n ext-dns ceph-objectstore-rgw --ignore-not-found=true
 
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
