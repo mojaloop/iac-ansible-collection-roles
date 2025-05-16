@@ -506,7 +506,7 @@ argocd_default:
       sub_apps:
         gitlab:
           app_name: "gitlab"
-          helm_version: "8.3.0"
+          helm_version: "9.0.0"
           namespace: "gitlab"
           public_ingress_access_domain: "true"
           oidc_secret: "gitlab-oidc-secret"
