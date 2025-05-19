@@ -72,7 +72,7 @@
     sleep 30
 
 
-- name: Remove netbird operator resources
+- name: Remove netbird resources
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application netbird-post-config --ignore-not-found > /dev/null 2>&1 &
