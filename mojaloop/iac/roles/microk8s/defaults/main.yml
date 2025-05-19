@@ -58,3 +58,4 @@ kubernetes_oidc_username_prefix: "oidc:"
 kubernetes_oidc_username_claim: "username"
 docker_registry_mirrors: ["docker.io", "ghcr.io", "quay.io", "k8s.gcr.io"]
 dns_bind_address: "169.254.20.10"
+max_pods_per_node: 110

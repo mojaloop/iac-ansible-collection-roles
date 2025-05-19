@@ -47,7 +47,9 @@
   ansible.builtin.blockinfile:
     dest: /var/snap/microk8s/current/args/kubelet
     marker: "# {mark} ANSIBLE MANAGED: microk8s kubelet config"
-    content: "--allowed-unsafe-sysctls=net.ipv4.ip_forward"
+    content: |
+      --allowed-unsafe-sysctls=net.ipv4.ip_forward"
+      --max-pods={{ max_pods_per_node }}
 
 - name: Wait for microk8s to be ready
   become: true
