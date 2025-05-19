@@ -16,6 +16,8 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     for resource in \
       "xgitlabpostconfig" \
+      "XProject" \
+      "AccessToken" \
       "workspaces.tf.upbound.io" \
       "providerconfigs.gitlab.crossplane.io"; do
       kubectl get "$resource" -n gitlab -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
