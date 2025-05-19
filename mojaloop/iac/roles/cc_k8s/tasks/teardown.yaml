@@ -1,36 +1,155 @@
-- name: Delete resources before infra teardown
+
+- name: Disable argocd apps automated sync
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-
-    kubectl patch application -n {{ fact_argo_merged_config.namespace }} dns-utils --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    kubectl delete awsroute53record -n ext-dns ceph-objectstore-rgw --ignore-not-found=true
-
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} netbird-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    # kubectl delete workspaces.tf.upbound.io vault-{{ dynamic_secret_platform }}-post-config
-    # kubectl delete workspaces.tf.upbound.io vault-post-config
-    # kubectl delete rdsaurorareplicaclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-
-    # kubectl delete s3bucketclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
-
-    # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
-
-    # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
-    # sleep 600
+    for app in dns-utils capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring netbird-operator; do
+      kubectl patch application -n {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    done
   args:
     executable: /bin/bash
   ignore_errors: true
+
+- name: Remove gitlab resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for resource in \
+      "xgitlabpostconfig" \
+      "workspaces.tf.upbound.io" \
+      "providerconfigs.gitlab.crossplane.io"; do
+      kubectl get "$resource" -n gitlab -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n gitlab --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+    kubectl delete -n argocd application gitlab-post-config --ignore-not-found
+    kubectl delete -n argocd application gitlab --ignore-not-found
+    kubectl get workspaces.tf.upbound.io -n gitlab -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+    xargs -r -I{} kubectl patch workspaces.tf.upbound.io {} -n gitlab --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    kubectl delete -n argocd application gitlab-pre --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove monitoring resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application monitoring-post-config --ignore-not-found
+    kubectl delete -n argocd application monitoring --ignore-not-found
+    kubectl delete -n argocd application monitoring-pre --ignore-not-found
+    for pvc in $(kubectl get pvc -n monitoring -o name 2>/dev/null); do
+    echo "🔧 Patching and deleting $pvc..."
+    kubectl patch "$pvc" -n monitoring --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl delete "$pvc" -n monitoring --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove nexus resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application nexus-post-config --ignore-not-found
+    kubectl delete -n argocd application nexus --ignore-not-found
+    kubectl delete -n argocd application nexus-pre --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove netbird resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for resource in \
+      "XNBOperatorBootstrap" \
+      "XOperatorPostConfig" \
+      "netbirdpostconfig" \
+      "xnetbirdpostconfig" \
+      "providerconfigs.netbird.crossplane.io"; do
+      kubectl get "$resource" -n netbird -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+       xargs -r -I{} kubectl patch "$resource" {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+
+    kubectl delete -n argocd application netbird-operator --ignore-not-found > /dev/null 2>&1 &
+    kubectl delete -n argocd application netbird-post-config --ignore-not-found
+    kubectl delete -n argocd application netbird --ignore-not-found
+    kubectl get workspaces.tf.upbound.io -n netbird -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+    xargs -r -I{} kubectl patch workspaces.tf.upbound.io {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    kubectl delete -n argocd application netbird-pre --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove dns resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete awsroute53record -n ext-dns ceph-objectstore-rgw --ignore-not-found=true
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove zitadel resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get workspaces.tf.upbound.io -n zitadel -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+    xargs -r -I{} kubectl patch workspaces.tf.upbound.io {} -n zitadel --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    kubectl delete -n argocd application zitadel-post-config --ignore-not-found
+    kubectl delete -n argocd application zitadel --ignore-not-found
+    kubectl delete -n argocd application zitadel-pre --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove vault resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application vault-post-config --ignore-not-found
+    kubectl delete -n argocd application vault --ignore-not-found 2>&1 &
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove storage resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get XObjectSyncer -n storage -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+    xargs -r -I{} kubectl patch XObjectSyncer {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    kubectl delete -n argocd application storage-post-config --ignore-not-found
+    kubectl delete -n argocd application storage --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+# - name: Delete resources before infra teardown
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     kubectl patch application -n {{ fact_argo_merged_config.namespace }} capi --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+
+#     kubectl patch application -n {{ fact_argo_merged_config.namespace }} dns-utils --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     kubectl delete awsroute53record -n ext-dns ceph-objectstore-rgw --ignore-not-found=true
+
+#     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} vault-post-config --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} gitlab-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} netbird-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     # kubectl patch application -n {{ fact_argo_merged_config.namespace }} zitadel-pre --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+#     # kubectl delete workspaces.tf.upbound.io vault-{{ dynamic_secret_platform }}-post-config
+#     # kubectl delete workspaces.tf.upbound.io vault-post-config
+#     # kubectl delete rdsaurorareplicaclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsauroradbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsdbclusterclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+
+#     # kubectl delete s3bucketclaims.infitx.org  -n {{ fact_argo_merged_config.apps['gitlab'].sub_apps['gitlab'].namespace }} --ignore-not-found=true --all
+
+#     # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].namespace }} --ignore-not-found=true --all
+
+#     # kubectl delete rdsaurorareplicaclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsauroradbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
+#     # kubectl delete rdsdbclusterclaims.infitx.org -n {{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].namespace }} --ignore-not-found=true --all
+#     # sleep 600
+#   args:
+#     executable: /bin/bash
+#   ignore_errors: true
 
 - name: Delete sc cluster before infra teardown
   shell: |
