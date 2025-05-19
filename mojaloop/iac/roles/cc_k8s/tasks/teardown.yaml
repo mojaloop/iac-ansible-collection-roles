@@ -3,7 +3,8 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl patch application -n {{ fact_argo_merged_config.namespace }} root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    for app in dns-utils capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab nexus monitoring netbird-operator; do
+    for app in dns-utils capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab gitlab-post-config nexus \
+    monitoring-pre monitoring monitoring-post-config netbird-operator storage-post-config storage; do
       kubectl patch application -n {{ fact_argo_merged_config.namespace }} $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     done
   args:
