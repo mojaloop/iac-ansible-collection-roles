@@ -1,11 +1,18 @@
 
-- name: unjoin the node from netbird
+- name: Stop netbird service
   become: true
-  shell: |
-    netbird down
+  ansible.builtin.systemd:
+    name: netbird
+    state: stopped
+    enabled: false
 
-  
-- name: remove netbird package
+- name: Remove Netbird config file
+  become: true
+  ansible.builtin.file:
+    path: /etc/netbird/config.json
+    state: absent
+
+- name: Remove Netbird and WireGuard packages
   become: true
   package:
     name:
