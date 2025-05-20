@@ -159,6 +159,7 @@ argocd_default:
           sc_nboperatorinstall_version: "v0.1.0"
           nb_config_version: "v0.1.0"
           argocd_config_version: "v0.1.0-pr62-15117476143"
+          zitadel_config_version: "v0.1.0-pr62-15117476143"
         rook_ceph_bucket_config:
           public_ingress_access_domain: "false"
           app_name: "rook-ceph-bucket"
