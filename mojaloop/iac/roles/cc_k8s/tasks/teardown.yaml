@@ -11,7 +11,7 @@
     executable: /bin/bash
   ignore_errors: true
 
-- name: Remove gitlab resources
+- name: Remove gitlab post-config resources
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application gitlab-post-config --ignore-not-found  2>&1 &
@@ -25,6 +25,13 @@
       xargs -I{} kubectl patch "$resource" {} -n gitlab --type=merge -p '{"metadata":{"finalizers":[]}}' || true
     done
     sleep 60
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove gitlab and pre resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application gitlab --ignore-not-found
     kubectl delete -n argocd application gitlab-pre --ignore-not-found 2>&1 &
     kubectl get workspaces.tf.upbound.io -n gitlab -o json 2>/dev/null | jq -r '.items[].metadata.name' | xargs -r -I{} kubectl patch workspaces.tf.upbound.io {} -n gitlab --type=merge -p '{"metadata":{"finalizers":[]}}' || true
@@ -71,7 +78,6 @@
        xargs -r -I{} kubectl patch "$resource" {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
     done
     sleep 30
-
 
 - name: Remove netbird resources
   shell: |
