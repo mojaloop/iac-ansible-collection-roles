@@ -1,4 +1,9 @@
 # for on premise installations
+- name: Stop microk8s
+  become: true
+  ansible.builtin.command: "microk8s stop"
+  ignore_errors: true
+
 - name: Reset microk8s
   become: true
   ansible.builtin.command: "microk8s reset"
