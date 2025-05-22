@@ -14,6 +14,7 @@
 - name: Remove gitlab post-config resources
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete rdscluster -n gitlab --ignore-not-found=true --all
     kubectl delete -n argocd application gitlab-post-config --ignore-not-found  2>&1 &
     for resource in \
       "xgitlabpostconfig" \
@@ -82,6 +83,7 @@
 - name: Remove netbird resources
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete rdscluster -n netbird --ignore-not-found=true --all
     kubectl delete -n argocd application netbird-post-config --ignore-not-found > /dev/null 2>&1 &
     for resource in \
       "XNBOperatorBootstrap" \
@@ -113,6 +115,7 @@
 - name: Remove zitadel resources
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete rdscluster -n zitadel --ignore-not-found=true --all
     kubectl get workspaces.tf.upbound.io -n zitadel -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
     xargs -r -I{} kubectl patch workspaces.tf.upbound.io {} -n zitadel --type=merge -p '{"metadata":{"finalizers":[]}}' || true
     kubectl delete -n argocd application zitadel-post-config --ignore-not-found
