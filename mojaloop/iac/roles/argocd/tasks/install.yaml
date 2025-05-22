@@ -1,0 +1,120 @@
+#Create a temporary directory for storing values files or other config
+- name: install kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0700
+
+- name: install kustomize
+  get_url:
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_kustomize.v{{ kustomize_version }}_linux_amd64
+    dest: /usr/local/bin/kustomize
+    mode: 0700
+
+- name: Create temporary directory for argo boot
+  tempfile:
+    state: directory
+    suffix: values
+  register: argotmpvalues
+
+- name: Create temporary directory for external secrets
+  tempfile:
+    state: directory
+    suffix: values
+  register: extsectmpvalues
+
+- name: "create directory for kubeconfig"
+  file:
+    path: "{{ kubeconfig_location }}"
+    state: directory
+    recurse: yes
+
+- name: copy kubeconfig
+  copy:
+    src: "{{ kubeconfig_local_location }}/kubeconfig"
+    dest: "{{ kubeconfig_location }}/kubeconfig"
+
+- name: apply node labels
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig label --overwrite nodes {{ item.node_name }} {% for labels in lookup('dict', item.node_labels, wantlist=True) %} {{ labels.key }}={{ labels.value }}{% endfor %}
+  loop: "{{ node_pool_labels }}"
+  when: node_pool_labels is defined
+
+- name: apply node taints
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
+  loop: "{{ node_pool_taints }}"
+  when: node_pool_taints is defined
+
+- name: Upload ext secrets bootstrap files
+  template:
+    src: "templates/{{ item }}.yaml.j2"
+    dest: "{{ extsectmpvalues.path }}/{{ item }}.yaml"
+  with_items:
+    - external-secretstore
+
+- name: Upload argo bootstrap files
+  template:
+    src: "templates/{{ item }}.yaml.j2"
+    dest: "{{ argotmpvalues.path }}/{{ item }}.yaml"
+  with_items:
+    - argocd-cm-patch
+    - argocd-rbac-cm-patch
+    - argo-gitlab
+    - argo-root-app
+    - argo-service-acct-patch
+    - argocd-lovely-plugin
+    - kustomization
+    - namespace
+    - vault-service-account-etc
+    - vault-env
+    #- netclient
+    - argo-oidc-secrets
+    - argocd-server-patch
+    - argocd-cmd-params-cm-patch
+    - k8s-oidc-rbac
+    - coredns-nodecache
+    #- coredns-values
+
+# - name: Install coredns
+#   shell: |
+#     helm repo add coredns https://coredns.github.io/helm
+#     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install coredns coredns/coredns --version {{ coredns_version }} -n kube-system --create-namespace -f {{ argotmpvalues.path }}/coredns-values.yaml
+
+- name: Install coredns-nodecache
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/coredns-nodecache.yaml
+  when: install_coredns | bool
+
+- name: Install external-secrets
+  shell: |
+    helm repo add external-secrets https://charts.external-secrets.io
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
+
+- name: Try clustersecretstore create until successful
+  shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
+  register: clustersecretstore
+  until: clustersecretstore is not failed
+  retries: 30
+  delay: 5
+
+- name: Install ArgoCD
+  shell: |
+    kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argo-root-app.yaml
+
+- name: copy kubeconfig for oidc and add credentials.
+  shell: |
+    cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/oidc-kubeconfig
+    export KUBECONFIG={{ kubeconfig_location }}/oidc-kubeconfig
+    kubectl config delete-user admin
+    kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
+    kubectl config set-context $(kubectl config current-context) --user=oidc
+  when: kubernetes_oidc_enabled | bool
+
+- name: Fetch oidc-kubeconfig
+  fetch:
+    src: "{{ kubeconfig_location }}/oidc-kubeconfig"
+    dest: "{{ kubeconfig_local_location }}/oidc-kubeconfig"
+    flat: yes
