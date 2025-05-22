@@ -1,3 +1,4 @@
+teardown: false
 argocd_version: "2.13.1"
 argocd_lovely_plugin_version: "0.18.0"
 repo_url: "https://localhost/repo.git"

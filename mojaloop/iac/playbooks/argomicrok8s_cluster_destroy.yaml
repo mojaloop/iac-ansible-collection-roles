@@ -1,3 +1,10 @@
+- hosts: "{{ groups['bastion'] | sort | first }}"
+  become: true
+  roles:
+    - role: mojaloop.iac.argocd
+      vars:
+        teardown: true
+
 - hosts: agent
   become: true
   vars:
