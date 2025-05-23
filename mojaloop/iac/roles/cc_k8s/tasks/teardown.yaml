@@ -138,8 +138,8 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application storage-post-config --ignore-not-found 2>&1 &
-    kubectl get XObjectSyncer -n storage -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
-    xargs -r -I{} kubectl patch XObjectSyncer {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    kubectl get XObjectSyncer -n {{ fact_storage_namespace }} -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+    xargs -r -I{} kubectl patch XObjectSyncer {} -n {{ fact_storage_namespace }} --type=merge -p '{"metadata":{"finalizers":[]}}' || true
     sleep 30
     for CRD in $(kubectl get crd -n {{ fact_storage_namespace }} | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n {{ fact_storage_namespace }} "$CRD" -o name | xargs -I {} kubectl patch -n {{ fact_storage_namespace }} {} --type merge -p '{"metadata":{"finalizers": []}}';done
     kubectl delete -n argocd application storage --ignore-not-found 2>&1 &

@@ -2,19 +2,45 @@
 - name: Disable argocd apps automated sync
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl patch application -n argocd root-deployer --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
-    for app in dns-utils capi-post-config capi vault vault-post-config gitlab-pre netbird-pre zitadel-pre gitlab gitlab-post-config nexus \
-    monitoring-pre monitoring monitoring-post-config netbird-operator storage-post-config storage; do
+    kubectl patch application -n argocd root-app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    for app in vault-app vault vault-config-operator monitoring-app monitoring-install monitoring-post-config moja storage-app
+    ; do
       kubectl patch application -n argocd $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
     done
   args:
     executable: /bin/bash
   ignore_errors: true
 
-- name: Remove vault resources
+- name: Remove mojaloop resources
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application vault-post-config --ignore-not-found
+    kubectl delete -n argocd application moja --ignore-not-found 2>&1 &
+    for pvc in $(kubectl get pvc -n mojaloop -o name 2>/dev/null); do
+    kubectl patch "$pvc" -n mojaloop --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl delete "$pvc" -n mojaloop --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove monitoring resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application monitoring-post-config --ignore-not-found
+    kubectl delete -n argocd application monitoring-install --ignore-not-found 2>&1 &
+    for pvc in $(kubectl get pvc -n monitoring -o name 2>/dev/null); do
+    kubectl patch "$pvc" -n monitoring --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl delete "$pvc" -n monitoring --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove vault resources
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application vault-config-operator --ignore-not-found
+    kubectl delete -n argocd application vault-pki-app --ignore-not-found
     kubectl delete -n argocd application vault --ignore-not-found 2>&1 &
   args:
     executable: /bin/bash
@@ -23,12 +49,9 @@
 - name: remove storage resources
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application storage-post-config --ignore-not-found 2>&1 &
-    kubectl get XObjectSyncer -n storage -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
-    xargs -r -I{} kubectl patch XObjectSyncer {} -n netbird --type=merge -p '{"metadata":{"finalizers":[]}}' || true
-    sleep 30
+    kubectl delete -n argocd application storage-app--ignore-not-found 2>&1 &
     for CRD in $(kubectl get crd -n storage | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n storage "$CRD" -o name | xargs -I {} kubectl patch -n storage {} --type merge -p '{"metadata":{"finalizers": []}}';done
-    kubectl delete -n argocd application storage --ignore-not-found 2>&1 &
+    sleep 60
   args:
     executable: /bin/bash
   ignore_errors: true
