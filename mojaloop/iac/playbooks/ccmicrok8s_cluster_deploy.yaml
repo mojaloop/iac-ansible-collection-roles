@@ -24,6 +24,14 @@
         microk8s_group_workers: "agent"
         add_workers_to_hostfile: true
 
+- hosts: master
+  become: true
+  tasks:
+    - name: patch calico
+      ansible.builtin.import_role:
+        name: mojaloop.iac.microk8s
+        tasks_from: patch-calico
+
 - hosts: agent
   become: true
   roles:

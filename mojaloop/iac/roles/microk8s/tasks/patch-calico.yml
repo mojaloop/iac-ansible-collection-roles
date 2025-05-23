@@ -1,0 +1,4 @@
+- name: Patch calico
+  become: true
+  ansible.builtin.shell: |
+    microk8s kubectl patch FelixConfiguration/default --type merge -p '{"spec":{"xdpEnabled":false}}'
