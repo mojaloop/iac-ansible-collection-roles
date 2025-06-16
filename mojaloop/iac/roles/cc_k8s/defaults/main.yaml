@@ -233,6 +233,10 @@ argocd_default:
           object_storage_class_name: "bucket"
         storage_aws_provider:
           csi_kubelet_dir_path: "/var/lib/kubelet"
+        kiali:
+          sync_wave: "'-10'"
+          helm_version: "2.11.0"
+          public_ingress_access_domain: "false"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
