@@ -1,0 +1,32 @@
+configuration:
+  logLevel: debug
+  backupStorageLocation:
+    - name: control-center-backup
+      provider: aws
+      bucket: control-center-backup-ccinfra04
+      default: true
+      accessMode: ReadWrite
+      credential:
+        name: cloud-credentials
+        key: cloud
+      config:
+        region: eu-west-1
+
+  volumeSnapshotLocation: []
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.9.2
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+      - mountPath: /credentials
+        name: cloud-credentials
+
+credentials:
+  useSecret: true
+  existingSecret: cloud-credentials
+
+annotations:
+  secret.reloader.stakater.com/reload: cloud-credentials

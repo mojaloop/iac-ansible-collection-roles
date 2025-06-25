@@ -1,0 +1,33 @@
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: velero:velero.io/BackupStorageLocation:velero/control-center-backup
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"velero.io/v1","kind":"BackupStorageLocation","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"velero:velero.io/BackupStorageLocation:velero/control-center-backup"},"labels":{"app.kubernetes.io/instance":"velero","app.kubernetes.io/managed-by":"Helm","app.kubernetes.io/name":"velero","helm.sh/chart":"velero-10.0.1"},"name":"control-center-backup","namespace":"velero"},"spec":{"accessMode":"ReadWrite","config":{"region":"eu-west-1"},"credential":{"key":"cloud","name":"cloud-credentials"},"default":true,"objectStorage":{"bucket":"control-center-backup-ccinfra04"},"provider":"aws"}}
+  creationTimestamp: "2025-06-16T12:33:57Z"
+  generation: 2017
+  labels:
+    app.kubernetes.io/instance: velero
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: velero
+    helm.sh/chart: velero-10.0.1
+  name: control-center-backup
+  namespace: velero
+  resourceVersion: "2496089"
+  uid: 94df7093-92cf-43a1-98d0-5a2052b9176d
+spec:
+  accessMode: ReadWrite
+  config:
+    region: eu-west-1
+  credential:
+    key: cloud
+    name: cloud-credentials
+  default: true
+  objectStorage:
+    bucket: control-center-backup-ccinfra04
+  provider: aws
+status:
+  lastSyncedTime: "2025-06-17T09:32:15Z"
+  lastValidationTime: "2025-06-17T09:32:44Z"
+  phase: Available

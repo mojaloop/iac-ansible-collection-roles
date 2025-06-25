@@ -1,0 +1,16 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: full-restore-excluding-velero
+  namespace: velero
+spec:
+  backupName: controlcenter-backup-20250624160012
+  includedResources:
+    - applications.argoproj.io
+    - applicationset.argoproj.io
+    - applicationset.argoproj.io/v1alpha1
+    - applicationset.argoproj.io/v1alpha1/applicationsets
+    - applicationset.argoproj.io/v1alpha1/applicationsettemplates
+    - applicationset.argoproj.io/v1alpha1/applicationsettemplates/applicationsettemplates
+    - applicationset.argoproj.io/v1alpha1/applicationsettemplates/applicationsettemplates/applicationsettemplates
+    - applicationset.argoproj.io/v1alpha1/applicationsettemplates/applicationsettemplates/applicationsettemplates/applicationsettemplates
