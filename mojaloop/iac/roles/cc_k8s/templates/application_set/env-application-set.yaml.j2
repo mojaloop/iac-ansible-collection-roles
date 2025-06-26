@@ -91,6 +91,8 @@ spec:
               value: "{{ '{{' }} cat \"int.\" .env | nospace {{ '}}'}}"
             - name: "domain"
               value: "{{ '{{' }} .domain {{ '}}'}}"
+            - name: "hyphenated_domain"
+              value: "{{ '{{' }} replace \".\" \"-\" .domain {{ '}}' }}"
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
             - name: "managed_services_env_cidr"
