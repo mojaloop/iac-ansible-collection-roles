@@ -102,6 +102,9 @@ spec:
             - name: "subnet_list"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].subnet_list }}"
 
+            - name: "azs"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].rdbms_azs }}"
+
             - name: "cloud_region"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard_common_mongodb_documentdb_provider'].cloud_region }}"
 
