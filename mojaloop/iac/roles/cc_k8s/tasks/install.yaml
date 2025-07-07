@@ -212,7 +212,7 @@
     cp {{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig .
     cp {{ kubeconfig_location }}/README.md .
     git add {{ cluster_name }}-oidc-kubeconfig README.md
-    git commit -m "Push existing oidc kubeconfig and readme to GitLab"
+    git commit -m "Push existing {{ cluster_name }} oidc kubeconfig and readme to GitLab"
     git push
 
 - name: copy env vars for push to cluster script
