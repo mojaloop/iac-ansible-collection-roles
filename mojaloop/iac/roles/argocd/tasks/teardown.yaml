@@ -31,6 +31,7 @@
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application mcm-app --ignore-not-found 2>&1 &
+    kubectl delete -n argocd application mcm-pre-app --ignore-not-found 2>&1 &
     kubectl patch KubernetesAuthEngineRole kubernetes-mcm-role -n mcm --type=merge -p '{"metadata":{"finalizers":null}}' || true
     kubectl patch policy.redhatcop.redhat.io mcm-policy -n mcm --type=merge -p '{"metadata":{"finalizers":null}}' || true
   args:
@@ -57,6 +58,11 @@
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application mojaloop-stateful-resources-app --ignore-not-found 2>&1 &
+    for resource in \
+      "kafkatopic"; do
+      kubectl get "$resource" -n vault -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
     kubectl delete -n argocd application common-stateful-resources-app --ignore-not-found
     kubectl delete -n argocd application stateful-resources-operators-app --ignore-not-found
     for resource in \
@@ -88,15 +94,15 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application vault-config-operator --ignore-not-found
     kubectl delete -n argocd application vault-pki-app --ignore-not-found 2>&1 &
-    for resource in \
-      "PKISecretEngineConfig" \
-      "PKISecretEngineRole" \
-      "policy.redhatcop.redhat.io" \
-      "KubernetesAuthEngineRole" \
-      "SecretEngineMount"; do
-      kubectl get "$resource" -n vault -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
-      xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
-    done
+      for resource in \
+        "PKISecretEngineConfig" \
+        "PKISecretEngineRole" \
+        "policy.redhatcop.redhat.io" \
+        "KubernetesAuthEngineRole" \
+        "SecretEngineMount"; do
+        kubectl get "$resource" -n vault -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+        xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+      done
     kubectl delete -n argocd application vault-app --ignore-not-found
     for pvc in $(kubectl get pvc -n vault -o name 2>/dev/null); do
     kubectl patch "$pvc" -n vault --type=merge -p '{"metadata":{"finalizers":null}}' || true
