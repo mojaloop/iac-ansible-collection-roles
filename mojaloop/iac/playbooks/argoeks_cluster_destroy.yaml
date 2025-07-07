@@ -1,7 +1,7 @@
 # add eks related clean up steps
-
-- hosts: bastion
+- hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
-  vars:
-    teardown: true
-  roles: []
+  roles:
+    - role: mojaloop.iac.argocd
+      vars:
+        teardown: true
