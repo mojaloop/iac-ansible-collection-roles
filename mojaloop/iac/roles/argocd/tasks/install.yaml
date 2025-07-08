@@ -17,7 +17,7 @@
   ansible.builtin.get_url:
     url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
     dest: /tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
-    mode: '0644'
+    mode: "0644"
 
 - name: Extract kustomize binary
   ansible.builtin.unarchive:
@@ -29,7 +29,7 @@
   ansible.builtin.copy:
     src: /tmp/kustomize
     dest: /usr/local/bin/kustomize
-    mode: '0755'
+    mode: "0755"
     remote_src: yes
 
 - name: Create temporary directory for argo boot
@@ -72,28 +72,28 @@
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ extsectmpvalues.path }}/{{ item }}.yaml"
   with_items:
-  - external-secretstore
+    - external-secretstore
 
 - name: Upload argo bootstrap files
   ansible.builtin.template:
     src: "templates/{{ item }}.yaml.j2"
     dest: "{{ argotmpvalues.path }}/{{ item }}.yaml"
   with_items:
-  - argocd-cm-patch
-  - argocd-rbac-cm-patch
-  - argo-gitlab
-  - argo-root-app
-  - argo-service-acct-patch
-  - argocd-lovely-plugin
-  - kustomization
-  - namespace
-  - vault-service-account-etc
-  - vault-env
-  - argo-oidc-secrets
-  - argocd-server-patch
-  - argocd-cmd-params-cm-patch
-  - k8s-oidc-rbac
-  - coredns-nodecache
+    - argocd-cm-patch
+    - argocd-rbac-cm-patch
+    - argo-gitlab
+    - argo-root-app
+    - argo-service-acct-patch
+    - argocd-lovely-plugin
+    - kustomization
+    - namespace
+    - vault-service-account-etc
+    - vault-env
+    - argo-oidc-secrets
+    - argocd-server-patch
+    - argocd-cmd-params-cm-patch
+    - k8s-oidc-rbac
+    - coredns-nodecache
 
 - name: Install coredns-nodecache
   ansible.builtin.shell: |
@@ -125,6 +125,7 @@
     kubectl config delete-user admin
     kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
     kubectl config set-context $(kubectl config current-context) --user=oidc
+    kubectl config rename-context microk8s {{ cluster_name }}
   when: kubernetes_oidc_enabled | bool
 
 - name: Fetch {{ cluster_name }}-oidc-kubeconfig
