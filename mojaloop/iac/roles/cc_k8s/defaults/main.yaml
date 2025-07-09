@@ -741,3 +741,7 @@ argocd_default:
           app_name: "rook-ceph"
           namespace: "rook-ceph"
           version: "1.16.3"
+        openebs:
+          app_name: "openebs"
+          namespace: "openebs"
+          version: "4.3.2"
