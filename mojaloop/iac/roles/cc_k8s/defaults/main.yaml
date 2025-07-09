@@ -745,4 +745,4 @@ argocd_default:
           app_name: "openebs"
           namespace: "openebs"
           sync_wave: "'-14'"
-          helm_version: "4.3.2"
+          helm_version: "4.1.3"
