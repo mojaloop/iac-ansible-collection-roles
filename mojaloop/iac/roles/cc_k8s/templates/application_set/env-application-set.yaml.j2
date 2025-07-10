@@ -95,10 +95,6 @@ spec:
               value: "{{ '{{' }} replace \".\" \"-\" .domain {{ '}}' }}"
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
-            - name: "managed_services_env_cidr"
-              value: "{{ '{{' }} .managed_vpc_cidr {{ '}}'}}"
-            - name: "managed_svc_enabled"
-              value: "{{ '{{' }} .managed_svc_enabled {{ '}}'}}"
             - name: "k8s_cluster_type"
               value: "{{ '{{' }} .k8s_cluster_type {{ '}}'}}"
             - name: "argocd_namespace"
@@ -195,6 +191,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
             - name: "storage_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['storage'].namespace }}"
+            - name: "cc_ports"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
+            - name: "sc_ports"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].sc_ports }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
