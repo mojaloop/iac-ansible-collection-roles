@@ -147,9 +147,6 @@
 - name: remove other apps
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application crossplane-packages-app --ignore-not-found
-    kubectl delete -n argocd application crossplane-providers-app --ignore-not-found
-    kubectl delete -n argocd application crossplane-app --ignore-not-found
     kubectl delete -n argocd application kyverno --ignore-not-found
     kubectl delete -n argocd application external-dns-app --ignore-not-found
     kubectl delete -n argocd application istio-app --ignore-not-found
