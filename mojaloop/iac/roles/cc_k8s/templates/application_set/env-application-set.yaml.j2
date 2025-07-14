@@ -195,6 +195,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
             - name: "sc_ports"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].sc_ports }}"
+            - name: "cc_network_resource_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
+            - name: "sc_network_resource_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].sc_network_resource_group }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
