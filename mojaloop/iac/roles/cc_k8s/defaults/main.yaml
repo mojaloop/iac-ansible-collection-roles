@@ -486,7 +486,7 @@ argocd_default:
           sync_wave: "'3'"
         netbird_env_access_control_policies:
           cc_ports: "443,16443"
-          sc_ports: "3306,6443,27017,3300,6789,443,80"
+          sc_ports: "3306,6443,27017,3300,6789,6800-7299,443,80"
     nexus:
       argocd_app_name: "nexus"
       app_namespace: "argocd"
