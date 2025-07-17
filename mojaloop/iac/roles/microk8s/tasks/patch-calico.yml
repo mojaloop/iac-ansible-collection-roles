@@ -2,3 +2,4 @@
   become: true
   ansible.builtin.shell: |
     microk8s kubectl patch FelixConfiguration/default --type merge -p '{"spec":{"xdpEnabled":false}}'
+    microk8s kubectl patch FelixConfiguration/default --type='json' -p='[{"op": "add", "path": "/spec/workloadSourceSpoofing", "value": "Any"}]'
