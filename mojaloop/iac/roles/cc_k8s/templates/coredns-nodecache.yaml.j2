@@ -79,7 +79,7 @@ data:
           rcode NOERROR
         }
         forward . /etc/resolv.conf {
-          force_tcp
+          prefer_udp
         }
         prometheus :9253
         }
@@ -96,7 +96,7 @@ data:
           rcode NOERROR
         }
         forward . /etc/resolv.conf {
-          force_tcp
+          prefer_udp
         }
         prometheus :9253
         }
@@ -213,7 +213,7 @@ data:
           rcode NOERROR
         }
         forward . /etc/resolv.conf {
-          force_tcp
+          prefer_udp
         }
         prometheus :9254
         }
@@ -229,7 +229,7 @@ data:
           rcode NOERROR
         }
         forward . /etc/resolv.conf {
-          force_tcp
+          prefer_udp
         }
         prometheus :9254
         }
