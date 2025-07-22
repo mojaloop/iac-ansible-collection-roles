@@ -11,7 +11,7 @@ helmfile_version: "1.0.0"
 helm_version: "3.17.3"
 cluster_cloud_provider: "aws"
 dynamic_secret_platform: "aws"
-netbird_build_server_client_version: "0.39.2"
+netbird_build_server_client_version: "0.51.1"
 install_coredns: true
 coredns_localcache_version: "1.12.1"
 dns_bind_address: "169.254.20.10"
