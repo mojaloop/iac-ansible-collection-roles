@@ -111,7 +111,6 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ extsectmpvalues.path }}/netbird-setupkey.yaml
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig patch deployment external-secrets -n {{ external_secrets_namespace }} --patch-file {{ extsectmpvalues.path }}/external-secrets-netbird-patch.yaml
-  when: netbird_sidecar_enabled | default(false) | bool
 
 - name: Try clustersecretstore create until successful
   ansible.builtin.shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
