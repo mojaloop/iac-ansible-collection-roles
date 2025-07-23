@@ -7,13 +7,11 @@
   become: true
   roles:
     - mojaloop.iac.k8s_node_common
-    - mojaloop.iac.netbird_client
 
 - hosts: agent
   become: true
   roles:
     - mojaloop.iac.k8s_node_common
-    - mojaloop.iac.netbird_client
 
 - hosts: master
   become: true
