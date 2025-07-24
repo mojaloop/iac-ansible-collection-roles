@@ -117,6 +117,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].tempo_bucket_storage_size }}"
             - name: "percona_bucket_storage_size"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].percona_bucket_storage_size }}"
+            - name: "velero_bucket_storage_size"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].velero_bucket_storage_size }}"
             - name: "object_storage_provider"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].object_storage_provider }}"
             - name: "sc_provider_config_name"
