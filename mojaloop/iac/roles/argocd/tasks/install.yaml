@@ -113,11 +113,11 @@
   retries: 30
   delay: 5
 
-- name: Install ArgoCD
-  ansible.builtin.shell: |
-    kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argo-root-app.yaml
+# - name: Install ArgoCD
+#   ansible.builtin.shell: |
+#     kustomize build {{ argotmpvalues.path }} > {{ argotmpvalues.path }}/argocd-deploy.yaml
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argocd-deploy.yaml
+#     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/argo-root-app.yaml
 
 - name: copy kubeconfig for oidc and add credentials.
   ansible.builtin.shell: |
