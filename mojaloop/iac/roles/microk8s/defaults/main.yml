@@ -67,3 +67,5 @@ docker_registry_mirrors: ["docker.io", "ghcr.io", "quay.io", "k8s.gcr.io"]
 dns_bind_address: "169.254.20.10"
 max_pods_per_node: 110
 cluster_name: "test-cluster"
+docker_registry_username: "docker-reader"
+docker_registry_password: "ReadOnlyP@ssw0rd123"
