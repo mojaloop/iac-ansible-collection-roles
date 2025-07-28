@@ -95,10 +95,6 @@ spec:
               value: "{{ '{{' }} replace \".\" \"-\" .domain {{ '}}' }}"
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
-            - name: "managed_services_env_cidr"
-              value: "{{ '{{' }} .managed_vpc_cidr {{ '}}'}}"
-            - name: "managed_svc_enabled"
-              value: "{{ '{{' }} .managed_svc_enabled {{ '}}'}}"
             - name: "k8s_cluster_type"
               value: "{{ '{{' }} .k8s_cluster_type {{ '}}'}}"
             - name: "argocd_namespace"
@@ -123,7 +119,6 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].object_storage_provider }}"
             - name: "sc_provider_config_name"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
-
             - name: "cloud_region"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
             - name: "common_platform_db_secret_name"
@@ -142,8 +137,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].preconfig_output_secret }}"
             - name: "cc_network_resource_group"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
-            - name: "sc_network_resource_group"
-              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].sc_network_resource_group }}"
+            - name: "cc_ports"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
@@ -197,6 +192,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
             - name: "storage_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['storage'].namespace }}"
+            - name: "sc_ports"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].sc_ports }}"
+            - name: "sc_network_resource_group"
+              value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].sc_network_resource_group }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'
