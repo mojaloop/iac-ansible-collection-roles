@@ -2,3 +2,4 @@ server = "https://{{ item }}"
 
 [host."https://{{ registry_mirror_fqdn }}"]
 capabilities = ["pull", "resolve"]
+authorization = "Basic {{ (docker_registry_username + ':' + docker_registry_password) | b64encode }}"
