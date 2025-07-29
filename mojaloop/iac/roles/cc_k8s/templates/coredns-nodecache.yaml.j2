@@ -70,8 +70,10 @@ data:
           prefer_udp
         }
         {% else %}
-        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+        template IN A {
+          match "^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
           answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+          fallthrough
         }
         {% endif %}
         {% endif %}
