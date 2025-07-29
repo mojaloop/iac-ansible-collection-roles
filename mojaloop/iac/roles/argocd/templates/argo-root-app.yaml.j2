@@ -16,13 +16,12 @@ spec:
     namespace: argocd
     server: https://kubernetes.default.svc
   project: default
+{% if automated_sync %}
   syncPolicy:
-  {% if automated_sync %}
     automated:
       prune: true
       selfHeal: true
       allowEmpty: true
-  {% endif %}
     retry:
       limit: 5
       backoff:
@@ -33,3 +32,16 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=background
       - PruneLast=true
+{% else %}
+  syncPolicy:
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
+{% endif %}
