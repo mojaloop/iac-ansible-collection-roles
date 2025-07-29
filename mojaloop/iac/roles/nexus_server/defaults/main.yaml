@@ -4,7 +4,7 @@ readonly_user_name: "docker-reader"
 readonly_user:
   username: "{{ readonly_user_name }}"
   password: "{{ readonly_user_password | default('ReadOnlyP@ssw0rd123') }}"
-  email: "docker-reader@localhost"
+  email: "docker-reader@example.com"
   first_name: "Docker"
   last_name: "Reader"
   status: "active"
