@@ -381,4 +381,11 @@ data:
           end
         end
 
+        -- Custom Mojaloop ory resources status check
+        if obj.status ~= nil and obj.status.state == "VALIDATED" then
+          health_status.status = "Healthy"
+          health_status.message = "State is VALIDATED"
+          return health_status
+        end
+
         return health_status
