@@ -33,15 +33,5 @@ spec:
       - PrunePropagationPolicy=background
       - PruneLast=true
 {% else %}
-  syncPolicy:
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        maxDuration: 3m0s
-        factor: 2
-    syncOptions:
-      - CreateNamespace=true
-      - PrunePropagationPolicy=background
-      - PruneLast=true
+  syncPolicy: {}
 {% endif %}
