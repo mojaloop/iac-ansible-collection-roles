@@ -64,6 +64,17 @@ data:
         template IN AAAA {
           rcode NOERROR
         }
+        {% if coredns_wildcard_domain is defined %}
+        {% if coredns_aws_dns is defined and coredns_aws_dns and coredns_cc_vpc is defined %}
+        forward {{ coredns_wildcard_domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
+          prefer_udp
+        }
+        {% else %}
+        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+          answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+        }
+        {% endif %}
+        {% endif %}
         kubernetes cluster.local
         prometheus :9253
         health {{ dns_bind_address }}:8080
@@ -95,6 +106,24 @@ data:
         template IN AAAA {
           rcode NOERROR
         }
+        {% if coredns_wildcard_domain is defined %}
+        {% if coredns_aws_dns is defined and coredns_aws_dns and coredns_cc_vpc is defined %}
+        forward {{ coredns_wildcard_domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
+          prefer_udp
+        }
+        {% else %}
+        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+          answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+        }
+        {% endif %}
+        {% endif %}
+        {% if coredns_aws_wildcard_domains is defined and coredns_cc_vpc is defined %}
+        {% for domain in coredns_aws_wildcard_domains %}
+        forward {{ domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
+          prefer_udp
+        }
+        {% endfor %}
+        {% endif %}
         forward . /etc/resolv.conf {
           prefer_udp
         }
@@ -199,6 +228,17 @@ data:
         template IN AAAA {
           rcode NOERROR
         }
+        {% if coredns_wildcard_domain is defined %}
+        {% if coredns_aws_dns is defined and coredns_aws_dns and coredns_cc_vpc is defined %}
+        forward {{ coredns_wildcard_domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
+          prefer_udp
+        }
+        {% else %}
+        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+          answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+        }
+        {% endif %}
+        {% endif %}
         kubernetes cluster.local
         prometheus :9254
         health {{ dns_bind_address }}:8082
@@ -228,6 +268,17 @@ data:
         template IN AAAA {
           rcode NOERROR
         }
+        {% if coredns_wildcard_domain is defined %}
+        {% if coredns_aws_dns is defined and coredns_aws_dns and coredns_cc_vpc is defined %}
+        forward {{ coredns_wildcard_domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
+          prefer_udp
+        }
+        {% else %}
+        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+          answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+        }
+        {% endif %}
+        {% endif %}
         forward . /etc/resolv.conf {
           prefer_udp
         }
