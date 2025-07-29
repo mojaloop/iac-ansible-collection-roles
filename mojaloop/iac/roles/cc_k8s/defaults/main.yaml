@@ -501,7 +501,7 @@ argocd_default:
           namespace: "nexus"
           public_ingress_access_domain: "true"
           storage_size: "30Gi"
-          readonly_user_name: "nexus-readonly"
+          readonly_user_name: "docker-readonly"
         ui:
           public_ingress_access_domain: "false"
         pre:
