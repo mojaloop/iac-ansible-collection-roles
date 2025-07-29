@@ -364,6 +364,7 @@ argocd_default:
           enable_dns_backend: "'true'"
           dns_access_role: "dns-access"
           cert_manager_access_role: "cert-man-access"
+          external_loadbalancer_private_ip: "10.0.0.1"
 
         post_config:
           app_name: "post-config"
@@ -500,6 +501,9 @@ argocd_default:
           namespace: "nexus"
           public_ingress_access_domain: "true"
           storage_size: "30Gi"
+          readonly_user_name: "nexus-readonly"
+        ui:
+          public_ingress_access_domain: "false"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
