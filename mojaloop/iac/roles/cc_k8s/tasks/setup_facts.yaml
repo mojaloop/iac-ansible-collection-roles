@@ -36,7 +36,7 @@
     coredns_aws_dns: "{{ cluster_cloud_provider == 'aws' }}"
     coredns_cc_vpc: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].cc_vpc_cidr }}"
     coredns_wildcard_domain: "*.{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].dns_public_subdomain }}"
-    coredns_wildcard_target: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].external_loadbalancer_private_ip }}"
+    coredns_wildcard_target: "{{ fact_argo_merged_config.apps['dns_utils'].sub_apps['cr_config'].external_load_balancer_private_ip }}"
 
 - name: set gitlab domain to public
   ansible.builtin.set_fact:
