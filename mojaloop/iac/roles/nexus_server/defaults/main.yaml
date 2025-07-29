@@ -1,7 +1,8 @@
 admin_password: oEPpOxBv_y_h5yB8uMdz
+readonly_user_name: "docker-reader"
 # Readonly user configuration for docker pulls
 readonly_user:
-  username: "docker-reader"
+  username: "{{ readonly_user_name }}"
   password: "{{ readonly_user_password | default('ReadOnlyP@ssw0rd123') }}"
   email: "docker-reader@localhost"
   first_name: "Docker"
