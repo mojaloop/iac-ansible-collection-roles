@@ -97,7 +97,7 @@
     user: "admin"
     password: "{{ admin_password }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200]
     timeout: 300
   register: readonly_user_exists
 
@@ -114,7 +114,7 @@
     body_format: json
     status_code: 200
     timeout: 300
-  when: readonly_user_exists.status == 404
+  when: readonly_user_exists.json | length == 0
 
 - name: Set active realms
   uri:
