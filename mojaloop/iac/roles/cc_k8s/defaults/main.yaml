@@ -364,7 +364,7 @@ argocd_default:
           enable_dns_backend: "'true'"
           dns_access_role: "dns-access"
           cert_manager_access_role: "cert-man-access"
-          external_loadbalancer_private_ip: "10.0.0.1"
+          external_load_balancer_private_ip: "10.0.0.1"
 
         post_config:
           app_name: "post-config"
