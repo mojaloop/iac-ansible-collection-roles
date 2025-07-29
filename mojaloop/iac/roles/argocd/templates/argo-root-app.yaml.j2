@@ -7,7 +7,7 @@ spec:
   source:
     path: "{{ root_app_path }}"
 {% if repo_url.endswith('.git') %}
-    repoURL: "{{ repo_url }}"    
+    repoURL: "{{ repo_url }}"
 {% else %}
     repoURL: "{{ repo_url }}.git"
 {% endif %}
@@ -17,10 +17,12 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   syncPolicy:
+  {% if automated_sync %}
     automated:
       prune: true
       selfHeal: true
       allowEmpty: true
+  {% endif %}
     retry:
       limit: 5
       backoff:
