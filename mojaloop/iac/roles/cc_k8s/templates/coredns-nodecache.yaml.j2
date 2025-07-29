@@ -79,19 +79,6 @@ data:
         prometheus :9253
         health {{ dns_bind_address }}:8080
         }
-    {% if coredns_wildcard_domain is defined and not (coredns_aws_dns is defined and coredns_aws_dns) %}
-    {{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}:53 {
-        errors
-        cache 30
-        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
-          answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
-        }
-        template IN AAAA {
-          rcode NOERROR
-        }
-        prometheus :9253
-        }
-    {% endif %}
     in-addr.arpa:53 {
         errors
         cache 120
@@ -119,16 +106,12 @@ data:
         template IN AAAA {
           rcode NOERROR
         }
-        {% if coredns_wildcard_domain is defined %}
-        {% if coredns_aws_dns is defined and coredns_aws_dns and coredns_cc_vpc is defined %}
-        forward {{ coredns_wildcard_domain }} {{ coredns_cc_vpc | ansible.utils.ipaddr('network') | ansible.utils.ipaddr('2') | ansible.utils.ipaddr('address') }} {
-          prefer_udp
-        }
-        {% else %}
-        template IN A "~^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }}$" {
+        {% if coredns_wildcard_domain is defined and not (coredns_aws_dns is defined and coredns_aws_dns) %}
+        template IN A {
+          match "^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
           answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
+          fallthrough
         }
-        {% endif %}
         {% endif %}
         {% if coredns_aws_wildcard_domains is defined and coredns_cc_vpc is defined %}
         {% for domain in coredns_aws_wildcard_domains %}
