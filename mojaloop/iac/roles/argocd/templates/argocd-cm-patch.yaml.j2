@@ -337,6 +337,14 @@ data:
         end
 
         local has_no_status = {}
+
+        -- Custom Mojaloop ory resources status check
+        if obj.status ~= nil and obj.status.state == "VALIDATED" then
+          health_status.status = "Healthy"
+          health_status.message = "State is VALIDATED"
+          return health_status
+        end
+
         if obj.status == nil
           or next(obj.status) == nil
           and contains(has_no_status, obj.kind)
@@ -379,13 +387,6 @@ data:
               return health_status
             end
           end
-        end
-
-        -- Custom Mojaloop ory resources status check
-        if obj.status ~= nil and obj.status.state == "VALIDATED" then
-          health_status.status = "Healthy"
-          health_status.message = "State is VALIDATED"
-          return health_status
         end
 
         return health_status
