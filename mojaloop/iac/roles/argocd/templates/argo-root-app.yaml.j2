@@ -16,7 +16,7 @@ spec:
     namespace: argocd
     server: https://kubernetes.default.svc
   project: default
-{% if automated_sync %}
+{% if automated_sync == "true" %}
   syncPolicy:
     automated:
       prune: true
