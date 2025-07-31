@@ -91,6 +91,21 @@
   when:
     - enable_registry_mirror
 
+
+- name: Add mirror registry credentials
+  become: true
+  ansible.builtin.blockinfile:
+    dest: /var/snap/microk8s/current/args/containerd-template.toml
+    marker: "# {mark} ANSIBLE MANAGED: microk8s Add mirror registry credentials"
+    content: |
+      [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ item }}".auth]
+      username = "{{ docker_registry_username }}"
+      password = "{{ docker_registry_password }}"
+  with_items: "{{ docker_registry_mirrors }}"
+  when:
+    - enable_registry_mirror
+
+
 - name: Create custom certificates
   become: true
   ansible.builtin.template:
