@@ -239,6 +239,8 @@ spec:
             - name: "zone_id"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dns_zone_id }}"
 
+            - name: "dbaas_default_management_policy"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
 
       destination:
         server: https://kubernetes.default.svc
