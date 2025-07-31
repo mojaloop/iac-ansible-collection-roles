@@ -649,6 +649,7 @@ argocd_default:
           common_mongodb_secret: "common-mongodb-credentials"
           common_mongodb_dbdeploy_name_prefix: "mongo"
           common_mongodb_externalservice_name: "common-mongodb-db-external"
+          dbaas_default_management_policy: "*"
 
     monitoring:
       argocd_app_name: "monitoring"
