@@ -97,7 +97,7 @@
     user: "admin"
     password: "{{ admin_password }}"
     force_basic_auth: yes
-    status_code: [200]
+    status_code: [200, 404]
     timeout: 300
   register: docker_read_role_exists
 
@@ -120,7 +120,7 @@
         - "nx-repository-view-docker-*-read"
     status_code: 200
     timeout: 300
-  when: docker_read_role_exists.json.id == "*"
+  when: docker_read_role_exists.status == 404
 
 - name: Check if readonly user exists
   uri:
