@@ -32,3 +32,7 @@ install_root_app: true
 coredns_localcache_version: "1.12.1"
 dns_bind_address: "169.254.20.10"
 automated_sync: true
+coredns_aws_dns: "{{ cluster_cloud_provider == 'aws' }}"
+coredns_cc_vpc: "{{ vpc_cidr }}"
+coredns_wildcard_domain: "*.{{ public_subdomain }}"
+coredns_wildcard_target: "{{ external_load_balancer_private_ip }}"
