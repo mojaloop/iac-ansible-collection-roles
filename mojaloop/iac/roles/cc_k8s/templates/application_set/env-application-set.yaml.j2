@@ -137,6 +137,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
             - name: "cc_ports"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
+            - name: "dbaas_default_management_policy"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
