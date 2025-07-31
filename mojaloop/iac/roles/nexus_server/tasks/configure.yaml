@@ -90,6 +90,38 @@
     timeout: 300    
   when: group_repo_exists.status == 404
 
+- name: Check if docker read role exists
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/security/roles/docker-read
+    method: GET
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: [200]
+    timeout: 300
+  register: docker_read_role_exists
+
+- name: Create docker read role if not exists
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/security/roles
+    method: POST
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      id: "docker-read"
+      name: "Docker Read Access"
+      description: "Read access to Docker repositories"
+      privileges:
+        - "nx-repository-view-docker-*-browse"
+        - "nx-repository-view-docker-*-read"
+    status_code: 200
+    timeout: 300
+  when: docker_read_role_exists.json.id == "*"
+
 - name: Check if readonly user exists
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/security/users?userId={{ readonly_user.username }}
