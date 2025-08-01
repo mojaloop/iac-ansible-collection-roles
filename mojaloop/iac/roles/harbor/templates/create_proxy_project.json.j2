@@ -9,7 +9,7 @@
     "prevent_vul": "false",
     "proxy_cache": "true"
   },
-  "registry_id": 0,
+  "registry_id": {{ registry_id_map[item.item.name] | default(0) }},
   "storage_limit": -1,
   "proxy_cache": {
     "endpoint": "{{ item.item.endpoint }}"
