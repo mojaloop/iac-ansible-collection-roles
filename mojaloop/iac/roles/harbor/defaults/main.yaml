@@ -1,0 +1,17 @@
+harbor_url: "http://harbor-cache.local"
+admin_user: "admin"
+admin_password: "ChangeMe123"
+readonly_user_name: "readonly"
+readonly_user_password: "ChangeMe123"
+
+
+proxy_projects:
+  - { name: "dockerhub", endpoint: "https://registry-1.docker.io" }
+  - { name: "ghcr", endpoint: "https://ghcr.io" }
+  - { name: "quay", endpoint: "https://quay.io" }
+  - { name: "gcr", endpoint: "https://gcr.io" }
+
+readonly_user:
+  username: {{ readonly_user_name }}
+  password: {{ readonly_user_password }}
+  email: "readonly@example.com"
