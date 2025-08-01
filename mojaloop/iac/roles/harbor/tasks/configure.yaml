@@ -66,18 +66,18 @@
 
 - name: Map project name to registry_id
   set_fact:
-    registry_id_map: "{{ registry_id_map | combine({ item.name: registry_id }) }}"
+    registry_id_map: "{{ registry_id_map | default({}) | combine({ item.name: registry_id }) }}"
   vars:
-    registry_id_map: "{{ registry_id_map | default({}) }}"
     registry_id: >-
       {{
         (existing_registries_refreshed.json
-         | selectattr('url','equalto', item.endpoint)
+         | selectattr('url', 'equalto', item.endpoint)
          | map(attribute='id')
          | list
          | first)
       }}
   loop: "{{ proxy_projects }}"
+
 
 
 # ---------------------------
