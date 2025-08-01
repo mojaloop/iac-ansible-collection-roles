@@ -1,7 +1,7 @@
 ---
 - name: Wait for Harbor to respond
   uri:
-    url: "{{ harbor_url }}/api/v2.0/users/current"
+    url: "http://{{ harbor_url }}/api/v2.0/users/current"
     method: GET
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -17,7 +17,7 @@
 # ---------------------------
 - name: Check if proxy projects exist
   uri:
-    url: "{{ harbor_url }}/api/v2.0/projects/{{ item.name }}"
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.name }}"
     method: GET
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -28,7 +28,7 @@
 
 - name: Create proxy projects if not exist
   uri:
-    url: "{{ harbor_url }}/api/v2.0/projects"
+    url: "http://{{ harbor_url }}/api/v2.0/projects"
     method: POST
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -46,7 +46,7 @@
 # ---------------------------
 - name: Check if readonly user exists
   uri:
-    url: "{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
+    url: "http://{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
     method: GET
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -56,7 +56,7 @@
 
 - name: Create readonly user if not exists
   uri:
-    url: "{{ harbor_url }}/api/v2.0/users"
+    url: "http://{{ harbor_url }}/api/v2.0/users"
     method: POST
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -70,7 +70,7 @@
 
 - name: Refresh readonly user info
   uri:
-    url: "{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
+    url: "http://{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
     method: GET
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -87,7 +87,7 @@
 # ---------------------------
 - name: Check readonly user membership for each project
   uri:
-    url: "{{ harbor_url }}/api/v2.0/projects/{{ item.name }}/members"
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.name }}/members"
     method: GET
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
@@ -98,7 +98,7 @@
 
 - name: Add readonly user to project with Guest role if missing
   uri:
-    url: "{{ harbor_url }}/api/v2.0/projects/{{ item.item.name }}/members"
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.item.name }}/members"
     method: POST
     user: "{{ admin_user }}"
     password: "{{ admin_password }}"
