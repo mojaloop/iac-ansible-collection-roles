@@ -1,0 +1,17 @@
+{
+  "project_name": "{{ item.item.name }}",
+  "metadata": {
+    "public": "true",
+    "enable_content_trust": "false",
+    "auto_scan": "false",
+    "severity": "none",
+    "reuse_sys_cve_whitelist": "true",
+    "prevent_vul": "false",
+    "proxy_cache": "true"
+  },
+  "registry_id": 0,
+  "storage_limit": -1,
+  "proxy_cache": {
+    "endpoint": "{{ item.item.endpoint }}"
+  }
+}

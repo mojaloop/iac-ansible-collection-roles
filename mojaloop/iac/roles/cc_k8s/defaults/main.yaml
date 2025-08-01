@@ -516,7 +516,33 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'-2'"
           ansible_collection_tag: "vexp-cck8s19"
-
+    harbor:
+      argocd_app_name: "harbor"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "cto-102-harbor-01"
+      sync_wave: "'-3'"
+      sub_apps:
+        harbor:
+          app_name: "harbor"
+          helm_version: "1.17.1"
+          namespace: "harbor"
+          public_ingress_access_domain: "true"
+          storage_size: "30Gi"
+          readonly_user_name: "docker-readonly"
+        ui:
+          public_ingress_access_domain: "false"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-4'"
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"
+        post_config:
+          app_name: "harbor-post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-2'"
+          ansible_collection_tag: "vexp-cck8s19"
     gitlab:
       argocd_app_name: "gitlab"
       app_namespace: "argocd"
