@@ -18,7 +18,8 @@
 # ---------------------------
 # Registry Management
 # ---------------------------
-- name: Refresh registry list
+
+- name: Get existing registries
   uri:
     url: "http://{{ harbor_url }}/api/v2.0/registries"
     method: GET
@@ -28,22 +29,56 @@
     status_code: 200
   register: existing_registries_refreshed
 
-- name: Initialize registry_id_map
-  set_fact:
-    registry_id_map: {}
+- name: Ensure proxy registries exist
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body: |
+      {
+        "name": "{{ item.name }}",
+        "type": "docker-hub",
+        "url": "{{ item.endpoint }}",
+        "credential": { "type": "anonymous" }
+      }
+    status_code: 201
+  loop: "{{ proxy_projects }}"
+  when: >
+    existing_registries_refreshed.json
+    | selectattr('url', 'equalto', item.endpoint)
+    | list
+    | length == 0
+
+- name: Refresh registry list after create
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: existing_registries_refreshed
 
 - name: Map project name to registry_id
   set_fact:
     registry_id_map: "{{ registry_id_map | combine({ item.name: registry_id }) }}"
   vars:
+    registry_id_map: "{{ registry_id_map | default({}) }}"
     registry_id: >-
       {{
         (existing_registries_refreshed.json
          | selectattr('url','equalto', item.endpoint)
          | map(attribute='id')
+         | list
          | first)
       }}
   loop: "{{ proxy_projects }}"
+
 
 # ---------------------------
 # Proxy Project Management
