@@ -12,6 +12,6 @@ proxy_projects:
   - { name: "gcr", endpoint: "https://gcr.io" }
 
 readonly_user:
-  username: {{ readonly_user_name }}
-  password: {{ readonly_user_password }}
+  username: "{{ readonly_user_name }}"
+  password: "{{ readonly_user_password }}"
   email: "readonly@example.com"
