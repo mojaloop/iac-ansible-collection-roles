@@ -166,20 +166,23 @@
 
 - name: Add readonly user to project with Guest role if missing
   uri:
-    url: "{{ harbor_api_url }}/projects/{{ item.project_id }}/members"
+    url: "http://{{ harbor_url }}/projects/{{ item.item.project_id }}/members"
     method: POST
-    headers:
-      Authorization: "Basic {{ harbor_api_auth }}"
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
     body_format: json
     body:
       role_id: 3
       member_user:
         username: "{{ readonly_user.username }}"
-    status_code: 201
-  loop: "{{ project_memberships.results }}"
+    status_code: 201,409
+  loop: "{{ project_memberships.results | default([]) }}"
   when: >
-    item.json
-    | selectattr('entity_name', 'equalto', readonly_user.username)
-    | selectattr('role_id', 'equalto', 3)
-    | list
-    | length == 0
+    (
+      item.json | default([])
+      | selectattr('entity_name', 'equalto', readonly_user.username)
+      | selectattr('role_id', 'equalto', 3)
+      | list
+      | length == 0
+    )
