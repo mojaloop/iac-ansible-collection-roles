@@ -1,4 +1,7 @@
 ---
+# ---------------------------
+# Wait for Harbor
+# ---------------------------
 - name: Wait for Harbor to respond
   uri:
     url: "http://{{ harbor_url }}/api/v2.0/users/current"
@@ -11,6 +14,36 @@
   until: harbor_status.status == 200
   retries: 30
   delay: 10
+
+# ---------------------------
+# Registry Management
+# ---------------------------
+- name: Refresh registry list
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: existing_registries_refreshed
+
+- name: Initialize registry_id_map
+  set_fact:
+    registry_id_map: {}
+
+- name: Map project name to registry_id
+  set_fact:
+    registry_id_map: "{{ registry_id_map | combine({ item.name: registry_id }) }}"
+  vars:
+    registry_id: >-
+      {{
+        (existing_registries_refreshed.json
+         | selectattr('url','equalto', item.endpoint)
+         | map(attribute='id')
+         | first)
+      }}
+  loop: "{{ proxy_projects }}"
 
 # ---------------------------
 # Proxy Project Management
