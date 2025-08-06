@@ -6,10 +6,10 @@ readonly_user_password: "ChangeMe123"
 
 
 proxy_projects:
-  - { name: "dockerhub", endpoint: "https://registry-1.docker.io" }
-  - { name: "ghcr", endpoint: "https://ghcr.io" }
-  - { name: "quay", endpoint: "https://quay.io" }
-  - { name: "gcr", endpoint: "https://gcr.io" }
+  - { name: "docker.io", endpoint: "https://registry-1.docker.io" }
+  - { name: "ghcr.io", endpoint: "https://ghcr.io" }
+  - { name: "quay.io", endpoint: "https://quay.io" }
+  - { name: "k8s.gcr.io", endpoint: "https://gcr.io" }
 
 readonly_user:
   username: "{{ readonly_user_name }}"
