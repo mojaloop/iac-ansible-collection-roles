@@ -1,4 +1,5 @@
 server = "https://{{ item }}"
 
-[host."https://{{ registry_mirror_fqdn }}"]
+[host."https://{{ registry_mirror_fqdn }}/{{ item }}"]
 capabilities = ["pull", "resolve"]
+override_path = true
