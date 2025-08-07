@@ -42,7 +42,7 @@
     body: |
       {
         "name": "{{ item.name }}",
-        "type": "docker-hub",
+        "type": "{{ item.type | default('docker-hub') }}",
         "url": "{{ item.endpoint }}",
         "credential": { "type": "anonymous" }
       }
