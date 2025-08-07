@@ -9,7 +9,7 @@ proxy_projects:
   - { name: "docker.io", endpoint: "https://registry-1.docker.io" }
   - { name: "ghcr.io", endpoint: "https://ghcr.io" }
   - { name: "quay.io", endpoint: "https://quay.io" }
-  - { name: "k8s.gcr.io", endpoint: "https://gcr.io" }
+  - { name: "registry.k8s.io", endpoint: "https://gcr.io" }
 
 readonly_user:
   username: "{{ readonly_user_name }}"
