@@ -95,12 +95,10 @@
 - name: Build all registry auth blocks
   set_fact:
     registry_auth_blocks: |
-      {% for mirror in docker_registry_mirrors %}
-      [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ mirror }}".auth]
-      username = "{{ docker_registry_username }}"
-      password = "{{ docker_registry_password }}"
-
-      {% endfor %}
+      [plugins."io.containerd.grpc.v1.cri".registry.configs]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor-registry.ccinfra05.drpp-onprem.global".auth]
+          username = "{{ docker_registry_username }}"
+          password = "{{ docker_registry_password }}"
   when: enable_registry_mirror
 
 - name: Add all mirror registry credentials in one block
