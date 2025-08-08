@@ -631,6 +631,7 @@ argocd_default:
           percona_bucket_storage_size: "10Gi"
           tempo_bucket_storage_size: "10Gi"
           loki_bucket_storage_size: "10Gi"
+          velero_bucket_storage_size: "10Gi"
           object_storage_provider: "ceph"
           sc_provider_config_name: "sc-kubernetes-provider"
           rdbms_provider: "rds"
