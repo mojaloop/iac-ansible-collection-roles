@@ -1,0 +1,12 @@
+---
+- name: Write secrets to Vault
+  community.hashi_vault.vault_write:
+    url: "{{ vault_addr }}"
+    token: "{{ vault_token }}"
+    path: "secret/cc_vars"
+    data:
+      ci_iam_user_secret_key: "{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}"
+      ci_iam_user_access_key: "{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}"
+      ssh_private_key: "{{ lookup('env', 'CC_VAR_ssh_private_key') }}"
+      capi_cluster_proxmox_password: "{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}"
+  no_log: true

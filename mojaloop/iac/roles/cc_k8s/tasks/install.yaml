@@ -134,6 +134,19 @@
   args:
     executable: /bin/bash
 
+- name: Get Vault root token
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.vault-root}" | base64 -d
+  register: vault_root_token
+
+- name: Write secrets to Vault
+  ansible.builtin.import_role:
+    name: mojaloop.iac.vault-secret-writer
+  vars:
+    vault_addr: "https://vault.{{ fact_dns_private_subdomain }}:8200"
+    vault_token: "{{ vault_root_token.stdout }}"
+
 - name: save build server setup key to temp
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
