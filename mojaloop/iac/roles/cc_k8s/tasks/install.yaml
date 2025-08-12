@@ -141,8 +141,7 @@
   register: vault_root_token
 
 - name: Write secrets to Vault
-  ansible.builtin.import_role:
-    name: mojaloop.iac.vault-secret-writer
+  ansible.builtin.import_tasks: write_vault_secrets.yml
   vars:
     vault_addr: "https://vault.{{ fact_dns_private_subdomain }}:8200"
     vault_token: "{{ vault_root_token.stdout }}"
