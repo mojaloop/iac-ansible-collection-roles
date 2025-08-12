@@ -135,10 +135,11 @@ spec:
         image: contentful/coredns-nodecache:v{{ coredns_localcache_version }}
         resources:
           limits:
-            memory: 50Mi
+            cpu: 100m
+            memory: 300Mi
           requests:
-            cpu: 25m
-            memory: 5Mi
+            cpu: 100m
+            memory: 300Mi
         args:
         - -conf
         - /etc/coredns/Corefile
@@ -268,10 +269,11 @@ spec:
         image: contentful/coredns-nodecache:v{{ coredns_localcache_version }}
         resources:
           limits:
-            memory: 50Mi
+            cpu: 100m
+            memory: 300Mi
           requests:
-            cpu: 25m
-            memory: 5Mi
+            cpu: 100m
+            memory: 300Mi
         args:
         - -conf
         - /etc/coredns/Corefile
