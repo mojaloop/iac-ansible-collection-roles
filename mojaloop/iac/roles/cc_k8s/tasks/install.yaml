@@ -137,7 +137,7 @@
 - name: Get Vault root token
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.vault-root}" | base64 -d
+    kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
 - name: Write secrets to Vault
