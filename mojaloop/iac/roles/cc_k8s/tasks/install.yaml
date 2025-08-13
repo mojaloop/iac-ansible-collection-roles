@@ -142,7 +142,7 @@
 
 - name: Write secrets to Vault
   community.hashi_vault.vault_write:
-    url: "https://vault.{{ fact_dns_private_subdomain }}:8200"
+    url: "https://vault.{{ fact_dns_private_subdomain }}"
     token: "{{ vault_root_token.stdout }}"
     path: "secret/cc_vars"
     data:
