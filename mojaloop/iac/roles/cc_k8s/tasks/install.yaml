@@ -148,9 +148,9 @@
     echo $VAULT_ADDR
     echo $VAULT_TOKEN
     echo $VAULT_SKIP_VERIFY
-    vault kv put secret/cc_vars \
-      test_ansible_key1=1234567890 \
-      test_ansible_key2=1234567890
+    # vault kv put secret/cc_vars \
+    #   test_ansible_key1=1234567890 \
+    #   test_ansible_key2=1234567890
     # vault kv put secret/cc_vars \
     #   ci_iam_user_secret_key="{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}" \
     #   ci_iam_user_access_key="{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}" \
