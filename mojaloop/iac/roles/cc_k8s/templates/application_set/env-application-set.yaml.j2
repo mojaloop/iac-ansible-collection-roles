@@ -123,24 +123,14 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
             - name: "cloud_region"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
-            - name: "common_platform_db_secret_name"
-              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
-            - name: "common_mojaloop_db_secret_name"
-              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_secret }}"
-            - name: "common_mongodb_secret_name"
-              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
-            - name: common_platform_db_external_name_service
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name }}"
-            - name: common_mojaloop_db_external_name_service
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_externalservice_name }}"
-            - name: common_mongodb_external_name_service
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
             - name: netbird_preconfig_output_secret
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].preconfig_output_secret }}"
             - name: "cc_network_resource_group"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
             - name: "cc_ports"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
+            - name: "dbaas_default_management_policy"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
@@ -168,10 +158,6 @@ spec:
               value: "{{ '{{' }} .domain {{ '}}'}}"
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
-            - name: "managed_services_env_cidr"
-              value: "{{ '{{' }} .managed_vpc_cidr {{ '}}'}}"
-            - name: "managed_svc_enabled"
-              value: "{{ '{{' }} .managed_svc_enabled {{ '}}'}}"
             - name: "k8s_cluster_type"
               value: "{{ '{{' }} .k8s_cluster_type {{ '}}'}}"
             - name: "argocd_namespace"

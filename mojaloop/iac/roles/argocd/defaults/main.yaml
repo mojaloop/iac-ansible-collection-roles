@@ -31,3 +31,4 @@ install_coredns: true
 install_root_app: true
 coredns_localcache_version: "1.12.1"
 dns_bind_address: "169.254.20.10"
+automated_sync: true

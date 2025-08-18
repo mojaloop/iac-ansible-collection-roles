@@ -68,8 +68,6 @@
 - name: Delete the removed env's appset
   shell: |
     kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-    kubectl delete appset {{ item }}-db-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-    kubectl delete appset {{ item }}-mongodb-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
 
   loop: "{{ fact_appsets_to_delete }}"
 
@@ -92,8 +90,6 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-db-application-set.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-mongodb-application-set.yaml
 
 - name: Install utils and wait for argocd autosync
   shell: |
