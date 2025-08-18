@@ -5,6 +5,7 @@ kustomize_version: "5.4.2"
 kubectl_version: "1.31.0"
 argocd_cli_version: "3.0.5"
 clusterctl_version: "1.9.5"
+vault_version: "1.17.0"
 cluster_name: envname
 kubeconfig_local_location: "/tmp"
 helmfile_version: "1.0.0"
