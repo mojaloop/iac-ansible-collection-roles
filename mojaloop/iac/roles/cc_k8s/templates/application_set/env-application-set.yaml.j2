@@ -123,6 +123,18 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
             - name: "cloud_region"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].cloud_region }}"
+            - name: "common_platform_db_secret_name"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_db_secret }}"
+            - name: "common_mojaloop_db_secret_name"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_db_secret }}"
+            - name: "common_mongodb_secret_name"
+              value: "{{ env_name }}-{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_secret }}"
+            - name: common_platform_db_external_name_service
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_platform_externalservice_name }}"
+            - name: common_mojaloop_db_external_name_service
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mojaloop_externalservice_name }}"
+            - name: common_mongodb_external_name_service
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].common_mongodb_externalservice_name }}"
             - name: netbird_preconfig_output_secret
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird'].preconfig_output_secret }}"
             - name: "cc_network_resource_group"
