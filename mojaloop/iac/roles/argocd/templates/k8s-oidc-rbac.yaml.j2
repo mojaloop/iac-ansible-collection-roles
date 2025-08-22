@@ -4,14 +4,12 @@ kind: ClusterRole
 metadata:
   name: oidc-user
 rules:
-  - verbs:
-      - get
-      - list
-      - watch
-    apiGroups:
-      - ''
-    resources:
-      - ResourceAll
+- verbs:
+    - get
+    - list
+    - watch
+  apiGroups: ["*"]
+  resources: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
