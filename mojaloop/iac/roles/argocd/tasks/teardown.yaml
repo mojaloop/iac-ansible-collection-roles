@@ -136,22 +136,18 @@
     executable: /bin/bash
   ignore_errors: true
 
-- name: remove netbird app
+- name: remove netbird post config
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application netbird-operator-app --ignore-not-found
+    kubectl delete -n argocd application netbird-operator-post-config-app --ignore-not-found
   args:
     executable: /bin/bash
   ignore_errors: true
 
-- name: remove other apps
+- name: remove netbird app
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application kyverno --ignore-not-found
-    kubectl delete -n argocd application external-dns-app --ignore-not-found
-    kubectl delete -n argocd application istio-app --ignore-not-found
-    kubectl delete -n argocd application certmanager-app --ignore-not-found
-    kubectl delete -n argocd application base-utils --ignore-not-found
+    kubectl delete -n argocd application netbird-operator-app --ignore-not-found
   args:
     executable: /bin/bash
   ignore_errors: true
