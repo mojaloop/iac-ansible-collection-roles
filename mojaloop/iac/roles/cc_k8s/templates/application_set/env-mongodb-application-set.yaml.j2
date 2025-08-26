@@ -149,8 +149,8 @@ spec:
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.cluster_name {{ '}}' }}"
 
             # Backup inputs
-            - name: "backup_enabled"
-              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_enabled {{ '}}' }}"
+            - name: "enable_backup"
+              value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.enable_backup {{ '}}' }}"
 
             - name: "backup_image"
               value: "{{ '{{' }} .common_mongodb.dbaas_resource_config.backup_image {{ '}}' }}"
