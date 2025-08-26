@@ -149,7 +149,9 @@
       ci_iam_user_secret_key="{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}" \
       ci_iam_user_access_key="{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}" \
       ssh_private_key="{{ lookup('env', 'CC_VAR_ssh_private_key') | replace('\n', '\\n') }}" \
-      capi_cluster_proxmox_password="{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}"
+      capi_cluster_proxmox_password="{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}" \
+      dockerhub_credentials="{{ lookup('env', 'CC_VAR_dockerhub_credentials') }}" \
+      github_pat="{{ lookup('env', 'CC_VAR_github_pat') }}"
   args:
     executable: /bin/bash
 
