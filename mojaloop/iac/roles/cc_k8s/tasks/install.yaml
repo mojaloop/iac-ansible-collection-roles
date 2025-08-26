@@ -128,7 +128,7 @@
     kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }}
   register: outputnetbird
   until: outputnetbird is not failed
-  retries: 100
+  retries: 200
   delay: 30
   ignore_errors: true
   args:
