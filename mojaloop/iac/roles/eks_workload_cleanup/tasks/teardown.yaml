@@ -1,0 +1,22 @@
+---
+- name: Disable argocd apps automated sync
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch application -n argocd root-app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    for app in mojaloop-stateful-resources-app \
+    common-stateful-resources-app; do
+      kubectl patch application -n argocd $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+
+- name: Remove stateful-resources app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete RDSCluster --all -n stateful-resources
+    kubectl delete DocDbCluster --all -n stateful-resources
+  args:
+    executable: /bin/bash
+  ignore_errors: true
