@@ -11,11 +11,38 @@
   ignore_errors: true
 
 
-- name: Remove stateful-resources app
+- name: Get all RDSClusters in stateful-resources namespace
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete RDSCluster --all -n stateful-resources --wait=true --timeout=10m
-    kubectl delete DocDbCluster --all -n stateful-resources --wait=true --timeout=10m
+    kubectl get RDSCluster -n stateful-resources -o jsonpath='{.items[*].metadata.name}'
   args:
     executable: /bin/bash
+  register: rds_clusters
+  changed_when: false
+
+- name: Delete each RDSCluster one by one
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete RDSCluster {{ item }} -n stateful-resources --wait=true --timeout=10m
+  args:
+    executable: /bin/bash
+  loop: "{{ rds_clusters.stdout.split() }}"
+  ignore_errors: true
+
+- name: Get all DocDbClusters in stateful-resources namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get DocDbCluster -n stateful-resources -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: docdb_clusters
+  changed_when: false
+
+- name: Delete each DocDbCluster one by one
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete DocDbCluster {{ item }} -n stateful-resources --wait=true --timeout=10m
+  args:
+    executable: /bin/bash
+  loop: "{{ docdb_clusters.stdout.split() }}"
   ignore_errors: true
