@@ -11,6 +11,15 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: Disable kyverno policies
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch application -n {{ fact_argo_merged_config.namespace }} kyverno --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    kubectl delete clusterpolicy add-ambient-mode-namespace redirect-bitnami-to-bitnamilegacy || true
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: Remove gitlab post-config resources
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
