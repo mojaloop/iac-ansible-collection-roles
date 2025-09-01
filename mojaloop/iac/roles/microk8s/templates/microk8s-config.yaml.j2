@@ -6,6 +6,9 @@ addons:
   - name: {{ addon.strip() }}
     disable: true
 {% endfor %}
+{% for addon in addons_to_enable.split(',') %}
+  - name: {{ addon.strip() }}
+{% endfor %}
 extraKubeletArgs:
   --cluster-domain: cluster.local
   --cluster-dns: {{ dns_bind_address }}

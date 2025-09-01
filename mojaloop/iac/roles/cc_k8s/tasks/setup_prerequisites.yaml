@@ -21,6 +21,31 @@
     curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --yes --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
     echo 'deb [signed-by=/usr/share/keyrings/netbird-archive-keyring.gpg] https://pkgs.netbird.io/debian stable main' | tee /etc/apt/sources.list.d/netbird.list
 
+- name: Ensure unzip is installed
+  ansible.builtin.package:
+    name: unzip
+    state: present
+
+- name: Download Vault CLI archive
+  ansible.builtin.get_url:
+    url: https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip
+    dest: /tmp/vault.zip
+    mode: '0644'
+
+- name: Unarchive Vault CLI
+  ansible.builtin.unarchive:
+    src: /tmp/vault.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+
+- name: Ensure Vault binary is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/vault
+    mode: '0755'
+    state: file
+
+
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: yes

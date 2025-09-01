@@ -113,6 +113,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].tempo_bucket_storage_size }}"
             - name: "percona_bucket_storage_size"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].percona_bucket_storage_size }}"
+            - name: "audit_bucket_storage_size"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].audit_bucket_storage_size }}"
             - name: "velero_bucket_storage_size"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].velero_bucket_storage_size }}"
             - name: "object_storage_provider"
@@ -139,6 +141,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].cc_network_resource_group }}"
             - name: "cc_ports"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
+            - name: "dbaas_default_management_policy"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['config'].terraform_modules_tag }}
@@ -166,10 +170,6 @@ spec:
               value: "{{ '{{' }} .domain {{ '}}'}}"
             - name: "env_cidr"
               value: "{{ '{{' }} .vpc_cidr {{ '}}'}}"
-            - name: "managed_services_env_cidr"
-              value: "{{ '{{' }} .managed_vpc_cidr {{ '}}'}}"
-            - name: "managed_svc_enabled"
-              value: "{{ '{{' }} .managed_svc_enabled {{ '}}'}}"
             - name: "k8s_cluster_type"
               value: "{{ '{{' }} .k8s_cluster_type {{ '}}'}}"
             - name: "argocd_namespace"

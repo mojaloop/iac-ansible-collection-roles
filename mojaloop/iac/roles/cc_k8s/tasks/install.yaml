@@ -128,9 +128,28 @@
     kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }}
   register: outputnetbird
   until: outputnetbird is not failed
-  retries: 100
+  retries: 200
   delay: 30
   ignore_errors: true
+  args:
+    executable: /bin/bash
+
+- name: Get Vault root token
+  shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
+  register: vault_root_token
+
+- name: Write secrets to Vault using CLI
+  shell: |
+    export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
+    export VAULT_TOKEN="{{ vault_root_token.stdout }}"
+    export VAULT_SKIP_VERIFY=true
+    vault kv put secret/cc_vars \
+      ci_iam_user_secret_key="{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}" \
+      ci_iam_user_access_key="{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}" \
+      ssh_private_key="{{ lookup('env', 'CC_VAR_ssh_private_key') | replace('\n', '\\n') }}" \
+      capi_cluster_proxmox_password="{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}"
   args:
     executable: /bin/bash
 

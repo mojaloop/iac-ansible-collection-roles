@@ -7,7 +7,7 @@ spec:
   source:
     path: "{{ root_app_path }}"
 {% if repo_url.endswith('.git') %}
-    repoURL: "{{ repo_url }}"    
+    repoURL: "{{ repo_url }}"
 {% else %}
     repoURL: "{{ repo_url }}.git"
 {% endif %}
@@ -16,6 +16,7 @@ spec:
     namespace: argocd
     server: https://kubernetes.default.svc
   project: default
+{% if automated_sync == "true" %}
   syncPolicy:
     automated:
       prune: true
@@ -31,3 +32,6 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=background
       - PruneLast=true
+{% else %}
+  syncPolicy: {}
+{% endif %}
