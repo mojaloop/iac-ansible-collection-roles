@@ -100,17 +100,17 @@
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
 
-# - name: Install external-secrets
-#   ansible.builtin.shell: |
-#     helm repo add external-secrets https://charts.external-secrets.io
-#     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
+- name: Install external-secrets
+  ansible.builtin.shell: |
+    helm repo add external-secrets https://charts.external-secrets.io
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
 
-# - name: Try clustersecretstore create until successful
-#   ansible.builtin.shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
-#   register: clustersecretstore
-#   until: clustersecretstore is not failed
-#   retries: 30
-#   delay: 5
+- name: Try clustersecretstore create until successful
+  ansible.builtin.shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
+  register: clustersecretstore
+  until: clustersecretstore is not failed
+  retries: 30
+  delay: 5
 
 - name: Install ArgoCD
   ansible.builtin.shell: |
