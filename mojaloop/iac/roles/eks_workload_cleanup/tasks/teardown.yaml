@@ -55,7 +55,7 @@
     executable: /bin/bash
   register: rds_check
   retries: 30
-  delay: 10
+  delay: 60
   until: rds_check.stdout == "[]"
   failed_when: rds_check.rc != 0 and "NotFound" not in rds_check.stderr
 
@@ -67,6 +67,6 @@
     executable: /bin/bash
   register: docdb_check
   retries: 30
-  delay: 10
+  delay: 60
   until: docdb_check.stdout == "[]"
   failed_when: docdb_check.rc != 0 and "NotFound" not in docdb_check.stderr
