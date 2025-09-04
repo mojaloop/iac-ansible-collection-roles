@@ -23,7 +23,7 @@
 - name: Delete each RDSCluster one by one
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete RDSCluster {{ item }} -n stateful-resources --wait=true --timeout=10m
+    kubectl delete RDSCluster {{ item }} -n stateful-resources --wait=false
   args:
     executable: /bin/bash
   loop: "{{ rds_clusters.stdout.split() }}"
@@ -41,8 +41,32 @@
 - name: Delete each DocDbCluster one by one
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete DocDbCluster {{ item }} -n stateful-resources --wait=true --timeout=10m
+    kubectl delete DocDbCluster {{ item }} -n stateful-resources --wait=false
   args:
     executable: /bin/bash
   loop: "{{ docdb_clusters.stdout.split() }}"
   ignore_errors: true
+
+- name: Wait for all RDSClusters to be deleted
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n stateful-resources -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: rds_check
+  retries: 30
+  delay: 60
+  until: rds_check.stdout == "[]"
+  failed_when: rds_check.rc != 0 and "NotFound" not in rds_check.stderr
+
+- name: Wait for all DocDbClusters to be deleted
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get DocDbCluster -n stateful-resources -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: docdb_check
+  retries: 30
+  delay: 60
+  until: docdb_check.stdout == "[]"
+  failed_when: docdb_check.rc != 0 and "NotFound" not in docdb_check.stderr
