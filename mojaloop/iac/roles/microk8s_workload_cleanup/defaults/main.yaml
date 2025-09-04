@@ -1,0 +1,2 @@
+teardown: false
+kubeconfig_location: "/root/.kube"

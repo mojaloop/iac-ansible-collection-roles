@@ -1,0 +1,157 @@
+---
+- name: Disable argocd apps automated sync
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch application -n argocd root-app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    for app in vault-app vault vault-config-operator monitoring-app monitoring-install monitoring-post-config moja mojaloop-stateful-resources-app \
+    mcm-app storage-app common-stateful-resources-app stateful-resources-operators-app ory-app keycloak-app vault-pki-app; do
+      kubectl patch application -n argocd $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove moja app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application moja --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove moja test app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application mojaloop-test --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove mcm app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application mcm-app --ignore-not-found 2>&1 &
+    kubectl delete -n argocd application mcm-pre-app --ignore-not-found 2>&1 &
+    kubectl patch KubernetesAuthEngineRole kubernetes-mcm-role -n mcm --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl patch policy.redhatcop.redhat.io mcm-policy -n mcm --type=merge -p '{"metadata":{"finalizers":null}}' || true
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove ory app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application ory-app --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove keycloak app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application keycloak-app --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove stateful-resources app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application mojaloop-stateful-resources-app --ignore-not-found 2>&1 &
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret" \
+      "kafkatopic"; do
+      kubectl get "$resource" -n mojaloop -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+    kubectl delete -n argocd application common-stateful-resources-app --ignore-not-found 2>&1 &
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret"; do
+      kubectl get "$resource" -n vault -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret"; do
+      kubectl get "$resource" -n stateful-resources -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+    kubectl delete -n argocd application stateful-resources-operators-app --ignore-not-found
+    for resource in \
+      "ExternalSecret"; do
+      kubectl get "$resource" -n stateful-resources -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n stateful-resources --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+    sleep 60
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove monitoring resources
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application monitoring-post-config --ignore-not-found
+    kubectl delete -n argocd application monitoring-install --ignore-not-found
+    kubectl delete -n argocd application monitoring-app --ignore-not-found
+    for pvc in $(kubectl get pvc -n monitoring -o name 2>/dev/null); do
+    kubectl patch "$pvc" -n monitoring --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl delete "$pvc" -n monitoring --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove vault resources
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application vault-config-operator --ignore-not-found
+    kubectl delete -n argocd application vault-pki-app --ignore-not-found 2>&1 &
+      for resource in \
+        "PKISecretEngineConfig" \
+        "PKISecretEngineRole" \
+        "policy.redhatcop.redhat.io" \
+        "KubernetesAuthEngineRole" \
+        "SecretEngineMount"; do
+        kubectl get "$resource" -n vault -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+        xargs -I{} kubectl patch "$resource" {} -n vault --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+      done
+    kubectl delete -n argocd application vault-app --ignore-not-found
+    for pvc in $(kubectl get pvc -n vault -o name 2>/dev/null); do
+    kubectl patch "$pvc" -n vault --type=merge -p '{"metadata":{"finalizers":null}}' || true
+    kubectl delete "$pvc" -n vault --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: remove storage resources
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application storage-app --ignore-not-found 2>&1 &
+    for CRD in $(kubectl get crd -n storage | awk '/ceph.rook.io/ {print $1}'); do kubectl get -n storage "$CRD" -o name | xargs -I {} kubectl patch -n storage {} --type merge -p '{"metadata":{"finalizers": []}}';done
+    sleep 60
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: remove netbird app
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application netbird-operator-app --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: remove other apps
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application kyverno --ignore-not-found
+    kubectl delete -n argocd application external-dns-app --ignore-not-found
+    kubectl delete -n argocd application istio-app --ignore-not-found
+    kubectl delete -n argocd application certmanager-app --ignore-not-found
+    kubectl delete -n argocd application base-utils --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
