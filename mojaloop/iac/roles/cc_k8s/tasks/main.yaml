@@ -5,9 +5,9 @@
   ansible.builtin.import_tasks: setup_prerequisites.yaml
   when: (not (teardown | bool))
 
-- name: install
-  ansible.builtin.import_tasks: install.yaml
-  when: (not (teardown | bool))
+# - name: install
+#   ansible.builtin.import_tasks: install.yaml
+#   when: (not (teardown | bool))
 
 - name: remove microk8s
   ansible.builtin.import_tasks: teardown.yaml
