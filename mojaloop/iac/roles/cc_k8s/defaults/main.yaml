@@ -2,7 +2,7 @@ teardown: false
 pipeline_executor: false
 kubeconfig_location: "/root/.kube"
 kustomize_version: "5.4.2"
-kubectl_version: "1.31.0"
+kubectl_version: "1.32.0"
 argocd_cli_version: "3.0.5"
 clusterctl_version: "1.9.5"
 vault_version: "1.17.0"
