@@ -1,6 +1,7 @@
 teardown: false
 argocd_version: "3.0.5"
 argocd_lovely_plugin_version: "0.18.0"
+argocd_reconciliation_timeout: "10s"
 repo_url: "https://localhost/repo.git"
 repo_password: mypassword
 repo_username: user

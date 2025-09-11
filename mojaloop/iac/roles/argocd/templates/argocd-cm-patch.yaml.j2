@@ -7,6 +7,7 @@ metadata:
   name: argocd-cm
 data:
   application.resourceTrackingMethod: annotation
+  timeout.reconciliation: {{ argocd_reconciliation_timeout }}
   url: https://argocd.{{ argocd_domain }}
   oidc.config: |
     name: Zitadel
