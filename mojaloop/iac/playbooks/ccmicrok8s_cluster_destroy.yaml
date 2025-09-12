@@ -4,7 +4,7 @@
     - role: geerlingguy.k8s.helm
       vars:
         helm_version: "v3.14.0"
-    - role: mojaloop.iac.cc_k8s
+    - role: mojaloop.iac.microk8s_cc_workload_cleanup
       vars:
         teardown: true
 

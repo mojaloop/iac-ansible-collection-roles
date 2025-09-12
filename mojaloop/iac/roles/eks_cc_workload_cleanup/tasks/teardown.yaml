@@ -1,0 +1,172 @@
+- name: Delete all appsets in argocd namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete appset -n argocd --all --wait=false
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Disable argocd apps automated sync
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl patch application -n argocd root-app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    for app in monitoring \
+      zitadel-pre \
+      netbird-pre \
+      gitlab-pre; do
+      kubectl patch application -n argocd $app --type json --patch='[ { "op": "remove", "path": "/spec/syncPolicy/automated" } ]' || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Get all RDSClusters in zitadel namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n zitadel -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: rds_clusters
+  changed_when: false
+
+- name: Delete each RDSCluster one by one in zitadel namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete RDSCluster {{ item }} -n zitadel --wait=false
+  args:
+    executable: /bin/bash
+  loop: "{{ rds_clusters.stdout.split() }}"
+  ignore_errors: true
+
+- name: Get all RDSClusters in netbird namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n netbird -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: rds_clusters
+  changed_when: false
+
+- name: Delete each RDSCluster one by one in netbird namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete RDSCluster {{ item }} -n netbird --wait=false
+  args:
+    executable: /bin/bash
+  loop: "{{ rds_clusters.stdout.split() }}"
+  ignore_errors: true
+
+- name: Get all RDSClusters in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n gitlab -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: rds_clusters
+  changed_when: false
+
+- name: Delete each RDSCluster one by one in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete RDSCluster {{ item }} -n gitlab --wait=false
+  args:
+    executable: /bin/bash
+  loop: "{{ rds_clusters.stdout.split() }}"
+  ignore_errors: true
+
+- name: Get all s3buckets in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get objectstores.objectstore.mojaloop.io -n gitlab -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: s3_buckets
+  changed_when: false
+
+- name: Delete each s3bucket one by one in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete objectstores.objectstore.mojaloop.io {{ item }} -n gitlab --wait=false
+  args:
+    executable: /bin/bash
+  loop: "{{ s3_buckets.stdout.split() }}"
+  ignore_errors: true
+
+- name: Get all s3buckets in monitoring namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get objectstores.objectstore.mojaloop.io -n monitoring -o jsonpath='{.items[*].metadata.name}'
+  args:
+    executable: /bin/bash
+  register: s3_buckets
+  changed_when: false
+
+- name: Delete each s3bucket one by one in monitoring namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete objectstores.objectstore.mojaloop.io {{ item }} -n monitoring --wait=false
+  args:
+    executable: /bin/bash
+  loop: "{{ s3_buckets.stdout.split() }}"
+  ignore_errors: true
+
+
+- name: Wait for all RDSClusters to be deleted in zitadel namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n zitadel -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: rds_check
+  retries: 30
+  delay: 60
+  until: rds_check.stdout == "[]"
+  failed_when: rds_check.rc != 0 and "NotFound" not in rds_check.stderr
+
+- name: Wait for all RDSClusters to be deleted in netbird namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n netbird -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: rds_check
+  retries: 30
+  delay: 60
+  until: rds_check.stdout == "[]"
+  failed_when: rds_check.rc != 0 and "NotFound" not in rds_check.stderr
+
+- name: Wait for all RDSClusters to be deleted in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get RDSCluster -n gitlab -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: rds_check
+  retries: 30
+  delay: 60
+  until: rds_check.stdout == "[]"
+  failed_when: rds_check.rc != 0 and "NotFound" not in rds_check.stderr
+
+- name: Wait for all s3buckets to be deleted in gitlab namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get objectstores.objectstore.mojaloop.io -n gitlab -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: s3_check
+  retries: 30
+  delay: 30
+  until: s3_check.stdout == "[]"
+  failed_when: s3_check.rc != 0 and "NotFound" not in s3_check.stderr
+
+- name: Wait for all s3buckets to be deleted in monitoring namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl get objectstores.objectstore.mojaloop.io -n monitoring -o jsonpath='{.items}'
+  args:
+    executable: /bin/bash
+  register: s3_check
+  retries: 30
+  delay: 30
+  until: s3_check.stdout == "[]"
+  failed_when: s3_check.rc != 0 and "NotFound" not in s3_check.stderr

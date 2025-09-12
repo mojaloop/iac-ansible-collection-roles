@@ -1,0 +1,3 @@
+- name: remove eks workload
+  ansible.builtin.import_tasks: teardown.yaml
+  when: (teardown | bool)

@@ -1,7 +1,7 @@
 - hosts: "{{ groups['bastion'] | sort | first }}"
   become: true
   roles:
-    - role: mojaloop.iac.microk8s_workload_cleanup
+    - role: mojaloop.iac.microk8s_env_workload_cleanup
       vars:
         teardown: true
 
