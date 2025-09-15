@@ -167,7 +167,6 @@
     fi
   args:
     executable: /bin/bash
-  delegate_to: localhost
 
 - name: save build server setup key to temp
   shell: |
