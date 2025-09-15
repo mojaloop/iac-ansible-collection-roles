@@ -141,29 +141,25 @@
   register: vault_root_token
 
 - name: Write CC_VAR_* secrets to Vault from controller env
-  shell: |
-    set -euo pipefail
-    declare -a args=()
-    : > "$KEYS_FILE"
-    while IFS= read -r -d '' entry; do
-      key="${entry%%=*}"
-      val="${entry#*=}"
-      [[ "$key" == CC_VAR_* ]] || continue
-      k="${key#CC_VAR_}"
-      # escape newlines and quotes for vault CLI
-      val_escaped=${val//$'\n'/\\n}
-      val_escaped=${val_escaped//\"/\\\"}
-      args+=( "$k=$val_escaped" )
-      echo "$k" >> "$KEYS_FILE"
-    done < <(printenv -0)
-    if [[ ${#args[@]} -gt 0 ]]; then
-      echo "Writing keys to Vault: $(tr '\n' ' ' < "$KEYS_FILE")"
-      vault kv put secret/cc_vars "${args[@]}"
-    else
-      echo "No CC_VAR_* found to write."
-    fi
+  ansible.builtin.command:
+    argv: ["/bin/bash", "-s"]
   args:
-    executable: /bin/bash
+    stdin: |
+      set -euo pipefail
+      : > "$KEYS_FILE"
+      args=()
+      env -0 | while IFS= read -r -d '' entry; do
+        key="${entry%%=*}"
+        val="${entry#*=}"
+        case "$key" in
+          CC_VAR_*) k="${key#CC_VAR_}"; args+=( "$k=$val" ); echo "$k" >> "$KEYS_FILE" ;;
+        esac
+      done
+      if [ ${#args[@]} -gt 0 ]; then
+        vault kv put secret/cc_vars "${args[@]}"
+      else
+        echo "No CC_VAR_* found to write."
+      fi
   environment:
     VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
     VAULT_TOKEN: "{{ vault_root_token.stdout }}"
