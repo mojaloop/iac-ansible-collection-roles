@@ -140,9 +140,30 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
+- name: Show CC_VAR_* on Ansible controller (localhost)
+  shell: |
+    env | grep '^CC_VAR_' || true
+  delegate_to: localhost
+  register: controller_cc_env
+
+- name: Show CC_VAR_* on remote host
+  shell: |
+    env | grep '^CC_VAR_' || true
+  register: remote_cc_env
+
+- name: Gather controller env facts
+  setup:
+    filter: ansible_env
+  delegate_to: localhost
+  run_once: true
+
 - name: Collect CC_VAR_* environment variables
   set_fact:
-    cc_env_items: "{{ ansible_env | dict2items | selectattr('key', 'match', '^CC_VAR_') | list }}"
+    cc_env_items: "{{ hostvars['localhost'].ansible_facts.ansible_env | dict2items | selectattr('key', 'match', '^CC_VAR_') | list }}"
+
+- name: Debug cc_env_items gathered from controller
+  debug:
+    var: cc_env_items
 
 - name: Build map of Vault secrets from CC_VAR_*
   set_fact:
@@ -151,13 +172,18 @@
 - name: Display which CC_VAR_* will be written to Vault
   debug:
     msg: "Will write the following keys to secret/cc_vars: {{ (cc_vars_for_vault | default({})).keys() | list | sort }}"
-  when: (cc_vars_for_vault | default({})) | length > 0
+
+- name: Build list of key=value args for vault CLI
+  set_fact:
+    cc_vars_kv_args_list: "{{ (cc_vars_for_vault | default({})) | dict2items | map(attribute='key') | list | zip(((cc_vars_for_vault | default({})) | dict2items | map(attribute='value') | map('regex_replace', '\n', '\\n') | list)) | map('join', '=') | list }}"
+
+- name: Debug cc_vars_kv_args_list to be passed to vault
+  debug:
+    var: cc_vars_kv_args_list
 
 - name: Write secrets to Vault using CLI
-  vars:
-    cc_vars_kv_args_list: '{{ (cc_vars_for_vault | default({)) | dict2items | map(attribute="key") | list | zip(((cc_vars_for_vault | default({})) | dict2items | map(attribute="value") | map("regex_replace", "\n", "\\n") | list)) | map("join", "=") | list }}'
   ansible.builtin.command:
-    argv: "{{ ['vault', 'kv', 'put', 'secret/cc_vars'] + cc_vars_kv_args_list }}"
+    argv: "{{ ['vault', 'kv', 'put', 'secret/cc_vars'] + (cc_vars_kv_args_list | default([])) }}"
   environment:
     VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
     VAULT_TOKEN: "{{ vault_root_token.stdout }}"
