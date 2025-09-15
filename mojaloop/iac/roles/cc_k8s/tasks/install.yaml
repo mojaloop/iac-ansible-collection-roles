@@ -140,18 +140,37 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
+- name: Collect CC_VAR_* environment variables
+  set_fact:
+    cc_env_items: "{{ ansible_env | dict2items | selectattr('key', 'match', '^CC_VAR_') | list }}"
+
+- name: Build map of Vault secrets from CC_VAR_*
+  set_fact:
+    cc_vars_for_vault: "{{ dict(cc_env_items | map(attribute='key') | map('regex_replace', '^CC_VAR_', '') | zip(cc_env_items | map(attribute='value'))) }}"
+
+- name: Display which CC_VAR_* will be written to Vault
+  debug:
+    msg: "Will write the following keys to secret/cc_vars: {{ (cc_vars_for_vault | default({})).keys() | list | sort }}"
+  when: (cc_vars_for_vault | default({})) | length > 0
+
 - name: Write secrets to Vault using CLI
   shell: |
     export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
     export VAULT_TOKEN="{{ vault_root_token.stdout }}"
     export VAULT_SKIP_VERIFY=true
     vault kv put secret/cc_vars \
-      ci_iam_user_secret_key="{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}" \
-      ci_iam_user_access_key="{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}" \
-      ssh_private_key="{{ lookup('env', 'CC_VAR_ssh_private_key') | replace('\n', '\\n') }}" \
-      capi_cluster_proxmox_password="{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}"
+    {% for kv in (cc_vars_for_vault | default({})) | dict2items %}
+      {{ kv.key }}="{{ kv.value | replace('\n', '\\n') | replace('"', '\\"') }}" \
+    {% endfor %}
   args:
     executable: /bin/bash
+  when: (cc_vars_for_vault | default({})) | length > 0
+
+- name: Save list of written cc_vars keys
+  copy:
+    content: "{{ (cc_vars_for_vault | default({})) | dict2items | map(attribute='key') | list | sort | join('\n') }}\n"
+    dest: "{{ cctmpvalues.path }}/cc_vars_keys.txt"
+  when: (cc_vars_for_vault | default({})) | length > 0
 
 - name: save build server setup key to temp
   shell: |
