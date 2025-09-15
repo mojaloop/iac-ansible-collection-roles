@@ -154,16 +154,14 @@
   when: (cc_vars_for_vault | default({})) | length > 0
 
 - name: Write secrets to Vault using CLI
-  shell: |
-    export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
-    export VAULT_TOKEN="{{ vault_root_token.stdout }}"
-    export VAULT_SKIP_VERIFY=true
-    vault kv put secret/cc_vars \
-    {% for kv in (cc_vars_for_vault | default({})) | dict2items %}
-      {{ kv.key }}="{{ kv.value | replace('\n', '\\n') | replace('"', '\\"') }}" \
-    {% endfor %}
-  args:
-    executable: /bin/bash
+  vars:
+    cc_vars_kv_args_list: '{{ (cc_vars_for_vault | default({)) | dict2items | map(attribute="key") | list | zip(((cc_vars_for_vault | default({})) | dict2items | map(attribute="value") | map("regex_replace", "\n", "\\n") | list)) | map("join", "=") | list }}'
+  ansible.builtin.command:
+    argv: "{{ ['vault', 'kv', 'put', 'secret/cc_vars'] + cc_vars_kv_args_list }}"
+  environment:
+    VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
+    VAULT_TOKEN: "{{ vault_root_token.stdout }}"
+    VAULT_SKIP_VERIFY: "true"
   when: (cc_vars_for_vault | default({})) | length > 0
 
 - name: Save list of written cc_vars keys
