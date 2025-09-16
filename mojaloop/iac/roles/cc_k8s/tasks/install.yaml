@@ -140,6 +140,10 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
+- name: Debug all environment variables (first 10 for brevity)
+  debug:
+    msg: "Available env vars: {{ ansible_env.keys() | list | sort | first(10) }}"
+
 - name: Collect CC_VAR_* from environment
   set_fact:
     cc_env_items: >-
@@ -147,23 +151,36 @@
          | selectattr('key','match','^CC_VAR_')
          | list }}
 
+- name: Debug CC_VAR_* collection result
+  debug:
+    msg: "Found {{ cc_env_items | length }} CC_VAR_* variables: {{ cc_env_items | map(attribute='key') | list }}"
+
+- name: Initialize cc_vars dict
+  set_fact:
+    cc_vars: {}
+
 - name: Build dict with CC_VAR_ prefix stripped
   set_fact:
-    cc_vars: "{{ cc_vars | default({}) | combine({ (item.key | regex_replace('^CC_VAR_', '')): item.value }) }}"
+    cc_vars: "{{ cc_vars | combine({ (item.key | regex_replace('^CC_VAR_', '')): item.value }) }}"
   loop: "{{ cc_env_items }}"
   when: cc_env_items | length > 0
 
 - name: Show which keys will be written (safe)
   debug:
     msg: "Writing keys to Vault: {{ cc_vars.keys() | list | sort }}"
-  when: cc_vars is defined and cc_vars | length > 0
+  when: cc_vars | length > 0
+
+- name: Show message when no CC_VAR_* found
+  debug:
+    msg: "No CC_VAR_* environment variables found - skipping Vault write"
+  when: cc_vars | length == 0
 
 - name: Write JSON payload for Vault
   copy:
     dest: "{{ cctmpvalues.path }}/cc_vars.json"
     mode: "0600"
     content: "{{ cc_vars | to_nice_json }}"
-  when: cc_vars is defined and cc_vars | length > 0
+  when: cc_vars | length > 0
 
 - name: Put CC variables into Vault (single write via @file)
   command:
@@ -175,7 +192,7 @@
   register: vault_put
   changed_when: true
   no_log: true
-  when: cc_vars is defined and cc_vars | length > 0
+  when: cc_vars | length > 0
 
 - name: Summarize Vault write result
   debug:
