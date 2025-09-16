@@ -140,44 +140,47 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Collect CC_VAR_* and write them to Vault in one put
-  shell: |
-    export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
-    export VAULT_TOKEN="{{ vault_root_token.stdout }}"
-    export VAULT_SKIP_VERIFY=true
-    set -euo pipefail
-    keys_file="{{ cctmpvalues.path }}/cc_vars_keys.txt"
-    : > "$keys_file"
+- name: Collect CC_VAR_* from environment
+  set_fact:
+    cc_env_items: >-
+      {{ ansible_env | dict2items
+         | selectattr('key','match','^CC_VAR_')
+         | list }}
 
-    declare -a args=()
+- name: Build dict with CC_VAR_ prefix stripped
+  set_fact:
+    cc_vars: "{{ cc_vars | default({}) | combine({ (item.key | regex_replace('^CC_VAR_', '')): item.value }) }}"
+  loop: "{{ cc_env_items }}"
+  when: cc_env_items | length > 0
 
-    # Read env as NUL-separated key=value pairs
-    while IFS= read -r -d '' entry; do
-      key="${entry%%=*}"
-      val="${entry#*=}"
-      [[ "$key" == CC_VAR_* ]] || continue
+- name: Show which keys will be written (safe)
+  debug:
+    msg: "Writing keys to Vault: {{ cc_vars.keys() | list | sort }}"
+  when: cc_vars is defined and cc_vars | length > 0
 
-      k="${key#CC_VAR_}"
+- name: Write JSON payload for Vault
+  copy:
+    dest: "{{ cctmpvalues.path }}/cc_vars.json"
+    mode: "0600"
+    content: "{{ cc_vars | to_nice_json }}"
+  when: cc_vars is defined and cc_vars | length > 0
 
-      # Escape newlines and double quotes for vault CLI
-      val_escaped=${val//$'\n'/\\n}
-      val_escaped=${val_escaped//\"/\\\"}
+- name: Put CC variables into Vault (single write via @file)
+  command:
+    cmd: "vault kv put secret/cc_vars @{{ cctmpvalues.path }}/cc_vars.json"
+  environment:
+    VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
+    VAULT_TOKEN: "{{ vault_root_token.stdout }}"
+    VAULT_SKIP_VERIFY: "true"
+  register: vault_put
+  changed_when: true
+  no_log: true
+  when: cc_vars is defined and cc_vars | length > 0
 
-      # Build key=value args array for a single kv put
-      args+=( "$k=$val_escaped" )
-
-      # Keep a readable list of keys for logging
-      echo "$k" >> "$keys_file"
-    done < <(printenv -0)
-
-    if [[ ${#args[@]} -gt 0 ]]; then
-      echo "Writing keys to Vault: $(tr '\n' ' ' < "$keys_file")"
-      vault kv put "secret/cc_vars" "${args[@]}"
-    else
-      echo "No CC_VAR_* found to write."
-    fi
-  args:
-    executable: /bin/bash
+- name: Summarize Vault write result
+  debug:
+    var: vault_put.stdout
+  when: vault_put is defined
 
 - name: save build server setup key to temp
   shell: |
