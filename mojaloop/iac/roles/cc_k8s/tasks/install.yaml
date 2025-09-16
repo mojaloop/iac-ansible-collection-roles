@@ -141,10 +141,8 @@
   register: vault_root_token
 
 - name: Write CC_VAR_* secrets to Vault from controller env
-  ansible.builtin.command:
-    argv: ["/bin/bash", "-s"]
-  args:
-    stdin: |
+  vars:
+    vault_script: |
       set -euo pipefail
       : > "$KEYS_FILE"
       args=()
@@ -160,6 +158,8 @@
       else
         echo "No CC_VAR_* found to write."
       fi
+  ansible.builtin.command:
+    argv: ["/bin/bash", "-c", "{{ vault_script }}"]
   environment:
     VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
     VAULT_TOKEN: "{{ vault_root_token.stdout }}"
