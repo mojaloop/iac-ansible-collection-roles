@@ -140,31 +140,55 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Write CC_VAR_* secrets to Vault from controller env
-  vars:
-    vault_script: |
-      set -euo pipefail
-      : > "$KEYS_FILE"
-      args=()
-      env -0 | while IFS= read -r -d '' entry; do
-        key="${entry%%=*}"
-        val="${entry#*=}"
-        case "$key" in
-          CC_VAR_*) k="${key#CC_VAR_}"; args+=( "$k=$val" ); echo "$k" >> "$KEYS_FILE" ;;
-        esac
-      done
-      if [ ${#args[@]} -gt 0 ]; then
-        vault kv put secret/cc_vars "${args[@]}"
-      else
-        echo "No CC_VAR_* found to write."
-      fi
-  ansible.builtin.command:
-    argv: ["/bin/bash", "-c", "{{ vault_script }}"]
-  environment:
-    VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
-    VAULT_TOKEN: "{{ vault_root_token.stdout }}"
-    VAULT_SKIP_VERIFY: "true"
-    KEYS_FILE: "{{ cctmpvalues.path }}/cc_vars_keys.txt"
+- name: Show CC_VAR_* on Ansible controller (localhost)
+  shell: |
+    env | grep '^CC_VAR_' || true
+  delegate_to: localhost
+  register: controller_cc_env
+
+- name: Show CC_VAR_* on remote host
+  shell: |
+    env | grep '^CC_VAR_' || true
+  register: remote_cc_env
+
+- name: Collect CC_VAR_* and write them to Vault in one put
+  shell: |
+    export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
+    export VAULT_TOKEN="{{ vault_root_token.stdout }}"
+    export VAULT_SKIP_VERIFY=true
+    set -euo pipefail
+    keys_file="{{ cctmpvalues.path }}/cc_vars_keys.txt"
+    : > "$keys_file"
+
+    declare -a args=()
+
+    # Read env as NUL-separated key=value pairs
+    while IFS= read -r -d '' entry; do
+      key="${entry%%=*}"
+      val="${entry#*=}"
+      [[ "$key" == CC_VAR_* ]] || continue
+
+      k="${key#CC_VAR_}"
+
+      # Escape newlines and double quotes for vault CLI
+      val_escaped=${val//$'\n'/\\n}
+      val_escaped=${val_escaped//\"/\\\"}
+
+      # Build key=value args array for a single kv put
+      args+=( "$k=$val_escaped" )
+
+      # Keep a readable list of keys for logging
+      echo "$k" >> "$keys_file"
+    done < <(printenv -0)
+
+    if [[ ${#args[@]} -gt 0 ]]; then
+      echo "Writing keys to Vault: $(tr '\n' ' ' < "$keys_file")"
+      vault kv put "secret/cc_vars" "${args[@]}"
+    else
+      echo "No CC_VAR_* found to write."
+    fi
+  args:
+    executable: /bin/bash
 
 - name: save build server setup key to temp
   shell: |
