@@ -140,17 +140,6 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Show CC_VAR_* on Ansible controller (localhost)
-  shell: |
-    env | grep '^CC_VAR_' || true
-  delegate_to: localhost
-  register: controller_cc_env
-
-- name: Show CC_VAR_* on remote host
-  shell: |
-    env | grep '^CC_VAR_' || true
-  register: remote_cc_env
-
 - name: Collect CC_VAR_* and write them to Vault in one put
   shell: |
     export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
