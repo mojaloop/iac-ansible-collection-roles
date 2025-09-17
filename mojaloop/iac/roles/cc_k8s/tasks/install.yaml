@@ -140,9 +140,9 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Debug all environment variables (first 10 for brevity)
+- name: Debug environment variables (first 10 for brevity)
   debug:
-    msg: "Available env vars: {{ ansible_env.keys() | list | sort | first(10) }}"
+    msg: "Available env vars: {{ (ansible_env.keys() | list | sort)[:10] }}"
 
 - name: Collect CC_VAR_* from environment
   set_fact:
