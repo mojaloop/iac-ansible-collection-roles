@@ -145,10 +145,6 @@
   register: cc_env_raw
   delegate_to: localhost
 
-- name: Debug CC_VAR_* collection result
-  debug:
-    msg: "Found {{ cc_env_raw.stdout_lines | length }} CC_VAR_* variables: {{ cc_env_raw.stdout_lines | map('regex_replace', '^(CC_VAR_[^=]+)=.*', '\\1') | list }}"
-
 - name: Initialize cc_vars dictionary
   set_fact:
     cc_vars: {}
@@ -164,16 +160,6 @@
       }}
   loop: "{{ cc_env_raw.stdout_lines }}"
   when: cc_env_raw.stdout_lines | length > 0
-
-- name: Show which keys will be written (safe)
-  debug:
-    msg: "Writing keys to Vault: {{ cc_vars.keys() | list | sort }}"
-  when: cc_vars | length > 0
-
-- name: Show message when no CC_VAR_* found
-  debug:
-    msg: "No CC_VAR_* environment variables found - skipping Vault write"
-  when: cc_vars | length == 0
 
 - name: Write JSON payload for Vault
   copy:
@@ -196,8 +182,13 @@
 
 - name: Summarize Vault write result
   debug:
-    var: vault_put.stdout
+    msg: "✅ Successfully wrote {{ cc_vars.keys() | list | length }} CC variables to Vault: {{ cc_vars.keys() | list | sort | join(', ') }}"
   when: cc_vars | length > 0
+
+- name: Show when no CC variables found
+  debug:
+    msg: "ℹ️  No CC_VAR_* environment variables found - Vault write skipped"
+  when: cc_vars | length == 0
 
 - name: save build server setup key to temp
   shell: |
