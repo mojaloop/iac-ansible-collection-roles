@@ -67,5 +67,6 @@ kubernetes_oidc_username_claim: "username"
 docker_registry_mirrors: ["docker.io", "ghcr.io", "quay.io", "k8s.gcr.io"]
 dns_bind_address: "169.254.20.10"
 max_pods_per_node: 110
-ipv4_services_cidr: "10.152.0.0/16"
+microk8s_services_cidr: "10.152.183.0/24"
+microk8s_custom_service_cidr_api_ip: ""
 cluster_name: "test-cluster"
