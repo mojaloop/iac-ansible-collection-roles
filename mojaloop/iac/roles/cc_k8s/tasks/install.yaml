@@ -140,9 +140,10 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Get system environment variables with CC_VAR_* prefix
+- name: Get CC_VAR_* environment variables from controller
   shell: env | grep '^CC_VAR_' || true
   register: cc_env_raw
+  delegate_to: localhost
 
 - name: Debug CC_VAR_* collection result
   debug:
