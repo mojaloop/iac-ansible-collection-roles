@@ -149,14 +149,6 @@
   set_fact:
     cc_vars: {}
 
-- name: Debug SSH private key lookup
-  debug:
-    msg:
-      - "SSH private key raw value length: {{ lookup('env', 'CC_VAR_ssh_private_key') | length }}"
-      - "SSH private key first 100 chars: {{ lookup('env', 'CC_VAR_ssh_private_key')[:100] }}"
-      - "SSH private key last 50 chars: {{ lookup('env', 'CC_VAR_ssh_private_key')[-50:] }}"
-  when: "'CC_VAR_ssh_private_key' in cc_var_names.stdout"
-
 - name: Build cc_vars dictionary using lookup (with special ssh_private_key handling)
   set_fact:
     cc_vars: >-
@@ -168,18 +160,6 @@
       }}
   loop: "{{ cc_var_names.stdout_lines }}"
   when: cc_var_names.stdout_lines | length > 0
-
-- name: Debug final SSH private key value in cc_vars
-  debug:
-    msg:
-      - "SSH private key in cc_vars length: {{ cc_vars.ssh_private_key | length }}"
-      - "SSH private key in cc_vars first 100 chars: {{ cc_vars.ssh_private_key[:100] }}"
-  when: "'ssh_private_key' in cc_vars and cc_vars.ssh_private_key | length > 0"
-
-- name: Debug when SSH private key is empty
-  debug:
-    msg: "❌ SSH private key is empty or missing from cc_vars"
-  when: "'ssh_private_key' not in cc_vars or cc_vars.ssh_private_key | length == 0"
 
 - name: Write JSON payload for Vault
   copy:
