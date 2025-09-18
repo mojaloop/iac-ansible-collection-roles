@@ -149,12 +149,13 @@
   set_fact:
     cc_vars: {}
 
-- name: Build cc_vars dictionary using lookup (preserves multiline values)
+- name: Build cc_vars dictionary using lookup (with special ssh_private_key handling)
   set_fact:
     cc_vars: >-
       {{
         cc_vars | combine({
-          (item | regex_replace('^CC_VAR_', '')): lookup('env', item)
+          (item | regex_replace('^CC_VAR_', '')):
+          (lookup('env', item) | replace('\n', '\\n') if (item | regex_replace('^CC_VAR_', '')) == 'ssh_private_key' else lookup('env', item))
         })
       }}
   loop: "{{ cc_var_names.stdout_lines }}"
