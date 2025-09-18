@@ -140,26 +140,25 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Get CC_VAR_* environment variables from controller
-  shell: env | grep '^CC_VAR_' || true
-  register: cc_env_raw
+- name: Get CC_VAR_* variable names from controller
+  shell: env | grep '^CC_VAR_' | cut -d'=' -f1 || true
+  register: cc_var_names
   delegate_to: localhost
 
 - name: Initialize cc_vars dictionary
   set_fact:
     cc_vars: {}
 
-- name: Build cc_vars dictionary from each CC_VAR_* line
+- name: Build cc_vars dictionary using lookup (preserves multiline values)
   set_fact:
     cc_vars: >-
       {{
         cc_vars | combine({
-          (item | regex_replace('^CC_VAR_([^=]+)=.*$', '\1')):
-          (item | regex_replace('^CC_VAR_[^=]+=(.*)$', '\1'))
+          (item | regex_replace('^CC_VAR_', '')): lookup('env', item)
         })
       }}
-  loop: "{{ cc_env_raw.stdout_lines }}"
-  when: cc_env_raw.stdout_lines | length > 0
+  loop: "{{ cc_var_names.stdout_lines }}"
+  when: cc_var_names.stdout_lines | length > 0
 
 - name: Write JSON payload for Vault
   copy:
