@@ -2,7 +2,7 @@ teardown: false
 pipeline_executor: false
 kubeconfig_location: "/root/.kube"
 kustomize_version: "5.4.2"
-kubectl_version: "1.31.0"
+kubectl_version: "1.32.0"
 argocd_cli_version: "3.0.5"
 clusterctl_version: "1.9.5"
 vault_version: "1.17.0"
@@ -215,6 +215,7 @@ argocd_default:
           capi_rook_ceph_post_config_sync_wave: "'-11'"
           capi_rook_ceph_rbd_pool_replication_size: "'3'"
           capi_rook_ceph_rgw_external_ip: "10.10.127.10"
+          capi_rook_ceph_rgw_hostname: "cephobjectstore.storage"
           capi_crossplane_k8s_providerconfig_name: "sc-kubernetes-provider"
           capi_crossplane_helm_providerconfig_name: "sc-helm-provider"
           capi_cluster_cidr: "10.10.127.0/24"
@@ -365,6 +366,7 @@ argocd_default:
           enable_dns_backend: "'true'"
           dns_access_role: "dns-access"
           cert_manager_access_role: "cert-man-access"
+          external_load_balancer_private_ip: "10.0.0.1"
 
         post_config:
           app_name: "post-config"
@@ -501,6 +503,9 @@ argocd_default:
           namespace: "nexus"
           public_ingress_access_domain: "true"
           storage_size: "30Gi"
+          readonly_user_name: "docker-readonly"
+        ui:
+          public_ingress_access_domain: "false"
         pre:
           app_name: "pre"
           sub_app_enabled: "true"
@@ -512,7 +517,33 @@ argocd_default:
           sub_app_enabled: "true"
           sync_wave: "'-2'"
           ansible_collection_tag: "vexp-cck8s19"
-
+    harbor:
+      argocd_app_name: "harbor"
+      app_namespace: "argocd"
+      app_enabled: "true"
+      application_gitrepo_tag: "cto-102-harbor-01"
+      sync_wave: "'-3'"
+      sub_apps:
+        harbor:
+          app_name: "harbor"
+          helm_version: "1.17.1"
+          namespace: "harbor"
+          public_ingress_access_domain: "true"
+          storage_size: "30Gi"
+          readonly_user_name: "docker-readonly"
+        ui:
+          public_ingress_access_domain: "false"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-4'"
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"
+        post_config:
+          app_name: "harbor-post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-2'"
+          ansible_collection_tag: "vexp-cck8s19"
     gitlab:
       argocd_app_name: "gitlab"
       app_namespace: "argocd"

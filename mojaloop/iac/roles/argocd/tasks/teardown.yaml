@@ -136,6 +136,14 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: remove netbird post config
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application netbird-operator-post-config-app --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: remove netbird app
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig

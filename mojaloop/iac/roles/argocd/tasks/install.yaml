@@ -9,7 +9,7 @@
 
 - name: install kubectl
   ansible.builtin.get_url:
-    url: https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
+    url: https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl
     dest: /usr/local/bin/kubectl
     mode: 700
 
@@ -73,6 +73,8 @@
     dest: "{{ extsectmpvalues.path }}/{{ item }}.yaml"
   with_items:
     - external-secretstore
+    - external-secrets-netbird-patch
+    - netbird-setupkey
 
 - name: Upload argo bootstrap files
   ansible.builtin.template:
@@ -105,12 +107,17 @@
     helm repo add external-secrets https://charts.external-secrets.io
     helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
 
+- name: Apply Netbird patch for external-secrets
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ extsectmpvalues.path }}/netbird-setupkey.yaml
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig patch deployment external-secrets -n {{ external_secrets_namespace }} --patch-file {{ extsectmpvalues.path }}/external-secrets-netbird-patch.yaml
+
 - name: Try clustersecretstore create until successful
   ansible.builtin.shell: kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -n {{ external_secrets_namespace }} -f {{ extsectmpvalues.path }}/external-secretstore.yaml
   register: clustersecretstore
   until: clustersecretstore is not failed
   retries: 30
-  delay: 5
+  delay: 10
 
 - name: Install ArgoCD
   ansible.builtin.shell: |

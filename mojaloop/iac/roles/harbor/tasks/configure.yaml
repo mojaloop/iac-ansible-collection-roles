@@ -1,0 +1,188 @@
+---
+# ---------------------------
+# Wait for Harbor
+# ---------------------------
+- name: Wait for Harbor to respond
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/users/current"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: harbor_status
+  until: harbor_status.status == 200
+  retries: 30
+  delay: 10
+
+# ---------------------------
+# Registry Management
+# ---------------------------
+
+- name: Get existing registries
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: existing_registries_refreshed
+
+- name: Ensure proxy registries exist
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body: |
+      {
+        "name": "{{ item.name }}",
+        "type": "{{ item.type | default('docker-hub') }}",
+        "url": "{{ item.endpoint }}",
+        "credential": { "type": "anonymous" }
+      }
+    status_code: 201
+  loop: "{{ proxy_projects }}"
+  when: >
+    existing_registries_refreshed.json
+    | selectattr('url', 'equalto', item.endpoint)
+    | list
+    | length == 0
+
+- name: Refresh registry list after create
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: existing_registries_refreshed
+
+- name: Map project name to registry_id
+  set_fact:
+    registry_id_map: "{{ registry_id_map | default({}) | combine({ item.name: registry_id }) }}"
+  vars:
+    registry_id: >-
+      {{
+        (existing_registries_refreshed.json
+         | selectattr('url', 'equalto', item.endpoint)
+         | map(attribute='id')
+         | list
+         | first)
+      }}
+  loop: "{{ proxy_projects }}"
+
+
+
+# ---------------------------
+# Proxy Project Management
+# ---------------------------
+- name: Check if proxy projects exist
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.name }}"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+  register: proxy_projects_status
+  loop: "{{ proxy_projects }}"
+
+- name: Create proxy projects if not exist
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'create_proxy_project.json.j2') }}"
+    body_format: json
+    status_code: 201
+  loop: "{{ proxy_projects_status.results }}"
+  when: item.status == 404
+
+# ---------------------------
+# Read-only User Management
+# ---------------------------
+- name: Check if readonly user exists
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: readonly_user_status
+
+- name: Create readonly user if not exists
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/users"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'create_readonly_user.json.j2') }}"
+    body_format: json
+    status_code: 201
+  when: readonly_user_status.json | length == 0
+
+- name: Refresh readonly user info
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/users?username={{ readonly_user.username }}"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: readonly_user_status_refreshed
+
+- name: Set readonly user ID fact
+  set_fact:
+    readonly_user_id: "{{ readonly_user_status_refreshed.json[0].user_id }}"
+
+# ---------------------------
+# Project Membership Management
+# ---------------------------
+- name: Check readonly user membership for each project
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.name }}/members"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: project_memberships
+  loop: "{{ proxy_projects }}"
+
+- name: Add readonly user to project with Guest role if missing
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects/{{ item.item.name }}/members"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      role_id: 3
+      member_user:
+        username: "{{ readonly_user.username }}"
+    status_code: [201, 409]
+  loop: "{{ project_memberships.results | default([]) }}"
+  when: >
+    (
+      item.json | default([])
+      | selectattr('entity_name', 'equalto', readonly_user.username)
+      | selectattr('role_id', 'equalto', 3)
+      | list
+      | length == 0
+    )

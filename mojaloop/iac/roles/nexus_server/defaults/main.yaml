@@ -1,4 +1,13 @@
 admin_password: oEPpOxBv_y_h5yB8uMdz
+readonly_user_name: "docker-reader"
+# Readonly user configuration for docker pulls
+readonly_user:
+  username: "{{ readonly_user_name }}"
+  password: "{{ readonly_user_password | default('ReadOnlyP@ssw0rd123') }}"
+  email: "docker-reader@example.com"
+  first_name: "Docker"
+  last_name: "Reader"
+  status: "active"
 proxy_repo_name: base-docker
 group_repo_name: docker-group
 nexus_docker_repo_listening_port: 8083
