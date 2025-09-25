@@ -140,18 +140,55 @@
     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
   register: vault_root_token
 
-- name: Write secrets to Vault using CLI
-  shell: |
-    export VAULT_ADDR="https://vault.{{ fact_dns_private_subdomain }}"
-    export VAULT_TOKEN="{{ vault_root_token.stdout }}"
-    export VAULT_SKIP_VERIFY=true
-    vault kv put secret/cc_vars \
-      ci_iam_user_secret_key="{{ lookup('env', 'CC_VAR_ci_iam_user_secret_key') }}" \
-      ci_iam_user_access_key="{{ lookup('env', 'CC_VAR_ci_iam_user_access_key') }}" \
-      ssh_private_key="{{ lookup('env', 'CC_VAR_ssh_private_key') | replace('\n', '\\n') }}" \
-      capi_cluster_proxmox_password="{{ lookup('env', 'CC_VAR_capi_cluster_proxmox_password') }}"
-  args:
-    executable: /bin/bash
+- name: Get CC_VAR_* variable names from controller
+  shell: env | grep '^CC_VAR_' | cut -d'=' -f1 || true
+  register: cc_var_names
+  delegate_to: localhost
+
+- name: Initialize cc_vars dictionary
+  set_fact:
+    cc_vars: {}
+
+- name: Build cc_vars dictionary using lookup (with special ssh_private_key handling)
+  set_fact:
+    cc_vars: >-
+      {{
+        cc_vars | combine({
+          (item | regex_replace('^CC_VAR_', '')):
+          (lookup('env', item) | replace('\n', '\\n') if (item | regex_replace('^CC_VAR_', '')) == 'ssh_private_key' else lookup('env', item))
+        })
+      }}
+  loop: "{{ cc_var_names.stdout_lines }}"
+  when: cc_var_names.stdout_lines | length > 0
+
+- name: Write JSON payload for Vault
+  copy:
+    dest: "{{ cctmpvalues.path }}/cc_vars.json"
+    mode: "0600"
+    content: "{{ cc_vars | to_nice_json }}"
+  when: cc_vars | length > 0
+
+- name: Put CC variables into Vault (single write via @file)
+  command:
+    cmd: "vault kv put secret/cc_vars @{{ cctmpvalues.path }}/cc_vars.json"
+  environment:
+    VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
+    VAULT_TOKEN: "{{ vault_root_token.stdout }}"
+    VAULT_SKIP_VERIFY: "true"
+  register: vault_put
+  changed_when: true
+  no_log: true
+  when: cc_vars | length > 0
+
+- name: Summarize Vault write result
+  debug:
+    msg: "✅ Successfully wrote {{ cc_vars.keys() | list | length }} CC variables to Vault: {{ cc_vars.keys() | list | sort | join(', ') }}"
+  when: cc_vars | length > 0
+
+- name: Show when no CC variables found
+  debug:
+    msg: "ℹ️  No CC_VAR_* environment variables found - Vault write skipped"
+  when: cc_vars | length == 0
 
 - name: save build server setup key to temp
   shell: |
