@@ -163,4 +163,20 @@ repoServer:
         - name: custom-tools
           subPath: envsubst
           mountPath: /usr/local/bin/envsubst
+  imagePullSecrets:
+    - name: {{ registry_mirror_pull_secret_name }}
+server:
+  imagePullSecrets:
+    - name: {{ registry_mirror_pull_secret_name }}
 
+controller:
+  imagePullSecrets:
+    - name: {{ registry_mirror_pull_secret_name }}
+
+applicationSet:
+  imagePullSecrets:
+    - name: {{ registry_mirror_pull_secret_name }}
+
+redis:
+  imagePullSecrets:
+    - name: {{ registry_mirror_pull_secret_name }}

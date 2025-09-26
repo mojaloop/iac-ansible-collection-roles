@@ -93,6 +93,7 @@
 
 - name: Install coredns-nodecache
   ansible.builtin.shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig create secret docker-registry {{ registry_mirror_pull_secret_name }} --docker-server={{ registry_mirror_fqdn }} --docker-username={{ docker_registry_username }} --docker-password={{ docker_registry_password }} --namespace=kube-system --dry-run=client -o yaml | kubectl apply -f -
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig apply -f {{ argotmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
 
@@ -110,13 +111,14 @@
 - name: Create argocd namespace with opt-out-mesh label
   shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get namespace argocd || kubectl create namespace argocd --dry-run=client -o yaml | kubectl label -f - opt-out-mesh="true" --overwrite | kubectl apply -f -
+    kubectl get namespace {{ argocd_namespace }} || kubectl create namespace {{ argocd_namespace }} --dry-run=client -o yaml | kubectl label -f - opt-out-mesh="true" --overwrite | kubectl apply -f -
   when: argocdappexists is failed
 
 - name: Install external-secrets
   ansible.builtin.shell: |
     helm repo add external-secrets https://charts.external-secrets.io
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true --set tolerations[0].key=netbird/ready --set tolerations[0].operator=Exists --set tolerations[0].effect=NoSchedule
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig create secret {{ registry_mirror_pull_secret_name }} registry-creds --docker-server={{ registry_mirror_fqdn }} --docker-username={{ docker_registry_username }} --docker-password={{ docker_registry_password }} --namespace={{ external_secrets_namespace }} --dry-run=client -o yaml | kubectl apply -f -
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true --set imagePullSecrets[0].name={{ registry_mirror_pull_secret_name }} --set tolerations[0].key=netbird/ready --set tolerations[0].operator=Exists --set tolerations[0].effect=NoSchedule
   when: extsecretsexists.stdout == "false"
   
 - name: Apply Netbird patch for external-secrets
@@ -137,7 +139,8 @@
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     helm repo add argo https://argoproj.github.io/argo-helm
     helm repo update
-    helm upgrade --install argocd argo/argo-cd --namespace argocd --version {{ argocd_helm_version }} \
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig create secret {{ registry_mirror_pull_secret_name }} registry-creds --docker-server={{ registry_mirror_fqdn }} --docker-username={{ docker_registry_username }} --docker-password={{ docker_registry_password }} --namespace={{ argocd_namespace }} --dry-run=client -o yaml | kubectl apply -f -
+    helm upgrade --install argocd argo/argo-cd --namespace {{ argocd_namespace }} --version {{ argocd_helm_version }} \
       --values {{ argotmpvalues.path }}/argocd-values.yaml
     kubectl -n argocd rollout status deployment/argocd-server
   when: argocdappexists is failed
