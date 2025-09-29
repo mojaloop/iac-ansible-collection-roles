@@ -48,7 +48,8 @@
   changed_when: false
 
 - name: Delete each RDSCluster one by one in netbird namespace
-  ansible.builtin.shell: |
+  ansible.builtin.sh
+  ell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete RDSCluster {{ item }} -n netbird --wait=false
   args:
