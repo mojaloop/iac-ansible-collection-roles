@@ -34,6 +34,11 @@
     channel: "{{ microk8s_version }}"
 #requires 1.30 and above, if running 1.29 or below, need to add --feature-gates=StructuredAuthenticationConfiguration=true
 
+- name: Hold microk8s snap refresh
+  become: true
+  ansible.builtin.command: snap refresh --hold
+  changed_when: false
+
 - name: add oidc config
   become: true
   ansible.builtin.blockinfile:
