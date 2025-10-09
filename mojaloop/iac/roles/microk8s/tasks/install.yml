@@ -26,25 +26,25 @@
     force: no
   when: kubernetes_oidc_enabled | bool
 
-- name: Check microk8s channel
+- name: Check microk8s installed
   become: true
-  ansible.builtin.command: snap info microk8s
-  register: microk8s_snap_info
+  ansible.builtin.command: snap list microk8s
+  register: microk8s_snap_list
   failed_when: false
 
 - name: Set fact if microk8s is not installed
   set_fact:
-    fact_microk8s_not_installed: "{{ 'no snap found for \"microk8s\"' in microk8s_snap_info.stderr or 'no snap found for \"microk8s\"' in microk8s_snap_info.stdout }}"
+    fact_microk8s_not_installed: "{{ microk8s_snap_list.rc != 0 or 'no matching snaps installed' in microk8s_snap_list.stderr or 'no matching snaps installed' in microk8s_snap_list.stdout }}"
 
-- name: Set fact if microk8s is not on desired channel
+- name: Set fact if microk8s needs update
   set_fact:
-    fact_microk8s_needs_update: "{{ (not fact_microk8s_not_installed) and (('tracking: ' ~ microk8s_version) not in microk8s_snap_info.stdout) }}"
+    fact_microk8s_needs_update: "{{ (not fact_microk8s_not_installed) and (('tracking: ' ~ microk8s_version) not in microk8s_snap_list.stdout) }}"
 
 - name: Debug microk8s snap info and facts
   debug:
     msg:
-      - "microk8s_snap_info.stdout: {{ microk8s_snap_info.stdout }}"
-      - "microk8s_snap_info.stderr: {{ microk8s_snap_info.stderr }}"
+      - "microk8s_snap_list.stdout: {{ microk8s_snap_list.stdout }}"
+      - "microk8s_snap_list.stderr: {{ microk8s_snap_list.stderr }}"
       - "fact_microk8s_not_installed: {{ fact_microk8s_not_installed }}"
       - "fact_microk8s_needs_update: {{ fact_microk8s_needs_update }}"
 
