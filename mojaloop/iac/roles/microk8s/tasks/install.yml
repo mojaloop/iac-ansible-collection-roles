@@ -30,10 +30,15 @@
   become: true
   ansible.builtin.command: snap info microk8s
   register: microk8s_snap_info
+  failed_when: false
+
+- name: Set fact if microk8s is not installed
+  set_fact:
+    fact_microk8s_not_installed: "{{ 'no snap found for \"microk8s\"' in microk8s_snap_info.stderr or 'no snap found for \"microk8s\"' in microk8s_snap_info.stdout }}"
 
 - name: Set fact if microk8s is not on desired channel
   set_fact:
-    fact_microk8s_needs_update: "{{ ('tracking: ' ~ microk8s_version) not in microk8s_snap_info.stdout }}"
+    fact_microk8s_needs_update: "{{ (not fact_microk8s_not_installed) and (('tracking: ' ~ microk8s_version) not in microk8s_snap_info.stdout) }}"
 
 - name: Install microk8s
   become: true
@@ -41,7 +46,7 @@
     name: microk8s
     classic: yes
     channel: "{{ microk8s_version }}"
-  when: not fact_microk8s_needs_update
+  when: fact_microk8s_not_installed
 
 - name: Update channel
   become: true
