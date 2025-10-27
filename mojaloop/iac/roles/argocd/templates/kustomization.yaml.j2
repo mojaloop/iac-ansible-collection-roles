@@ -5,14 +5,14 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v{{ argocd_version }}
+- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v{{ argocd_version }}&timeout=600
 - namespace.yaml
 - vault-service-account-etc.yaml
 - argo-gitlab.yaml
 - vault-env.yaml
 - argo-oidc-secrets.yaml
 {% if kubernetes_oidc_enabled | bool %}
-- k8s-oidc-rbac.yaml 
+- k8s-oidc-rbac.yaml
 {% endif %}
 
 patches:
@@ -23,7 +23,7 @@ patches:
 - path: argocd-rbac-cm-patch.yaml
   target:
     kind: ConfigMap
-    name: argocd-rbac-cm    
+    name: argocd-rbac-cm
 - path: argocd-lovely-plugin.yaml
   target:
     kind: Deployment
@@ -40,4 +40,4 @@ patches:
 - path: argocd-server-patch.yaml
   target:
     kind: Deployment
-    name: argocd-server    
+    name: argocd-server
