@@ -9,279 +9,279 @@
     kubectl apply -f {{ cctmpvalues.path }}/coredns-nodecache.yaml
   when: install_coredns | bool
 
-- name: Create argocd namespace
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl get namespace {{ fact_argocd_helm_namespace }} || kubectl create namespace {{ fact_argocd_helm_namespace }}
-
-- name: Install argocd
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    helm repo add argo https://argoproj.github.io/argo-helm
-    helm repo update
-    helm upgrade --install {{ fact_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ fact_argocd_helm_namespace }} --version {{ fact_argocd_helm_version }} \
-      --set fullnameOverride={{ fact_argocd_helm_release }} \
-      --set applicationSet.enabled=false \
-      --set notifications.enabled=false \
-      --set dex.enabled=false \
-      --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
-    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
-  when: argocdappexists is failed
-
-- name: Install root app
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
-
-- name: Find the existing env app sets
-  shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd | grep -v '\-db\-' | grep -v '\-mongodb\-' || true
-  register: existing_appsets
-
-- name: Display existing app sets string
-  debug:
-    var: existing_appsets
-
-- name: Convert the existing app sets to a list
-  set_fact:
-    existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
-
-- name: Display the envs in the fact_environment_list
-  debug:
-    var: fact_environment_list
-
-- name: Convert existing app set to remove onboard name
-  set_fact:
-    existing_appsets_conv_list: "{{ existing_appsets_list | map('regex_replace', '-env-onboard$', '') | list }}"
-
-- name: Display existing app sets
-  debug:
-    var: existing_appsets_conv_list
-
-- name: Find the difference between input_appset_list and existing_appsets_list
-  set_fact:
-    fact_appsets_to_delete: "{{ existing_appsets_conv_list | difference(fact_environment_list) }}"
-
-- name: Display app sets to delete
-  debug:
-    var: fact_appsets_to_delete
-
-- name: Delete the removed env's appset
-  shell: |
-    kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-    kubectl delete appset {{ item }}-db-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-    kubectl delete appset {{ item }}-mongodb-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
-
-  loop: "{{ fact_appsets_to_delete }}"
-
-- name: Find the apps to create
-  set_fact:
-    fact_appset_to_create: "{{ fact_environment_list }}"
-
-- name: Display app sets to create or modify
-  debug:
-    var: fact_appset_to_create
-
-- name: Upload env appset template files
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
-  with_filetree: "{{role_path}}/templates/application_set/"
-  when: item.state == 'file'
-
-- name: Install env app set
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-db-application-set.yaml
-    kubectl apply -f {{ cctmpvalues.path }}/argocd/env-mongodb-application-set.yaml
-
-- name: Install utils and wait for argocd autosync
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-    until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
-    kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
-    until argocd app sync {{ fact_argocd_helm_release }}; do echo "awaiting argocd to sync..." && sleep 10; done
-    kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
-  args:
-    executable: /bin/bash
-
-# - name: wait for sc cluster
+# - name: Create argocd namespace
 #   shell: |
 #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-#     kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
-#     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
-#     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
-#   register: clusterstatus
-#   until: clusterstatus is not failed
-#   retries: 20
+#     kubectl get namespace {{ fact_argocd_helm_namespace }} || kubectl create namespace {{ fact_argocd_helm_namespace }}
+
+# - name: Install argocd
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     helm repo add argo https://argoproj.github.io/argo-helm
+#     helm repo update
+#     helm upgrade --install {{ fact_argocd_helm_release }} argo/argo-cd --create-namespace --namespace {{ fact_argocd_helm_namespace }} --version {{ fact_argocd_helm_version }} \
+#       --set fullnameOverride={{ fact_argocd_helm_release }} \
+#       --set applicationSet.enabled=false \
+#       --set notifications.enabled=false \
+#       --set dex.enabled=false \
+#       --values {{ cctmpvalues.path }}/argocd/argocd-values.yaml
+#     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-server
+#   when: argocdappexists is failed
+
+# - name: Install root app
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/root-app.yaml
+
+# - name: Find the existing env app sets
+#   shell: kubectl get appset --no-headers -o custom-columns=":metadata.name" --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd | grep -v '\-db\-' | grep -v '\-mongodb\-' || true
+#   register: existing_appsets
+
+# - name: Display existing app sets string
+#   debug:
+#     var: existing_appsets
+
+# - name: Convert the existing app sets to a list
+#   set_fact:
+#     existing_appsets_list: "{{ existing_appsets.stdout_lines }}"
+
+# - name: Display the envs in the fact_environment_list
+#   debug:
+#     var: fact_environment_list
+
+# - name: Convert existing app set to remove onboard name
+#   set_fact:
+#     existing_appsets_conv_list: "{{ existing_appsets_list | map('regex_replace', '-env-onboard$', '') | list }}"
+
+# - name: Display existing app sets
+#   debug:
+#     var: existing_appsets_conv_list
+
+# - name: Find the difference between input_appset_list and existing_appsets_list
+#   set_fact:
+#     fact_appsets_to_delete: "{{ existing_appsets_conv_list | difference(fact_environment_list) }}"
+
+# - name: Display app sets to delete
+#   debug:
+#     var: fact_appsets_to_delete
+
+# - name: Delete the removed env's appset
+#   shell: |
+#     kubectl delete appset {{ item }}-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+#     kubectl delete appset {{ item }}-db-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+#     kubectl delete appset {{ item }}-mongodb-env-onboard --kubeconfig {{ kubeconfig_location }}/kubeconfig -n argocd
+
+#   loop: "{{ fact_appsets_to_delete }}"
+
+# - name: Find the apps to create
+#   set_fact:
+#     fact_appset_to_create: "{{ fact_environment_list }}"
+
+# - name: Display app sets to create or modify
+#   debug:
+#     var: fact_appset_to_create
+
+# - name: Upload env appset template files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ cctmpvalues.path }}/argocd/{{ item.path | regex_replace('\\.j2$', '') }}"
+#   with_filetree: "{{role_path}}/templates/application_set/"
+#   when: item.state == 'file'
+
+# - name: Install env app set
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-application-set.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-db-application-set.yaml
+#     kubectl apply -f {{ cctmpvalues.path }}/argocd/env-mongodb-application-set.yaml
+
+# - name: Install utils and wait for argocd autosync
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     export ARGOCD_PWD=$(kubectl -n {{ fact_argocd_helm_namespace }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+#     until argocd login --core --username admin --password $ARGOCD_PWD --insecure; do :; done
+#     kubectl config set-context --current --namespace={{ fact_argocd_helm_namespace }}
+#     until argocd app sync {{ fact_argocd_helm_release }}; do echo "awaiting argocd to sync..." && sleep 10; done
+#     kubectl -n {{ fact_argocd_helm_namespace }} rollout status deployment/{{ fact_argocd_helm_release }}-repo-server
+#   args:
+#     executable: /bin/bash
+
+# # - name: wait for sc cluster
+# #   shell: |
+# #     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+# #     kubectl get cluster -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} -o jsonpath="{.status.phase}"
+# #     clusterctl get kubeconfig -n {{ fact_capi_cluster_namespace }} {{ fact_capi_cluster_name }} > /tmp/sc-kubeconfig.yaml
+# #     kubectl --kubeconfig=/tmp/sc-kubeconfig.yaml get nodes
+# #   register: clusterstatus
+# #   until: clusterstatus is not failed
+# #   retries: 20
+# #   delay: 30
+# #   ignore_errors: true
+# #   args:
+# #     executable: /bin/bash
+# #   when: fact_cloud_provider == 'private-cloud'
+
+# - name: wait for netbird-management autosync
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_netbird_namespace }} rollout status deployment/netbird-management
+#     kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }}
+#   register: outputnetbird
+#   until: outputnetbird is not failed
+#   retries: 200
 #   delay: 30
 #   ignore_errors: true
 #   args:
 #     executable: /bin/bash
-#   when: fact_cloud_provider == 'private-cloud'
 
-- name: wait for netbird-management autosync
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_netbird_namespace }} rollout status deployment/netbird-management
-    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }}
-  register: outputnetbird
-  until: outputnetbird is not failed
-  retries: 200
-  delay: 30
-  ignore_errors: true
-  args:
-    executable: /bin/bash
+# - name: Get Vault root token
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
+#   register: vault_root_token
 
-- name: Get Vault root token
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_argo_merged_config.apps.vault.sub_apps.vault.namespace }} get secret {{ fact_argo_merged_config.apps.vault.sub_apps.vault.vault_keys_secret }} -o jsonpath="{.data.root_token}" | base64 -d
-  register: vault_root_token
+# - name: Get CC_VAR_* variable names from controller
+#   shell: env | grep '^CC_VAR_' | cut -d'=' -f1 || true
+#   register: cc_var_names
+#   delegate_to: localhost
 
-- name: Get CC_VAR_* variable names from controller
-  shell: env | grep '^CC_VAR_' | cut -d'=' -f1 || true
-  register: cc_var_names
-  delegate_to: localhost
+# - name: Initialize cc_vars dictionary
+#   set_fact:
+#     cc_vars: {}
 
-- name: Initialize cc_vars dictionary
-  set_fact:
-    cc_vars: {}
+# - name: Build cc_vars dictionary using lookup (with special ssh_private_key handling)
+#   set_fact:
+#     cc_vars: >-
+#       {{
+#         cc_vars | combine({
+#           (item | regex_replace('^CC_VAR_', '')):
+#           (lookup('env', item) | replace('\n', '\\n') if (item | regex_replace('^CC_VAR_', '')) == 'ssh_private_key' else lookup('env', item))
+#         })
+#       }}
+#   loop: "{{ cc_var_names.stdout_lines }}"
+#   when: cc_var_names.stdout_lines | length > 0
 
-- name: Build cc_vars dictionary using lookup (with special ssh_private_key handling)
-  set_fact:
-    cc_vars: >-
-      {{
-        cc_vars | combine({
-          (item | regex_replace('^CC_VAR_', '')):
-          (lookup('env', item) | replace('\n', '\\n') if (item | regex_replace('^CC_VAR_', '')) == 'ssh_private_key' else lookup('env', item))
-        })
-      }}
-  loop: "{{ cc_var_names.stdout_lines }}"
-  when: cc_var_names.stdout_lines | length > 0
+# - name: Write JSON payload for Vault
+#   copy:
+#     dest: "{{ cctmpvalues.path }}/cc_vars.json"
+#     mode: "0600"
+#     content: "{{ cc_vars | to_nice_json }}"
+#   when: cc_vars | length > 0
 
-- name: Write JSON payload for Vault
-  copy:
-    dest: "{{ cctmpvalues.path }}/cc_vars.json"
-    mode: "0600"
-    content: "{{ cc_vars | to_nice_json }}"
-  when: cc_vars | length > 0
+# - name: Put CC variables into Vault (single write via @file)
+#   command:
+#     cmd: "vault kv put secret/cc_vars @{{ cctmpvalues.path }}/cc_vars.json"
+#   environment:
+#     VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
+#     VAULT_TOKEN: "{{ vault_root_token.stdout }}"
+#     VAULT_SKIP_VERIFY: "true"
+#   register: vault_put
+#   changed_when: true
+#   no_log: true
+#   when: cc_vars | length > 0
 
-- name: Put CC variables into Vault (single write via @file)
-  command:
-    cmd: "vault kv put secret/cc_vars @{{ cctmpvalues.path }}/cc_vars.json"
-  environment:
-    VAULT_ADDR: "https://vault.{{ fact_dns_private_subdomain }}"
-    VAULT_TOKEN: "{{ vault_root_token.stdout }}"
-    VAULT_SKIP_VERIFY: "true"
-  register: vault_put
-  changed_when: true
-  no_log: true
-  when: cc_vars | length > 0
+# - name: Summarize Vault write result
+#   debug:
+#     msg: "✅ Successfully wrote {{ cc_vars.keys() | list | length }} CC variables to Vault: {{ cc_vars.keys() | list | sort | join(', ') }}"
+#   when: cc_vars | length > 0
 
-- name: Summarize Vault write result
-  debug:
-    msg: "✅ Successfully wrote {{ cc_vars.keys() | list | length }} CC variables to Vault: {{ cc_vars.keys() | list | sort | join(', ') }}"
-  when: cc_vars | length > 0
+# - name: Show when no CC variables found
+#   debug:
+#     msg: "ℹ️  No CC_VAR_* environment variables found - Vault write skipped"
+#   when: cc_vars | length == 0
 
-- name: Show when no CC variables found
-  debug:
-    msg: "ℹ️  No CC_VAR_* environment variables found - Vault write skipped"
-  when: cc_vars | length == 0
+# - name: save build server setup key to temp
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.password}" | base64 -d
+#   register: build_server_netbird_setup_key
 
-- name: save build server setup key to temp
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_netbird_namespace }} get secret {{ fact_netbird_setup_key_secret_name }} -o jsonpath="{.data.password}" | base64 -d
-  register: build_server_netbird_setup_key
+# - name: set build server netbird setup key fact
+#   set_fact:
+#     fact_build_server_netbird_setup_key: "{{ build_server_netbird_setup_key.stdout | trim }}"
 
-- name: set build server netbird setup key fact
-  set_fact:
-    fact_build_server_netbird_setup_key: "{{ build_server_netbird_setup_key.stdout | trim }}"
+# - name: import build server join to netbird role
+#   ansible.builtin.import_role:
+#     name: mojaloop.iac.netbird_client
+#     tasks_from: install
+#   vars:
+#     netbird_version: "{{ netbird_build_server_client_version }}"
+#     netbird_api_host: "https://netbird.{{ fact_dns_public_subdomain }}:443"
+#     netbird_setup_key: "{{ fact_build_server_netbird_setup_key }}"
+#   delegate_to: localhost
+#   when: not (pipeline_executor | bool)
 
-- name: import build server join to netbird role
-  ansible.builtin.import_role:
-    name: mojaloop.iac.netbird_client
-    tasks_from: install
-  vars:
-    netbird_version: "{{ netbird_build_server_client_version }}"
-    netbird_api_host: "https://netbird.{{ fact_dns_public_subdomain }}:443"
-    netbird_setup_key: "{{ fact_build_server_netbird_setup_key }}"
-  delegate_to: localhost
-  when: not (pipeline_executor | bool)
+# - name: get k8s kubernetes_oidc_issuer
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_issuer}" | base64 -d
+#   register: kubernetes_oidc_issuer
 
-- name: get k8s kubernetes_oidc_issuer
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_issuer}" | base64 -d
-  register: kubernetes_oidc_issuer
+# - name: get k8s kubernetes_oidc_client_id
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_client_id}" | base64 -d
+#   register: kubernetes_oidc_client_id
 
-- name: get k8s kubernetes_oidc_client_id
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_k8s_oidc_namespace }} get secret {{ fact_k8s_oidc_secret_name }} -o jsonpath="{.data.kubernetes_oidc_client_id}" | base64 -d
-  register: kubernetes_oidc_client_id
+# - name: copy kubeconfig for oidc and add credentials.
+#   shell: |
+#     cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig
+#     export KUBECONFIG={{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig
+#     kubectl config delete-user admin
+#     kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
+#     kubectl config set-context $(kubectl config current-context) --user=oidc
 
-- name: copy kubeconfig for oidc and add credentials.
-  shell: |
-    cp {{ kubeconfig_location }}/kubeconfig {{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig
-    export KUBECONFIG={{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig
-    kubectl config delete-user admin
-    kubectl config set-credentials oidc --exec-api-version=client.authentication.k8s.io/v1beta1 --exec-command=kubectl --exec-arg=oidc-login --exec-arg=get-token --exec-arg=--oidc-issuer-url={{ kubernetes_oidc_issuer.stdout }} --exec-arg=--oidc-client-id={{ kubernetes_oidc_client_id.stdout }} --exec-arg=--oidc-extra-scope=email --exec-arg=--oidc-extra-scope=offline_access --exec-arg=--oidc-extra-scope=profile --exec-arg=--oidc-extra-scope=openid
-    kubectl config set-context $(kubectl config current-context) --user=oidc
+# - name: get gitlab access token
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
+#   register: fact_gitlab_access_token
 
-- name: get gitlab access token
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n {{ fact_gitlab_namespace }} get secret {{ fact_gitlab_token_secret_name }} -o jsonpath="{.data.{{ fact_gitlab_token_secret_key }}}" | base64 -d
-  register: fact_gitlab_access_token
+# - name: copy readme.md to bastion
+#   template:
+#     src: "tenancy-docs-readme.md.j2"
+#     dest: "{{ kubeconfig_location }}/README.md"
+#   vars:
+#     netbird_admin_url: "https://netbird-dashboard.{{ fact_dns_public_subdomain }}:443"
+#     netbird_mgmt_url: "https://netbird.{{ fact_dns_public_subdomain }}:443"
+#     gitlab_fqdn: "{{ fact_gitlab_fqdn }}"
 
-- name: copy readme.md to bastion
-  template:
-    src: "tenancy-docs-readme.md.j2"
-    dest: "{{ kubeconfig_location }}/README.md"
-  vars:
-    netbird_admin_url: "https://netbird-dashboard.{{ fact_dns_public_subdomain }}:443"
-    netbird_mgmt_url: "https://netbird.{{ fact_dns_public_subdomain }}:443"
-    gitlab_fqdn: "{{ fact_gitlab_fqdn }}"
+# - name: wait for gitlab post-config to be done
+#   shell: |
+#     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+#     kubectl -n argocd get application gitlab-post-config -o=jsonpath='{.status.health.status}'
+#   register: outputgitlabpostconfig
+#   until: outputgitlabpostconfig is not failed and outputgitlabpostconfig.stdout == "Healthy"
+#   retries: 100
+#   delay: 30
+#   ignore_errors: true
+#   args:
+#     executable: /bin/bash
 
-- name: wait for gitlab post-config to be done
-  shell: |
-    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl -n argocd get application gitlab-post-config -o=jsonpath='{.status.health.status}'
-  register: outputgitlabpostconfig
-  until: outputgitlabpostconfig is not failed and outputgitlabpostconfig.stdout == "Healthy"
-  retries: 100
-  delay: 30
-  ignore_errors: true
-  args:
-    executable: /bin/bash
+# - name: save oidc kubeconfig to gitlab
+#   shell: |
+#     git config --global user.email "root@{{ fact_gitlab_fqdn }}"
+#     git config --global user.name "root"
+#     git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git {{ cctmpvalues.path }}/tenancy-docs
+#     cd {{ cctmpvalues.path }}/tenancy-docs
+#     cp {{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig .
+#     cp {{ kubeconfig_location }}/README.md .
+#     git add {{ cluster_name }}-oidc-kubeconfig README.md
+#     git commit -m "Push existing {{ cluster_name }} oidc kubeconfig and readme to GitLab"
+#     git push
 
-- name: save oidc kubeconfig to gitlab
-  shell: |
-    git config --global user.email "root@{{ fact_gitlab_fqdn }}"
-    git config --global user.name "root"
-    git clone https://root:{{ fact_gitlab_access_token.stdout }}@{{ fact_gitlab_fqdn }}/tenancy-internal/tenancy-docs.git {{ cctmpvalues.path }}/tenancy-docs
-    cd {{ cctmpvalues.path }}/tenancy-docs
-    cp {{ kubeconfig_location }}/{{ cluster_name }}-oidc-kubeconfig .
-    cp {{ kubeconfig_location }}/README.md .
-    git add {{ cluster_name }}-oidc-kubeconfig README.md
-    git commit -m "Push existing {{ cluster_name }} oidc kubeconfig and readme to GitLab"
-    git push
+# - name: copy env vars for push to cluster script
+#   template:
+#     src: "localenv.sh.j2"
+#     dest: "{{ kubeconfig_local_location }}/gitlabenv.sh"
+#   delegate_to: localhost
+#   when: not (pipeline_executor | bool)
 
-- name: copy env vars for push to cluster script
-  template:
-    src: "localenv.sh.j2"
-    dest: "{{ kubeconfig_local_location }}/gitlabenv.sh"
-  delegate_to: localhost
-  when: not (pipeline_executor | bool)
-
-- name: set k8s oidc facts
-  set_fact:
-    kubernetes_oidc_issuer: "{{ kubernetes_oidc_issuer.stdout }}"
-    kubernetes_oidc_client_id: "{{ kubernetes_oidc_client_id.stdout }}"
-    kubernetes_oidc_groups_claim: "{{ fact_kubernetes_oidc_groups_claim }}"
-    kubernetes_oidc_groups_prefix: ""
-    kubernetes_oidc_username_prefix: ""
-    kubernetes_oidc_username_claim: "email"
+# - name: set k8s oidc facts
+#   set_fact:
+#     kubernetes_oidc_issuer: "{{ kubernetes_oidc_issuer.stdout }}"
+#     kubernetes_oidc_client_id: "{{ kubernetes_oidc_client_id.stdout }}"
+#     kubernetes_oidc_groups_claim: "{{ fact_kubernetes_oidc_groups_claim }}"
+#     kubernetes_oidc_groups_prefix: ""
+#     kubernetes_oidc_username_prefix: ""
+#     kubernetes_oidc_username_claim: "email"
