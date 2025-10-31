@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v{{ argocd_version }}&timeout=600
+- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v{{ argocd_version }}&timeout=600s
 - namespace.yaml
 - vault-service-account-etc.yaml
 - argo-gitlab.yaml
