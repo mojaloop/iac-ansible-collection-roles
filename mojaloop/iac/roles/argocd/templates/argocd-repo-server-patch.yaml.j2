@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: repo-server
+        env:
+        - name: ARGOCD_EXEC_TIMEOUT
+          value: "600s"
+        - name: ARGOCD_EXEC_FATAL_TIMEOUT
+          value: "630s"

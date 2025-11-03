@@ -96,6 +96,7 @@
     - argocd-cmd-params-cm-patch
     - k8s-oidc-rbac
     - coredns-nodecache
+    - argocd-repo-server-patch
 
 - name: Install coredns-nodecache
   ansible.builtin.shell: |
