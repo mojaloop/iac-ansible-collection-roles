@@ -1,0 +1,10 @@
+- op: add
+  path: "/spec/template/spec/containers/1/env/-"
+  value:
+    name: ARGOCD_EXEC_TIMEOUT
+    value: "600s"
+- op: add
+  path: "/spec/template/spec/containers/1/env/-"
+  value:
+    name: ARGOCD_EXEC_FATAL_TIMEOUT
+    value: "630s"
