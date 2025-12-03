@@ -69,7 +69,7 @@
 #removing taint that gets set by register-with-taints on startup.  if node is restarted, this taint should still be set so that it will prevent csi pods from running before netbird operator.
 - name: remove netbird taints from all nodes
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint nodes --all netbird/ready:NoSchedule-
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint nodes --all netbird/ready:NoSchedule- || true
 
 - name: Upload ext secrets bootstrap files
   ansible.builtin.template:
