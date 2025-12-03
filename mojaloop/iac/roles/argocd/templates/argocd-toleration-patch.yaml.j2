@@ -1,9 +1,6 @@
-apiVersion: apps/v1
-kind: Deployment
-spec:
-  template:
-    spec:
-      tolerations:
-        - key: "netbird/ready"
-          operator: "Exists"
-          effect: "NoSchedule"
+- op: add
+  path: /spec/template/spec/tolerations
+  value:
+    - key: "netbird/ready"
+      operator: "Exists"
+      effect: "NoSchedule"
