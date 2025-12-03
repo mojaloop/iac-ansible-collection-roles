@@ -66,6 +66,10 @@
     kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint --overwrite nodes {{ item.node_name }} {% for taints in lookup('dict', item.node_taints, wantlist=True) %} {{ taints.value }}{% endfor %}
   loop: "{{ node_pool_taints }}"
   when: node_pool_taints is defined
+#removing taint that gets set by register-with-taints on startup.  if node is restarted, this taint should still be set so that it will prevent csi pods from running before netbird operator.
+- name: remove netbird taints from all nodes
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint nodes --all netbird/ready:NoSchedule-
 
 - name: Upload ext secrets bootstrap files
   ansible.builtin.template:
@@ -97,6 +101,7 @@
     - k8s-oidc-rbac
     - coredns-nodecache
     - argocd-repo-server-patch
+    - argocd-toleration-patch
 
 - name: Install coredns-nodecache
   ansible.builtin.shell: |
@@ -106,7 +111,7 @@
 - name: Install external-secrets
   ansible.builtin.shell: |
     helm repo add external-secrets https://charts.external-secrets.io
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true --set tolerations[0].key=netbird/ready --set tolerations[0].operator=Exists --set tolerations[0].effect=NoSchedule
 
 - name: Apply Netbird patch for external-secrets
   ansible.builtin.shell: |
