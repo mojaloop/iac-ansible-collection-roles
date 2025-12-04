@@ -146,13 +146,13 @@
   when: enable_registry_mirror
 
 - name: Set SystemdCgroup in containerd config
+  become: true
   ansible.builtin.replace:
     path: /var/snap/microk8s/current/args/containerd-template.toml
-    regexp: '(\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\]\n\s*runtime_type = "io\.containerd\.runc\.v2"\n)(?!\s*\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\.options\])'    
+    regexp: '(^\s*runtime_type = "io\.containerd\.runc\.v2"\s*$)'
     replace: |
-      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-        runtime_type = "io.containerd.runc.v2"
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+      runtime_type = "io.containerd.runc.v2"
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
           SystemdCgroup = true
 
 - name: Create custom certificates
