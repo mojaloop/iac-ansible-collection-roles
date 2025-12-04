@@ -149,7 +149,7 @@
   become: true
   ansible.builtin.replace:
     path: /var/snap/microk8s/current/args/containerd-template.toml
-    regexp: '(^\s*runtime_type = "io\.containerd\.runc\.v2"\s*$)'
+    regexp: '(^\s{6}runtime_type = "io\.containerd\.runc\.v2"\s*$)'
     replace: |
       runtime_type = "io.containerd.runc.v2"
       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
