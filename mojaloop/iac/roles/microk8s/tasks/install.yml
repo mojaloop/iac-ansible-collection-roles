@@ -149,8 +149,9 @@
   become: true
   ansible.builtin.replace:
     path: /var/snap/microk8s/current/args/containerd-template.toml
-    regexp: '(\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\]\s*\n\s*# runtime_type.*\n\s*runtime_type = "\${RUNTIME_TYPE}")'
+    regexp: '(\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\]\s*\n\s*# runtime_type.*\n\s*runtime_type = "\${RUNTIME_TYPE}"\s*\n\s*\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\.options\]\s*\n\s*SystemdCgroup = true)'
     replace: '    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]\n      # runtime_type is the runtime type to use in containerd e.g. io.containerd.runtime.v1.linux\n      runtime_type = "${RUNTIME_TYPE}"\n      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]\n        SystemdCgroup = true'
+
 - name: Create custom certificates
   become: true
   ansible.builtin.template:
