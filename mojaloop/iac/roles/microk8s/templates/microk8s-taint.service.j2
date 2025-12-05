@@ -1,0 +1,16 @@
+[Unit]
+Description=Apply netbird taint on startup
+After=microk8s.daemon-apiserver.service microk8s.daemon-kubelet.service
+Wants=microk8s.daemon-apiserver.service
+
+[Service]
+Type=oneshot
+# Wait until MicroK8s is ready, detect local node name, apply taint
+ExecStart=/bin/bash -c '\
+  /snap/bin/microk8s.status --wait-ready; \
+  NODE_NAME=$(hostname -s); \
+  /snap/bin/microk8s.kubectl taint nodes "$NODE_NAME" netbird/ready=false:NoSchedule --overwrite \
+'
+
+[Install]
+WantedBy=multi-user.target

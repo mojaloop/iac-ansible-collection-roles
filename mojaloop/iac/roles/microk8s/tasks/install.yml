@@ -85,9 +85,8 @@
     dest: /var/snap/microk8s/current/args/kubelet
     marker: "# {mark} ANSIBLE MANAGED: microk8s kubelet config"
     content: |
-      --allowed-unsafe-sysctls=net.ipv4.ip_forward"
+      --allowed-unsafe-sysctls=net.ipv4.ip_forward
       --max-pods={{ max_pods_per_node }}
-      --register-with-taints=netbird/ready=false:NoSchedule
 
 - name: Wait for microk8s to be ready
   become: true
@@ -194,3 +193,24 @@
     content: |
       127.0.0.1 api.snapcraft.io
   when: microk8s_disable_snap_autoupdate
+
+- name: Create systemd service to apply taint on startup
+  become: true
+  ansible.builtin.template:
+    src: microk8s-taint.service.j2
+    dest: /etc/systemd/system/microk8s-taint.service
+    mode: '0644'
+  notify: 
+    - reload systemd
+    - enable microk8s-taint
+
+- name: reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable microk8s-taint
+  become: true
+  ansible.builtin.systemd:
+    name: microk8s-taint
+    enabled: yes
