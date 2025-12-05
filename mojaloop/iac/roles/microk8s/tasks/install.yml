@@ -87,6 +87,7 @@
     content: |
       --allowed-unsafe-sysctls=net.ipv4.ip_forward
       --max-pods={{ max_pods_per_node }}
+      --cgroup-driver=systemd
 
 - name: Wait for microk8s to be ready
   become: true
