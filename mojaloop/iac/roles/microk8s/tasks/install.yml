@@ -203,14 +203,3 @@
   notify: 
     - reload systemd
     - enable microk8s-taint
-
-- name: reload systemd
-  become: true
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: enable microk8s-taint
-  become: true
-  ansible.builtin.systemd:
-    name: microk8s-taint
-    enabled: yes
