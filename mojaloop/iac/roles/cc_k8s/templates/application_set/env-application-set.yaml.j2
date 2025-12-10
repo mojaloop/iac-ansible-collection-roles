@@ -200,6 +200,14 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].sc_ports }}"
             - name: "sc_network_resource_group"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_operator'].sc_network_resource_group }}"
+            - name: "hyphenated_domain"
+              value: "{{ '{{' }} replace \".\" \"-\" .domain {{ '}}' }}"
+            - name: "sc_provider_config_name"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].sc_provider_config_name }}"
+            - name: "pxc_backup_bucket_storage_size"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].pxc_backup_bucket_storage_size }}"
+            - name: "psmb_backup_bucket_storage_size"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].psmb_backup_bucket_storage_size }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'argocd'

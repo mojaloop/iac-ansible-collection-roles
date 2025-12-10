@@ -70,7 +70,7 @@ argocd_default:
           sub_app_enabled: "true"
         redis: # TODO not used?
           app_name: "redis-operator"
-          helm_version: "0.16.4"
+          helm_version: "0.16.3"
           namespace: "redis"
           debug: "debug"
         percona:
