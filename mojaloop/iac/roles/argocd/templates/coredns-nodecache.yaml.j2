@@ -1,4 +1,3 @@
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -157,6 +156,9 @@ spec:
         operator: Exists
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+      - key: "netbird/ready"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: coredns-nodecache
         image: contentful/coredns-nodecache:v{{ coredns_localcache_version }}

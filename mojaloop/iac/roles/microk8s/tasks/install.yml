@@ -85,8 +85,9 @@
     dest: /var/snap/microk8s/current/args/kubelet
     marker: "# {mark} ANSIBLE MANAGED: microk8s kubelet config"
     content: |
-      --allowed-unsafe-sysctls=net.ipv4.ip_forward"
+      --allowed-unsafe-sysctls=net.ipv4.ip_forward
       --max-pods={{ max_pods_per_node }}
+      --cgroup-driver=systemd
 
 - name: Wait for microk8s to be ready
   become: true
@@ -144,6 +145,12 @@
     content: "{{ registry_auth_blocks }}"
   when: enable_registry_mirror
 
+- name: Add SystemdCgroup to runc runtime options
+  become: true
+  ansible.builtin.replace:
+    path: /var/snap/microk8s/current/args/containerd-template.toml
+    regexp: '(\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\][\s\S]*?runtime_type = "\${RUNTIME_TYPE}")(?!\s*\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\.options\])'
+    replace: '\1\n      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]\n        SystemdCgroup = true'
 - name: Create custom certificates
   become: true
   ansible.builtin.template:
@@ -187,3 +194,13 @@
     content: |
       127.0.0.1 api.snapcraft.io
   when: microk8s_disable_snap_autoupdate
+
+- name: Create systemd service to apply taint on startup
+  become: true
+  ansible.builtin.template:
+    src: microk8s-taint.service.j2
+    dest: /etc/systemd/system/microk8s-taint.service
+    mode: '0644'
+  notify: 
+    - reload systemd
+    - enable microk8s-taint
