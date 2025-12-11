@@ -5,6 +5,33 @@
     state: latest
   become: true
 
+- name: Ensure nbd.conf exists with nbds_max=128
+  copy:
+    dest: /etc/modprobe.d/nbd.conf
+    content: "options nbd nbds_max=128\n"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Attempt to unload nbd module (ignored if in use)
+  shell: "modprobe -r nbd"
+  register: unload_nbd
+  ignore_errors: true
+
+- name: Load nbd module with nbds_max=128
+  shell: "modprobe nbd nbds_max=128"
+  register: load_nbd
+  ignore_errors: true
+
+- name: Check nbds_max value
+  shell: "cat /sys/module/nbd/parameters/nbds_max 2>/dev/null || echo 'module_not_loaded'"
+  register: nbds_value
+
+- name: Print nbds_max result
+  debug:
+    msg: "nbds_max is: {{ nbds_value.stdout }}"
+
+
 - name: "create directory for microk8s config"
   become: true
   ansible.builtin.file:
