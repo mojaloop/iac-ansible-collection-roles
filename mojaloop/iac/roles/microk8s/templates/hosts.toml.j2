@@ -3,3 +3,6 @@ server = "https://{{ item }}"
 [host."https://{{ registry_mirror_fqdn }}/v2/{{ item }}"]
 capabilities = ["pull", "resolve"]
 override_path = true
+  [host."https://{{ registry_mirror_fqdn }}/v2/{{ item }}".auth]
+    username = "{{ docker_registry_username }}"
+    password = "{{ docker_registry_password }}"
