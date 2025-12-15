@@ -18,10 +18,10 @@
     state: restarted
   when: "'multipath-tools' in ansible_facts.packages and multipathconf.changed"
 
-- name: Ensure nbd.conf exists with nbds_max=128
+- name: Ensure nbd.conf exists with nbds_max=2048
   copy:
     dest: /etc/modprobe.d/nbd.conf
-    content: "options nbd nbds_max=128\n"
+    content: "options nbd nbds_max=2048\n"
     owner: root
     group: root
     mode: '0644'
@@ -31,8 +31,8 @@
   register: unload_nbd
   ignore_errors: true
 
-- name: Load nbd module with nbds_max=128
-  shell: "modprobe nbd nbds_max=128"
+- name: Load nbd module with nbds_max=2048
+  shell: "modprobe nbd nbds_max=2048"
   register: load_nbd
   ignore_errors: true
 
