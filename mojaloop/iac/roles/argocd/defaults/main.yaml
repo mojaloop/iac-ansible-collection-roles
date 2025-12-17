@@ -37,3 +37,9 @@ coredns_aws_dns: "{{ cluster_cloud_provider == 'aws' }}"
 coredns_cc_vpc: "{{ vpc_cidr }}"
 coredns_wildcard_domain: "*.{{ public_subdomain }}"
 coredns_wildcard_target: "{{ external_load_balancer_private_ip }}"
+registry_mirror_fqdn: example.com
+registry_mirror_port: 9000
+docker_registry_username: "docker-reader"
+docker_registry_password: "ReadOnlyP@ssw0rd123"
+registry_mirror_pull_secret_name: "registry-creds"
+argocd_namespace: "argocd"

@@ -147,6 +147,8 @@ spec:
       labels:
         k8s-app: coredns-nodecache
     spec:
+      imagePullSecrets:
+        - name: {{ registry_mirror_pull_secret_name }}
       priorityClassName: system-node-critical
       serviceAccountName: coredns-nodecache
       hostNetwork: true

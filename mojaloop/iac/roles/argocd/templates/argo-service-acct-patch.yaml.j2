@@ -1,9 +1,0 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: patch-serviceAccount
-spec:
-  template:
-    spec:
-      serviceAccount: argocd
-      automountServiceAccountToken: true
