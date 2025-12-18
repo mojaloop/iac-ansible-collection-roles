@@ -11,6 +11,30 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: Remove all webhooks in the cluster
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for webhook in $(kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io -o name 2>/dev/null); do
+      kubectl delete $webhook --ignore-not-found || true
+    done
+    for webhook in $(kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io -o name 2>/dev/null); do
+      kubectl delete $webhook --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove kyverno ClusterPolicy from the cluster
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    kubectl delete -n argocd application kyverno --ignore-not-found
+    for policy in $(kubectl get clusterpolicy -o name 2>/dev/null); do
+      kubectl delete $policy --ignore-not-found || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: Remove moja app
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -46,10 +70,36 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: Remove randomsecret, passwordpolicy and vaultsecret finalizers in ory namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret"; do
+      kubectl get "$resource" -n ory -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n ory --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: Remove keycloak app
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
     kubectl delete -n argocd application keycloak-app --ignore-not-found
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
+- name: Remove randomsecret, passwordpolicy and vaultsecret finalizers in keycloak namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret"; do
+      kubectl get "$resource" -n keycloak -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n keycloak --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
   args:
     executable: /bin/bash
   ignore_errors: true
@@ -103,6 +153,19 @@
     executable: /bin/bash
   ignore_errors: true
 
+- name: Remove randomsecret, passwordpolicy finalizers in monitoring namespace
+  ansible.builtin.shell: |
+    export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
+    for resource in \
+      "passwordpolicy" \
+      "randomsecret"; do
+      kubectl get "$resource" -n monitoring -o json 2>/dev/null | jq -r '.items[].metadata.name' | \
+      xargs -I{} kubectl patch "$resource" {} -n monitoring --type=merge -p '{"metadata":{"finalizers":[]}}' || true
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+
 - name: Remove vault resources
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
@@ -147,7 +210,6 @@
 - name: remove other apps
   ansible.builtin.shell: |
     export KUBECONFIG={{ kubeconfig_location }}/kubeconfig
-    kubectl delete -n argocd application kyverno --ignore-not-found
     kubectl delete -n argocd application external-dns-app --ignore-not-found
     kubectl delete -n argocd application istio-app --ignore-not-found
     kubectl delete -n argocd application certmanager-app --ignore-not-found
