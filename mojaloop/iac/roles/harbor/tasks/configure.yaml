@@ -263,11 +263,11 @@
         ]
       }}
   loop: "{{ converted_classic_charts }}"
-  
+
 - name: Ensure Helm 3 is installed
   ansible.builtin.command: helm version --short
   register: helm_check
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Download and install Helm if missing
   ansible.builtin.get_url:
@@ -299,6 +299,9 @@
       register: chart_exists
       ignore_errors: true
       changed_when: false
+      loop: "{{ charts_to_push }}"
+      loop_control:
+        loop_var: item
 
     - name: Pull chart version from upstream if not exists
       command: >
@@ -308,15 +311,23 @@
       args:
         creates: "/tmp/{{ item.name }}-{{ item.version }}.tgz"
       when: chart_exists.rc != 0
+      loop: "{{ charts_to_push }}"
+      loop_control:
+        loop_var: item
 
     - name: Push chart to helm-oci-proxy if not exists
       command: >
         helm push /tmp/{{ item.name }}-{{ item.version }}.tgz
         oci://{{ harbor_url }}/helm-oci-proxy
       when: chart_exists.rc != 0
+      loop: "{{ charts_to_push }}"
+      loop_control:
+        loop_var: item
 
     - name: Cleanup local chart tarball
       file:
         path: "/tmp/{{ item.name }}-{{ item.version }}.tgz"
         state: absent
-  loop: "{{ charts_to_push }}"
+      loop: "{{ charts_to_push }}"
+      loop_control:
+        loop_var: item
