@@ -186,3 +186,127 @@
       | list
       | length == 0
     )
+
+# ---------------------------
+# Upstream Helm Chart Setup
+# ---------------------------
+
+# Ensure destination projects exist for all charts
+- name: Ensure projects exist for upstream charts
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "project_name": "{{ item.project }}",
+        "public": false,
+        "metadata": {"chart_repo_enabled": "{{ 'true' if item.type == 'classic' else 'false' }}"}
+      }
+    body_format: json
+    status_code: [201, 409]
+  loop: "{{ upstream_helm_charts }}"
+
+# Refresh registry list for id mapping
+- name: Get existing registries
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: existing_registries_refreshed
+
+# Create Helm registries for classic charts
+- name: Ensure Helm registries exist for classic charts
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body: |
+      {
+        "name": "{{ item.name }}",
+        "type": "helm",
+        "url": "{{ item.endpoint }}",
+        "credential": { "type": "anonymous" }
+      }
+    status_code: 201
+  loop: "{{ upstream_helm_charts }}"
+  when: item.type == "classic"
+  register: helm_registry_creation
+
+# Refresh registry list again after creating new registries
+- name: Refresh registry list after Helm registry creation
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/registries"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: updated_registries
+
+# Map chart name → registry_id for classic charts
+- name: Set registry_id_map fact
+  set_fact:
+    registry_id_map: >-
+      {{
+        registry_id_map | default({}) | combine({
+          item.name: (
+            updated_registries.json
+            | selectattr('url','equalto', item.endpoint)
+            | map(attribute='id')
+            | first
+          )
+        })
+      }}
+  loop: "{{ upstream_helm_charts }}"
+  when: item.type == "classic"
+
+# Create replication policies for classic charts
+- name: Create replication rules for classic Helm charts
+  uri:
+    url: "{{ harbor_url }}/api/v2.0/replication/policies"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      name: "replicate-{{ item.name }}"
+      enabled: true
+      trigger:
+        type: manual
+      src_registry:
+        id: "{{ registry_id_map[item.name] }}"
+      dest_namespace: "{{ item.project }}"
+      resource_type: chart
+      deletion: false
+      override: true
+    status_code: [201, 409]
+  loop: "{{ upstream_helm_charts }}"
+  when: item.type == "classic"
+
+# Push OCI charts directly to Harbor
+- name: Push OCI charts to Harbor
+  shell: |
+    helm registry login {{ item.endpoint | regex_replace('oci://(.*)', '\1') }} \
+      --username {{ admin_user }} --password {{ admin_password }}
+    helm push {{ item.chart_file }} {{ item.endpoint }}
+  loop: "{{ upstream_helm_charts }}"
+  when: item.type == "oci"
+  args:
+    warn: false
+
