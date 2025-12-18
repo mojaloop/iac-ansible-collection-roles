@@ -15,11 +15,3 @@ readonly_user:
   username: "{{ readonly_user_name }}"
   password: "{{ readonly_user_password }}"
   email: "readonly@example.com"
-
-upstream_oci_registries:
-  - name: ghcr-grafana
-    url: oci://ghcr.io/grafana/helm-charts
-
-converted_classic_charts:
-  - name: reporting-k8s-templates
-    url: "https://mojaloop.github.io/reporting-k8s-templates"
