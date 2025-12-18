@@ -16,12 +16,10 @@ readonly_user:
   password: "{{ readonly_user_password }}"
   email: "readonly@example.com"
 
-upstream_helm_charts:
+upstream_oci_registries:
+  - name: ghcr-grafana
+    url: oci://ghcr.io/grafana/helm-charts
+
+converted_classic_charts:
   - name: reporting-k8s-templates
-    type: classic          # or "oci"
-    endpoint: "https://mojaloop.github.io/reporting-k8s-templates"
-    project: "helm-local"
-  # - name: prometheus-oci
-  #   type: oci
-  #   endpoint: "oci://harbor.example.com/helm"
-  #   project: "helm-oci"
+    url: "https://mojaloop.github.io/reporting-k8s-templates"

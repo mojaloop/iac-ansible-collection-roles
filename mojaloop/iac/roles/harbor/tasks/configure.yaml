@@ -188,11 +188,19 @@
     )
 
 # ---------------------------
-# Upstream Helm Chart Setup
+# Create helm-oci-proxy project
 # ---------------------------
+- name: Check if helm-oci-proxy project exists
+  uri:
+    url: "http://{{ harbor_url }}/api/v2.0/projects/helm-oci-proxy"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+  register: helm_oci_proxy_project_status
 
-# Ensure destination projects exist for all charts
-- name: Ensure projects exist for upstream charts
+- name: Create helm-oci-proxy project if missing
   uri:
     url: "http://{{ harbor_url }}/api/v2.0/projects"
     method: POST
@@ -201,29 +209,18 @@
     force_basic_auth: yes
     headers:
       Content-Type: application/json
-    body: |
-      {
-        "project_name": "{{ item.project }}",
-        "public": false,
-        "metadata": {"chart_repo_enabled": "{{ 'true' if item.type == 'classic' else 'false' }}"}
-      }
+    body:
+      project_name: "helm-oci-proxy"
+      metadata:
+        public: "false"
     body_format: json
-    status_code: [201, 409]
-  loop: "{{ upstream_helm_charts }}"
+    status_code: 201
+  when: helm_oci_proxy_project_status.status == 404
 
-# Refresh registry list for id mapping
-- name: Get existing registries
-  uri:
-    url: "http://{{ harbor_url }}/api/v2.0/registries"
-    method: GET
-    user: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: 200
-  register: existing_registries_refreshed
-
-# Create Helm registries for classic charts
-- name: Ensure Helm registries exist for classic charts
+# ---------------------------
+# Configure upstream OCI proxy registries
+# ---------------------------
+- name: Ensure upstream OCI proxy registries exist
   uri:
     url: "http://{{ harbor_url }}/api/v2.0/registries"
     method: POST
@@ -236,77 +233,90 @@
     body: |
       {
         "name": "{{ item.name }}",
-        "type": "helm",
-        "url": "{{ item.endpoint }}",
-        "credential": { "type": "anonymous" }
+        "type": "oci",
+        "url": "{{ item.url }}",
+        "credential": { "type": "{{ item.credential_type | default('anonymous') }}" }
       }
     status_code: 201
-  loop: "{{ upstream_helm_charts }}"
-  when: item.type == "classic"
-  register: helm_registry_creation
+  loop: "{{ upstream_oci_registries }}"
+  when: >
+    (existing_registries_refreshed.json
+     | selectattr('url', 'equalto', item.url)
+     | list
+     | length == 0)
 
-# Refresh registry list again after creating new registries
-- name: Refresh registry list after Helm registry creation
-  uri:
-    url: "http://{{ harbor_url }}/api/v2.0/registries"
-    method: GET
-    user: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: 200
-  register: updated_registries
-
-# Map chart name → registry_id for classic charts
-- name: Set registry_id_map fact
+# ---------------------------
+# Pull and push converted classic charts
+# ---------------------------
+- name: Collect all versions for converted classic charts
   set_fact:
-    registry_id_map: >-
+    charts_to_push: >-
       {{
-        registry_id_map | default({}) | combine({
-          item.name: (
-            updated_registries.json
-            | selectattr('url','equalto', item.endpoint)
-            | map(attribute='id')
-            | first
-          )
-        })
+        charts_to_push | default([]) + [
+          {
+            'name': item.name,
+            'version': version.version,
+            'repo_name': item.name,
+            'harbor_project': 'helm-oci-proxy'
+          }
+          for version in (chart_index_yaml.results[loop.index0].content | from_yaml).entries[item.name]
+        ]
       }}
-  loop: "{{ upstream_helm_charts }}"
-  when: item.type == "classic"
+  loop: "{{ converted_classic_charts }}"
+  
+- name: Ensure Helm 3 is installed
+  ansible.builtin.command: helm version --short
+  register: helm_check
+  ignore_errors: yes
 
-# Create replication policies for classic charts
-- name: Create replication rules for classic Helm charts
-  uri:
-    url: "{{ harbor_url }}/api/v2.0/replication/policies"
-    method: POST
-    user: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body_format: json
-    body:
-      name: "replicate-{{ item.name }}"
-      enabled: true
-      trigger:
-        type: manual
-      src_registry:
-        id: "{{ registry_id_map[item.name] }}"
-      dest_namespace: "{{ item.project }}"
-      resource_type: chart
-      deletion: false
-      override: true
-    status_code: [201, 409]
-  loop: "{{ upstream_helm_charts }}"
-  when: item.type == "classic"
+- name: Download and install Helm if missing
+  ansible.builtin.get_url:
+    url: https://get.helm.sh/helm-v3.12.3-linux-amd64.tar.gz
+    dest: /tmp/helm.tar.gz
+  when: helm_check.failed
 
-# Push OCI charts directly to Harbor
-- name: Push OCI charts to Harbor
-  shell: |
-    helm registry login {{ item.endpoint | regex_replace('oci://(.*)', '\1') }} \
-      --username {{ admin_user }} --password {{ admin_password }}
-    helm push {{ item.chart_file }} {{ item.endpoint }}
-  loop: "{{ upstream_helm_charts }}"
-  when: item.type == "oci"
-  args:
-    warn: false
+- name: Extract and install Helm binary
+  ansible.builtin.unarchive:
+    src: /tmp/helm.tar.gz
+    dest: /usr/local/bin/
+    remote_src: yes
+    copy: no
+    extra_opts: [--strip-components=1]
+  when: helm_check.failed
 
+- name: Login to Harbor OCI registry
+  command: >
+    helm registry login {{ harbor_url }}
+    --username {{ admin_user }}
+    --password {{ admin_password }}
+  changed_when: false
+
+- name: Pull and push converted classic charts to helm-oci-proxy (idempotent)
+  block:
+    - name: Check if chart version already exists in Harbor
+      command: >
+        helm pull oci://{{ harbor_url }}/helm-oci-proxy/{{ item.name }} --version {{ item.version }}
+      register: chart_exists
+      ignore_errors: true
+      changed_when: false
+
+    - name: Pull chart version from upstream if not exists
+      command: >
+        helm pull {{ item.repo_name }}/{{ item.name }}
+        --version {{ item.version }}
+        --destination /tmp
+      args:
+        creates: "/tmp/{{ item.name }}-{{ item.version }}.tgz"
+      when: chart_exists.rc != 0
+
+    - name: Push chart to helm-oci-proxy if not exists
+      command: >
+        helm push /tmp/{{ item.name }}-{{ item.version }}.tgz
+        oci://{{ harbor_url }}/helm-oci-proxy
+      when: chart_exists.rc != 0
+
+    - name: Cleanup local chart tarball
+      file:
+        path: "/tmp/{{ item.name }}-{{ item.version }}.tgz"
+        state: absent
+  loop: "{{ charts_to_push }}"
