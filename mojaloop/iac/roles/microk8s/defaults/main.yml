@@ -70,3 +70,4 @@ max_pods_per_node: 110
 cluster_name: "test-cluster"
 docker_registry_username: "docker-reader"
 docker_registry_password: "ReadOnlyP@ssw0rd123"
+taint_for_netbird: true

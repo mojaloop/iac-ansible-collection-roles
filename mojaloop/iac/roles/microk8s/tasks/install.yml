@@ -205,3 +205,4 @@
   notify: 
     - reload systemd
     - enable microk8s-taint
+  when: taint_for_netbird
