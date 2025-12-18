@@ -232,7 +232,7 @@
         "registry_name": "{{ item.name }}",
         "registry_type": "harbor",           # required for OCI pull-through
         "description": "Upstream OCI cache for {{ item.name }}",
-        "url": "{{ item.url_https }}"        # Must be HTTPS, not oci://
+        "url": "{{ item.url }}"        # Must be HTTPS, not oci://
       }
     status_code: [201, 409]  # 409 if it already exists
   loop: "{{ upstream_oci_registries }}"
