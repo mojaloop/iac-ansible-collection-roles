@@ -1,0 +1,17 @@
+{
+  "name": "{{ helm_oci_group_name }}",
+  "online": true,
+  "storage": {
+    "blobStoreName": "default",
+    "strictContentTypeValidation": false
+  },
+  "group": {
+    "memberNames": {{ helm_oci_proxy_repos | map(attribute='name') | list | to_json }}
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false,
+    "httpPort": {{ helm_oci_group_port }},
+    "httpsPort": null
+  }
+}

@@ -1,35 +1,51 @@
 admin_password: oEPpOxBv_y_h5yB8uMdz
-readonly_user_name: "docker-reader"
-# Readonly user configuration for docker pulls
+
+readonly_user_name: "helm-reader"
+
 readonly_user:
   username: "{{ readonly_user_name }}"
   password: "{{ readonly_user_password | default('ReadOnlyP@ssw0rd123') }}"
-  email: "docker-reader@example.com"
-  first_name: "Docker"
+  email: "helm-reader@example.com"
+  first_name: "Helm"
   last_name: "Reader"
   status: "active"
-proxy_repo_name: base-docker
-group_repo_name: docker-group
-nexus_docker_repo_listening_port: 8083
-nexus_server: nexus-app-nexus3.nexus.svc.cluster.local:8081
-docker_group_member_list:
-  ["base-docker", "ghcr.io-proxy", "quay.io-proxy", "k8s.gcr.io"]
-docker_proxy_repos:
-  - name: "base-docker"
-    url: "https://registry-1.docker.io"
-    index_type: "REGISTRY"
-  - name: "ghcr.io-proxy"
-    url: "https://ghcr.io"
-    index_type: "REGISTRY"
-  - name: "quay.io-proxy"
-    url: "https://quay.io/"
-    index_type: "REGISTRY"
-  - name: "k8s.gcr.io"
-    url: "https://k8s.gcr.io/"
-    index_type: "REGISTRY"
 
-helm_proxy_repos:
-  - name: "mojaloop-base"
+nexus_server: nexus-app-nexus3.nexus.svc.cluster.local:8081
+
+
+# Classic Helm repositories (traditional Helm format)
+helm_classic_proxy_repos:
+  - name: "mojaloop"
     url: "https://mojaloop.github.io/helm/repo"
-  - name: "gitlab-private"
-    url: "https://gitlab-url/repo/helm"
+  - name: "mojaloop-charts"
+    url: "https://mojaloop.github.io/charts/repo"
+  - name: "mojaloop-reporting"
+    url: "https://mojaloop.github.io/reporting-k8s-templates"
+  - name: "prometheus"
+    url: "https://prometheus-community.github.io/helm-charts"
+  - name: "grafana"
+    url: "https://grafana.github.io/helm-charts"
+  - name: "netbird"
+    url: "https://netbirdio.github.io/kubernetes-operator"
+  - name: "kyverno"
+    url: "https://kyverno.github.io/kyverno/"
+  - name: "crossplane"
+    url: "https://charts.crossplane.io/stable"
+  - name: "velero"
+    url: "https://vmware-tanzu.github.io/helm-charts/"
+
+# OCI Helm chart proxies (Docker format for OCI support)
+helm_oci_proxy_repos:
+  - name: "helm-oci-dockerhub"
+    url: "https://registry-1.docker.io"
+  - name: "helm-oci-ghcr"
+    url: "https://ghcr.io"
+  - name: "helm-oci-ecr-public"
+    url: "https://public.ecr.aws"
+
+# Classic Helm group repository
+helm_classic_group_name: "helm-classic-group"
+
+# OCI Helm group repository
+helm_oci_group_name: "helm-oci-group"
+helm_oci_group_port: 8083
