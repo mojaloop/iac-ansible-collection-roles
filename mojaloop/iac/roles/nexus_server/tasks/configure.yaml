@@ -138,6 +138,5 @@
     body:
       - "NexusAuthenticatingRealm"
       - "NexusAuthorizingRealm"
-      - "DockerToken"
     status_code: 204
     timeout: 300
