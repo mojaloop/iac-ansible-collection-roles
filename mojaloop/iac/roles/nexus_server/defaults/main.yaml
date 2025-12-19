@@ -43,8 +43,6 @@ helm_oci_proxy_repos:
   - name: "helm-oci-ecr-public"
     url: "https://public.ecr.aws"
 
-# Classic Helm group repository
-helm_classic_group_name: "helm-classic-group"
 
 # OCI Helm group repository
 helm_oci_group_name: "helm-oci-group"
