@@ -77,6 +77,21 @@
     timeout: 300    
   register: helm_oci_group_repo_exists
 
+- name: Update OCI helm group repo configuration
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ helm_oci_group_name }}
+    method: PUT
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'createhelmocigrouprepo.json.j2') }}"
+    body_format: json
+    status_code: [200, 204]
+    timeout: 300
+  when: helm_oci_group_repo_exists.status == 200  # Update existing repo
+
 - name: Add OCI helm group repo if not exists
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group
