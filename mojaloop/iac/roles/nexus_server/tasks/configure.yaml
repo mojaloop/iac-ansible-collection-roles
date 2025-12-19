@@ -107,81 +107,8 @@
     timeout: 300    
   when: helm_oci_group_repo_exists.status == 404
 
-# Security configuration
-- name: Check if helm read role exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/roles/helm-read
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: helm_read_role_exists
-
-- name: Create helm read role if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/roles
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body_format: json
-    body:
-      id: "helm-read"
-      name: "Helm Read Access"
-      description: "Read access to Helm repositories"
-      privileges:
-        - "nx-repository-view-helm-*-browse"
-        - "nx-repository-view-helm-*-read"
-        - "nx-repository-view-docker-*-browse"
-        - "nx-repository-view-docker-*-read"
-    status_code: 200
-    timeout: 300
-  when: helm_read_role_exists.status == 404
-
-- name: Check if readonly user exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/users?userId={{ readonly_user.username }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200]
-    timeout: 300
-  register: readonly_user_exists
-
-- name: Create readonly user for helm pulls
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/users
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'create_readonly_user.json.j2') }}"
-    body_format: json
-    status_code: 200
-    timeout: 300
-  when: readonly_user_exists.json | length == 0
-
-- name: Set active realms
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
-    method: PUT
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    src: putrealmbody.json
-    status_code: 204
-    timeout: 300    
-
-- name: Disable anonymous access (security best practice)
+# Security configuration - Enable anonymous access
+- name: Enable anonymous access for repository access
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/security/anonymous
     method: PUT
@@ -190,6 +117,27 @@
     force_basic_auth: yes
     headers:
       Content-Type: application/json
-    src: anonymousaccess.json
+    body_format: json
+    body:
+      enabled: true
+      userId: "anonymous"
+      realmName: "NexusAuthorizingRealm"
     status_code: 200
+    timeout: 300
+
+- name: Set active realms including Docker Token for OCI access
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
+    method: PUT
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      - "NexusAuthenticatingRealm"
+      - "NexusAuthorizingRealm"
+      - "DockerToken"
+    status_code: 204
     timeout: 300
