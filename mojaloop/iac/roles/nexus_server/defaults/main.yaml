@@ -42,7 +42,8 @@ helm_oci_proxy_repos:
     url: "https://ghcr.io"
   - name: "helm-oci-ecr-public"
     url: "https://public.ecr.aws"
-
+  - name: "helm-oci-quay"
+    url: "https://quay.io"
 
 # OCI Helm group repository
 helm_oci_group_name: "helm-oci-group"
