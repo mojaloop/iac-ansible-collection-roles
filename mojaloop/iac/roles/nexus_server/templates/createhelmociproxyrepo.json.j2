@@ -1,14 +1,20 @@
 {
-  "name": "{{ item.key }}",
+  "name": "{{ item.item.key }}",
   "online": true,
   "storage": {
     "blobStoreName": "default",
-    "strictContentTypeValidation": false
+    "strictContentTypeValidation": true
   },
   "proxy": {
-    "remoteUrl": "{{ item.value }}",
+    "remoteUrl": "{{ item.item.value }}",
     "contentMaxAge": 1440,
     "metadataMaxAge": 1440
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false,
+    "httpPort": null,
+    "httpsPort": null
   },
   "negativeCache": {
     "enabled": true,
@@ -17,15 +23,5 @@
   "httpClient": {
     "blocked": false,
     "autoBlock": true
-  },
-  "dockerProxy": {
-    "indexType": "REGISTRY",
-    "useTrustStoreForIndexAccess": false
-  },
-  "docker": {
-    "v1Enabled": false,
-    "forceBasicAuth": false,
-    "httpPort": null,
-    "httpsPort": null
   }
 }

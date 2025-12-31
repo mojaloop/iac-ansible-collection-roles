@@ -7,7 +7,7 @@
   },
   "group": {
     "memberNames": [
-      {% for repo_name, repo_url in oci_repos_dict.items() %}
+      {% for repo_name in oci_repos_dict.keys() %}
       "{{ repo_name }}"{% if not loop.last %},{% endif %}
       {% endfor %}
     ]

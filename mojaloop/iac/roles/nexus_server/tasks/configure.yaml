@@ -42,7 +42,7 @@
     status_code: 201
     timeout: 300    
   when: item.status == 404
-  with_items: "{{ helm_classic_proxy_repos_exists.results }}"
+  loop: "{{ helm_classic_proxy_repos_exists.results }}"
 
 # OCI Helm repository proxies (using Docker format)
 - name: Get OCI helm proxy repo if exists
@@ -71,7 +71,7 @@
     status_code: 201
     timeout: 300
   when: item.status == 404
-  with_items: "{{ helm_oci_proxy_repos_exists.results }}"
+  loop: "{{ helm_oci_proxy_repos_exists.results }}"
 
 # OCI Helm group repository
 - name: Get OCI helm group repo if exists
