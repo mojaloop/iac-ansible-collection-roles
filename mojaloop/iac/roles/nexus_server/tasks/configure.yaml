@@ -9,12 +9,12 @@
   
 - name: Parse classic repos
   set_fact:
-    classic_repos_dict: "{{ helm_classic_proxy_repos.split(',') | map('split', '=') | map('list') | items2dict }}"
+    classic_repos_dict: "{{ dict(helm_classic_proxy_repos.split(',') | map('split', '=') | map('list')) }}"
 
 - name: Parse OCI repos
   set_fact:
-    oci_repos_dict: "{{ helm_oci_proxy_repos.split(',') | map('split', '=') | map('list') | items2dict }}"
-
+    oci_repos_dict: "{{ dict(helm_oci_proxy_repos.split(',') | map('split', '=') | map('list')) }}"
+    
 # Classic Helm repository proxies
 - name: Get classic helm proxy repo if exists
   uri:
