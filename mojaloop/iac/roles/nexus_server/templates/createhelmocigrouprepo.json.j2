@@ -3,10 +3,14 @@
   "online": true,
   "storage": {
     "blobStoreName": "default",
-    "strictContentTypeValidation": false
+    "strictContentTypeValidation": true
   },
   "group": {
-    "memberNames": {{ helm_oci_proxy_repos | map(attribute='name') | list | to_json }}
+    "memberNames": [
+      {% for repo_name, repo_url in oci_repos_dict.items() %}
+      "{{ repo_name }}"{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
   },
   "docker": {
     "v1Enabled": false,

@@ -1,12 +1,12 @@
 {
-  "name": "{{ item.item.name }}",
+  "name": "{{ item.key }}",
   "online": true,
   "storage": {
     "blobStoreName": "default",
     "strictContentTypeValidation": false
   },
   "proxy": {
-    "remoteUrl": "{{ item.item.url }}",
+    "remoteUrl": "{{ item.value }}",
     "contentMaxAge": 1440,
     "metadataMaxAge": 1440
   },
