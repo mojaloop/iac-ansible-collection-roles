@@ -6,49 +6,29 @@
   until: _result.status == 200
   retries: 30
   delay: 10
+  
+- name: Parse classic repos
+  set_fact:
+    classic_repos_dict: "{{ dict(helm_classic_proxy_repos.split(',') | map('split', '=') | map('list')) }}"
 
-- name: Get docker proxy repo if exists
+- name: Parse OCI repos
+  set_fact:
+    oci_repos_dict: "{{ dict(helm_oci_proxy_repos.split(',') | map('split', '=') | map('list')) }}"
+    
+# Classic Helm repository proxies
+- name: Get classic helm proxy repo if exists
   uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.key }}
     method: GET
     user: "admin"
     password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
     timeout: 300
-  register: docker_proxy_repos_exists
-  with_items: "{{ docker_proxy_repos }}"
+  register: helm_classic_proxy_repos_exists
+  with_dict: "{{ classic_repos_dict }}"
 
-
-- name: Add docker proxy if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'createdockerproxyrepo.json.j2') }}"
-    body_format: json
-    status_code: 201
-    timeout: 300
-  when: item.status == 404
-  with_items: "{{ docker_proxy_repos_exists.results }}"
-
-- name: Get helm proxy repo if exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy/{{ item.name }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: helm_proxy_repos_exists
-  with_items: "{{ helm_proxy_repos }}"
-
-- name: Add helm proxy if not exists
+- name: Add classic helm proxy if not exists
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/repositories/helm/proxy
     method: POST
@@ -57,25 +37,70 @@
     force_basic_auth: yes
     headers:
       Content-Type: application/json
-    body: "{{ lookup('template', 'createhelmproxyrepo.json.j2') }}"
+    body: "{{ lookup('template', 'createhelmclassicproxyrepo.json.j2') }}"
     body_format: json
     status_code: 201
     timeout: 300    
   when: item.status == 404
-  with_items: "{{ helm_proxy_repos_exists.results }}"
+  loop: "{{ helm_classic_proxy_repos_exists.results }}"
 
-- name: Get docker group repo if exists
+# OCI Helm repository proxies (using Docker format)
+- name: Get OCI helm proxy repo if exists
   uri:
-    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ group_repo_name }}
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy/{{ item.key }}
+    method: GET
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    timeout: 300
+  register: helm_oci_proxy_repos_exists
+  with_dict: "{{ oci_repos_dict }}"
+
+- name: Add OCI helm proxy if not exists
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/proxy
+    method: POST
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'createhelmociproxyrepo.json.j2') }}"
+    body_format: json
+    status_code: 201
+    timeout: 300
+  when: item.status == 404
+  loop: "{{ helm_oci_proxy_repos_exists.results }}"
+
+# OCI Helm group repository
+- name: Get OCI helm group repo if exists
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ helm_oci_group_name }}
     method: GET
     user: "admin"
     password: "{{ admin_password }}"
     force_basic_auth: yes
     status_code: [200, 404]
     timeout: 300    
-  register: group_repo_exists
+  register: helm_oci_group_repo_exists
 
-- name: Add docker group repo if not exists
+- name: Update OCI helm group repo configuration
+  uri:
+    url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group/{{ helm_oci_group_name }}
+    method: PUT
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'createhelmocigrouprepo.json.j2') }}"
+    body_format: json
+    status_code: [200, 204]
+    timeout: 300
+  when: helm_oci_group_repo_exists.status == 200  # Update existing repo
+
+- name: Add OCI helm group repo if not exists
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/repositories/docker/group
     method: POST
@@ -84,84 +109,14 @@
     force_basic_auth: yes
     headers:
       Content-Type: application/json
-    body: "{{ lookup('template', 'createdockergrouprepo.json.j2') }}"
+    body: "{{ lookup('template', 'createhelmocigrouprepo.json.j2') }}"
     body_format: json
     status_code: 201
     timeout: 300    
-  when: group_repo_exists.status == 404
+  when: helm_oci_group_repo_exists.status == 404
 
-- name: Check if docker read role exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/roles/docker-read
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200, 404]
-    timeout: 300
-  register: docker_read_role_exists
-
-- name: Create docker read role if not exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/roles
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body_format: json
-    body:
-      id: "docker-read"
-      name: "Docker Read Access"
-      description: "Read access to Docker repositories"
-      privileges:
-        - "nx-repository-view-docker-*-browse"
-        - "nx-repository-view-docker-*-read"
-    status_code: 200
-    timeout: 300
-  when: docker_read_role_exists.status == 404
-
-- name: Check if readonly user exists
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/users?userId={{ readonly_user.username }}
-    method: GET
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    status_code: [200]
-    timeout: 300
-  register: readonly_user_exists
-
-- name: Create readonly user for docker pulls
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/users
-    method: POST
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'create_readonly_user.json.j2') }}"
-    body_format: json
-    status_code: 200
-    timeout: 300
-  when: readonly_user_exists.json | length == 0
-
-- name: Set active realms
-  uri:
-    url: http://{{ nexus_server }}/service/rest/v1/security/realms/active
-    method: PUT
-    user: "admin"
-    password: "{{ admin_password }}"
-    force_basic_auth: yes
-    headers:
-      Content-Type: application/json
-    src: putrealmbody.json
-    status_code: 204
-    timeout: 300    
-
-- name: Disable anonymous access (security best practice)
+# Security configuration - Enable anonymous access
+- name: Enable anonymous access for repository access
   uri:
     url: http://{{ nexus_server }}/service/rest/v1/security/anonymous
     method: PUT
@@ -170,6 +125,10 @@
     force_basic_auth: yes
     headers:
       Content-Type: application/json
-    src: anonymousaccess.json
+    body_format: json
+    body:
+      enabled: true
+      userId: "anonymous"
+      realmName: "NexusAuthorizingRealm"
     status_code: 200
-    timeout: 300    
+    timeout: 300

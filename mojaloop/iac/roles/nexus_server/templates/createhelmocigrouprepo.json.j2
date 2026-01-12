@@ -1,0 +1,21 @@
+{
+  "name": "{{ helm_oci_group_name }}",
+  "online": true,
+  "storage": {
+    "blobStoreName": "default",
+    "strictContentTypeValidation": true
+  },
+  "group": {
+    "memberNames": [
+      {% for repo_name in oci_repos_dict.keys() %}
+      "{{ repo_name }}"{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false,
+    "httpPort": {{ helm_oci_group_port }},
+    "httpsPort": null
+  }
+}

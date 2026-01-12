@@ -504,6 +504,8 @@ argocd_default:
           public_ingress_access_domain: "true"
           storage_size: "30Gi"
           readonly_user_name: "docker-readonly"
+          helm_classic_proxy_repos: "mojaloop=https://mojaloop.github.io/helm/repo,mojaloop-charts=https://mojaloop.github.io/charts/repo,mojaloop-reporting=https://mojaloop.github.io/reporting-k8s-templates,prometheus=https://prometheus-community.github.io/helm-charts,grafana=https://grafana.github.io/helm-charts,netbird=https://netbirdio.github.io/kubernetes-operator,kyverno=https://kyverno.github.io/kyverno/,crossplane=https://charts.crossplane.io/stable,velero=https://vmware-tanzu.github.io/helm-charts/"
+          helm_oci_proxy_repos: "helm-oci-dockerhub=https://registry-1.docker.io,helm-oci-ghcr=https://ghcr.io,helm-oci-ecr-public=https://public.ecr.aws,helm-oci-quay=https://quay.io"
         ui:
           public_ingress_access_domain: "false"
         pre:

@@ -1,0 +1,31 @@
+{
+  "name": "{{ item.item.key }}",
+  "online": true,
+  "storage": {
+    "blobStoreName": "default",
+    "strictContentTypeValidation": false
+  },
+  "proxy": {
+    "remoteUrl": "https://{{ item.item.value | regex_replace('^oci://', '') }}",
+    "contentMaxAge": 1440,
+    "metadataMaxAge": 1440
+  },
+  "dockerProxy": {
+    "indexType": "REGISTRY",
+    "indexUrl": "https://{{ item.item.value | regex_replace('^oci://', '') }}"
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false,
+    "httpPort": null,
+    "httpsPort": null
+  },
+  "negativeCache": {
+    "enabled": true,
+    "timeToLive": 1440
+  },
+  "httpClient": {
+    "blocked": false,
+    "autoBlock": true
+  }
+}
