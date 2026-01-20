@@ -202,7 +202,18 @@
     src: microk8s-taint.service.j2
     dest: /etc/systemd/system/microk8s-taint.service
     mode: '0644'
-  notify: 
-    - reload systemd
-    - enable microk8s-taint
+  when: taint_for_netbird
+
+- name: Reload systemd daemon
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: taint_for_netbird
+
+- name: Enable and start microk8s-taint service
+  become: true
+  ansible.builtin.systemd:
+    name: microk8s-taint
+    enabled: true
+    state: started
   when: taint_for_netbird
