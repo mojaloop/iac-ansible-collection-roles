@@ -210,10 +210,9 @@
     daemon_reload: true
   when: taint_for_netbird
 
-- name: Enable and start microk8s-taint service
+- name: Enable microk8s-taint service
   become: true
   ansible.builtin.systemd:
     name: microk8s-taint
     enabled: true
-    state: started
   when: taint_for_netbird
