@@ -69,7 +69,7 @@
 #removing taint that gets set by register-with-taints on startup.  if node is restarted, this taint should still be set so that it will prevent csi pods from running before netbird operator.
 - name: remove netbird taints from all nodes
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint nodes --all netbird/ready:NoSchedule- || true
+    kubectl --kubeconfig {{ kubeconfig_location }}/kubeconfig taint nodes --all netbird/ready:NoExecute- || true
 
 - name: Upload ext secrets bootstrap files
   ansible.builtin.template:
@@ -113,7 +113,7 @@
 - name: Install external-secrets
   ansible.builtin.shell: |
     helm repo add external-secrets https://charts.external-secrets.io
-    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true --set tolerations[0].key=netbird/ready --set tolerations[0].operator=Exists --set tolerations[0].effect=NoSchedule
+    helm --kubeconfig {{ kubeconfig_location }}/kubeconfig upgrade --install external-secrets external-secrets/external-secrets --version {{ external_secrets_version }} -n {{ external_secrets_namespace }} --create-namespace --set installCRDs=true --set tolerations[0].key=netbird/ready --set tolerations[0].operator=Exists --set tolerations[0].effect=NoExecute
 
 - name: Apply Netbird patch for external-secrets
   ansible.builtin.shell: |

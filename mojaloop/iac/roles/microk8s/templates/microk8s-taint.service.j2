@@ -9,7 +9,7 @@ Type=oneshot
 ExecStart=/bin/bash -c '\
   /snap/bin/microk8s.status --wait-ready; \
   NODE_NAME=$(hostname -s); \
-  /snap/bin/microk8s.kubectl taint nodes "$NODE_NAME" netbird/ready=false:NoSchedule --overwrite \
+  /snap/bin/microk8s.kubectl taint nodes "$NODE_NAME" netbird/ready=false:NoExecute --overwrite \
 '
 
 [Install]
