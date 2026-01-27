@@ -1,0 +1,12 @@
+[Unit]
+Description=Pre-clean stale Ceph RBD CSI state before MicroK8s start
+DefaultDependencies=no
+Before=snap.microk8s.daemon-kubelite.service snap.microk8s.daemon-containerd.service
+Wants=snap.microk8s.daemon-kubelite.service snap.microk8s.daemon-containerd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/microk8s-rbd-preclean.sh
+
+[Install]
+WantedBy=multi-user.target
