@@ -207,7 +207,7 @@
 - name: Create systemd service scriptto cleanup RBD on startup
   become: true
   ansible.builtin.template:
-    src: microk8s-rbd-preclean.sh
+    src: microk8s-rbd-preclean.sh.j2
     dest: /usr/local/bin/microk8s-rbd-preclean.sh
     mode: '0755'
   when: microk8s_startup_taint_enabled
