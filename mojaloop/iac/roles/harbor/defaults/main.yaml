@@ -7,7 +7,7 @@ readonly_user_password: "ChangeMe123"
 
 proxy_projects:
   - { name: "docker.io", endpoint: "https://registry-1.docker.io", type: "docker-hub" }
-  - { name: "quay.io", endpoint: "https://quay.io", type: "quay" }
+  - { name: "quay.io", endpoint: "https://quay.io", type: "docker-registry" }
   - { name: "registry.k8s.io", endpoint: "https://registry.k8s.io", type: "docker-registry" }
   - { name: "ghcr.io", endpoint: "https://ghcr.io", type: "docker-registry" }
 
