@@ -236,6 +236,6 @@
 - name: Enable microk8s-cleanup-rbd service
   become: true
   ansible.builtin.systemd:
-    name: microk8s-cleanup-rbd
+    name: microk8s-rbd-preclean
     enabled: true
   when: microk8s_startup_taint_enabled
