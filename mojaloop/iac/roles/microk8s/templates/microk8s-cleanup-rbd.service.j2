@@ -1,0 +1,35 @@
+[Unit]
+Description=Pre-clean stale Ceph RBD CSI state before MicroK8s start
+DefaultDependencies=no
+Before=snap.microk8s.daemon-kubelite.service snap.microk8s.daemon-containerd.service
+Wants=snap.microk8s.daemon-kubelite.service snap.microk8s.daemon-containerd.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -e -c '\
+  echo "[rbd-preclean] Starting CSI RBD cleanup"; \
+
+  # Ensure kubelite is not running
+  if systemctl is-active --quiet snap.microk8s.daemon-kubelite; then \
+    echo "[rbd-preclean] kubelite already running, skipping cleanup"; \
+    exit 0; \
+  fi; \
+
+  # Unmount any stale RBD mounts (force)
+  mount | awk "/rbd/ {print \$3}" | while read m; do \
+    echo "[rbd-preclean] Unmounting stale RBD mount: $m"; \
+    umount -lf "$m" || true; \
+  done; \
+
+  # Remove stale CSI plugin state
+  rm -rf /var/snap/microk8s/common/var/lib/kubelet/plugins/storage.rbd.csi.ceph.com || true; \
+  rm -rf /var/snap/microk8s/common/var/lib/kubelet/plugins_registry/storage.rbd.csi.ceph.com || true; \
+
+  # Remove orphaned CSI pod volume directories
+  rm -rf /var/snap/microk8s/common/var/lib/kubelet/pods/*/volumes/kubernetes.io~csi || true; \
+
+  echo "[rbd-preclean] CSI RBD cleanup completed"; \
+'
+
+[Install]
+WantedBy=multi-user.target
