@@ -16,9 +16,9 @@ ExecStart=/bin/bash -e -c '\
   fi; \
 
   # Unmount any stale RBD mounts (force)
-  mount | awk "/rbd/ {print \$3}" | while read m; do \
-    echo "[rbd-preclean] Unmounting stale RBD mount: $m"; \
-    umount -lf "$m" || true; \
+  mount | awk "/rbd/ {print \\$3}" | while read m; do \\
+    echo "[rbd-preclean] Unmounting stale RBD mount: \\$m"; \\
+    umount -lf "\\$m" || true; \\
   done; \
 
   # Remove stale CSI plugin state
