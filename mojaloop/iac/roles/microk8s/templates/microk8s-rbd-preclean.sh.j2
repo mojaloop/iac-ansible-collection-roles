@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "[rbd-preclean] Starting CSI RBD cleanup"
+
+# Skip if kubelite already running
+if systemctl is-active --quiet snap.microk8s.daemon-kubelite; then
+  echo "[rbd-preclean] kubelite already running, skipping cleanup"
+  exit 0
+fi
+
+# Unmount any stale RBD mounts
+mount | awk '/rbd/ {print $3}' | while read -r m; do
+  echo "[rbd-preclean] Unmounting stale RBD mount: $m"
+  umount -lf "$m" || true
+done
+
+# Remove stale CSI globalmount directories
+rm -rf /var/snap/microk8s/common/var/lib/kubelet/plugins/kubernetes.io/csi/storage.rbd.csi.ceph.com/*/globalmount/* || true
+
+# Remove orphaned pod CSI volume directories
+rm -rf /var/snap/microk8s/common/var/lib/kubelet/pods/*/volumes/kubernetes.io~csi/* || true
+
+# Remove stale CSI plugin registry sockets
+rm -f /var/snap/microk8s/common/var/lib/kubelet/plugins_registry/storage.rbd.csi.ceph.com-*.sock || true
+
+echo "[rbd-preclean] CSI RBD cleanup completed"

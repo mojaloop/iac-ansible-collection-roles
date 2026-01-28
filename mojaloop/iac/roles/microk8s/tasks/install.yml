@@ -202,7 +202,40 @@
     src: microk8s-taint.service.j2
     dest: /etc/systemd/system/microk8s-taint.service
     mode: '0644'
-  notify: 
-    - reload systemd
-    - enable microk8s-taint
-  when: taint_for_netbird
+  when: microk8s_startup_taint_enabled
+
+- name: Create systemd service scriptto cleanup RBD on startup
+  become: true
+  ansible.builtin.template:
+    src: microk8s-rbd-preclean.sh.j2
+    dest: /usr/local/bin/microk8s-rbd-preclean.sh
+    mode: '0755'
+  when: microk8s_startup_taint_enabled
+
+- name: Create systemd service to cleanup RBD on startup
+  become: true
+  ansible.builtin.template:
+    src: microk8s-rbd-preclean.service.j2
+    dest: /etc/systemd/system/microk8s-rbd-preclean.service
+    mode: '0644'
+  when: microk8s_startup_taint_enabled
+
+- name: Reload systemd daemon
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: microk8s_startup_taint_enabled
+
+- name: Enable microk8s-taint service
+  become: true
+  ansible.builtin.systemd:
+    name: microk8s-taint
+    enabled: true
+  when: microk8s_startup_taint_enabled
+
+- name: Enable microk8s-cleanup-rbd service
+  become: true
+  ansible.builtin.systemd:
+    name: microk8s-rbd-preclean
+    enabled: true
+  when: microk8s_startup_taint_enabled
