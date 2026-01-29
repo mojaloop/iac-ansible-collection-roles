@@ -794,3 +794,24 @@ argocd_default:
           namespace: "openebs"
           sync_wave: "'-14'"
           helm_version: "4.1.3"
+    pulp:
+      sync_wave: "'-3'"
+      sub_apps:
+        pulp:
+          app_name: "pulp"
+          helm_version: "0.5.0"
+          namespace: "pulp"
+          operator_namespace: "pulp-operator"
+          public_ingress_access_domain: "false"
+          storage_size: "30Gi"
+          readonly_user_name: "docker-readonly"
+        pre:
+          app_name: "pre"
+          sub_app_enabled: "true"
+          sync_wave: "'-4'"
+          vault_k8s_admin_auth_path: "admin-k8s"
+          vault_k8s_admin_role_name: "admin-role"
+        post_config:
+          app_name: "pulp-post-config"
+          sub_app_enabled: "true"
+          sync_wave: "'-2'"
