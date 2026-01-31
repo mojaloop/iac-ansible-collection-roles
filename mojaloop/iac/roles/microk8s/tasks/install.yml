@@ -31,6 +31,7 @@
   ansible.builtin.command: snap list microk8s
   register: microk8s_snap_list
   failed_when: false
+  changed_when: false
 
 - name: Set fact if microk8s is not installed
   set_fact:
