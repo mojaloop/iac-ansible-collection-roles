@@ -38,7 +38,7 @@
 
 - name: Extract microk8s channel from snap list
   set_fact:
-    fact_microk8s_installed_channel: "{{ microk8s_snap_list.stdout | regex_search('microk8s\\s+\\S+\\s+\\S+\\s+(\\S+)', '\\1') }}"
+    fact_microk8s_installed_channel: "{{ (microk8s_snap_list.stdout | regex_search('microk8s\\s+\\S+\\s+\\S+\\s+(\\S+)', '\\1')) | first | default('') }}"
 
 - name: Set fact if microk8s needs update
   set_fact:
