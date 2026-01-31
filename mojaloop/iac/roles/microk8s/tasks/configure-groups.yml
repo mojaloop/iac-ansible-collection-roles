@@ -2,8 +2,10 @@
 ---
 - name: add user to group
   become: true
-  ansible.builtin.command: "usermod -a -G microk8s {{ user }}"
-  changed_when: true
+  ansible.builtin.user:
+    name: "{{ user }}"
+    groups: microk8s
+    append: yes
   with_items: "{{ users }}"
   loop_control:
     loop_var: user
@@ -23,12 +25,20 @@
     loop_var: user
     label: "{{ user }}"
 
+- name: Get current kubectl config
+  become: true
+  ansible.builtin.shell: microk8s config
+  register: microk8s_config
+  changed_when: false
+
 - name: create kubectl config
   become: true
-  changed_when: true
-  ansible.builtin.shell: microk8s config > $(eval echo "~{{ user }}/.kube/config")
-  args:
-    executable: /bin/bash
+  ansible.builtin.copy:
+    content: "{{ microk8s_config.stdout }}"
+    dest: "{{ '~' + user + '/.kube/config' | expanduser }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0600'
   with_items: "{{ users }}"
   loop_control:
     loop_var: user

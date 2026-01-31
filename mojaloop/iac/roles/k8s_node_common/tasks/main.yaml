@@ -26,20 +26,25 @@
     group: root
     mode: '0644'
 
+- name: Check current nbds_max value
+  shell: "cat /sys/module/nbd/parameters/nbds_max 2>/dev/null || echo '0'"
+  register: nbds_current
+  changed_when: false
+
 - name: Attempt to unload nbd module (ignored if in use)
   shell: "modprobe -r nbd"
   register: unload_nbd
   ignore_errors: true
+  changed_when: unload_nbd.rc == 0
+  when: nbds_current.stdout != '2048'
 
 - name: Load nbd module with nbds_max=2048
   shell: "modprobe nbd nbds_max=2048"
   register: load_nbd
   ignore_errors: true
-
-- name: Check nbds_max value
-  shell: "cat /sys/module/nbd/parameters/nbds_max 2>/dev/null || echo 'module_not_loaded'"
-  register: nbds_value
+  changed_when: load_nbd.rc == 0
+  when: nbds_current.stdout != '2048'
 
 - name: Print nbds_max result
   debug:
-    msg: "nbds_max is: {{ nbds_value.stdout }}"
+    msg: "nbds_max is: {{ nbds_current.stdout }}"
