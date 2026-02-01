@@ -71,3 +71,8 @@ cluster_name: "test-cluster"
 docker_registry_username: "docker-reader"
 docker_registry_password: "ReadOnlyP@ssw0rd123"
 microk8s_startup_taint_enabled: true
+#cillium variables
+cilium_version: "1.15.5"
+cilium_namespace: kube-system
+pod_cidr: "10.1.0.0/16"   # adjust if needed
+service_cidr: "10.152.183.0/24"  # MicroK8s default
