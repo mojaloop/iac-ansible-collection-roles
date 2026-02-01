@@ -154,6 +154,7 @@
     --set l7Proxy=false
     --set socketLB.enabled=true
     --set socketLB.hostNamespaceOnly=true
+    --set ipv4NativeRoutingCIDR={{ pod_cidr }}
 
   register: cilium_install
 
