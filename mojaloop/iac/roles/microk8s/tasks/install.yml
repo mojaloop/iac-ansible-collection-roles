@@ -155,7 +155,7 @@
     --set socketLB.enabled=true
     --set socketLB.hostNamespaceOnly=true
     --set ipv4NativeRoutingCIDR={{ pod_cidr }}
-    --set operator.prometheus.enabled=false
+    --set operator.replicas=1
 
   register: cilium_install
 
