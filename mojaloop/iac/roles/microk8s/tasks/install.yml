@@ -132,15 +132,6 @@
   changed_when: false
   register: aliashelmout
 
-- name: Calculate pod CIDR
-  set_fact:
-    pod_cidr: "10.100.{{ ansible_default_ipv4.address.split('.')[-1] }}.0/24"
-
-- name: Set pod CIDR on this node
-  become: true
-  ansible.builtin.command: >
-    kubectl patch node {{ inventory_hostname }} -p '{"spec":{"podCIDR":"{{ pod_cidr }}"}}'
-
 - name: "create directory for mirror registry configs"
   become: true
   ansible.builtin.file:
@@ -217,6 +208,40 @@
   ansible.builtin.command: "update-ca-certificates"
   register: command_result
   changed_when: "'0 added, 0 removed' not in command_result.stdout"
+
+- name: Create custom cilium addon directory
+  become: true
+  ansible.builtin.file:
+    path: /var/snap/microk8s/common/addons/core/cilium
+    state: directory
+    mode: '0755'
+
+- name: Create cilium addon enable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-enable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/cilium/enable
+    mode: '0755'
+
+- name: Create cilium addon disable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-disable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/cilium/disable
+    mode: '0755'
+
+- name: Add cilium addon to core addons list
+  become: true
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/common/addons/core/addons.yaml
+    marker: "# {mark} ANSIBLE MANAGED: cilium addon"
+    insertafter: '^addons:'
+    content: |
+      - name: cilium
+        description: "custom cilium install"
+        version: "{{ cilium_version }}"
+        check_status: "pod/cilium"
+    create: true
 
 - name: Disable snap autoupdate
   become: true
