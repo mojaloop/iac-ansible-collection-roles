@@ -30,6 +30,8 @@
     --set tunnel=disabled
     --set routingMode=native
     --set autoDirectNodeRoutes=true
+    --set enableIPv4=true
+    --set enableIPv4MasqAgent=false
     --set enableIPv4Masquerade=true
     --set hubble.enabled=true
     --set hubble.relay.enabled=true
