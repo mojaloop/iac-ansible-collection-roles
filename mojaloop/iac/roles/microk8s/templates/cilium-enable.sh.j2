@@ -103,21 +103,26 @@ else
       --set cni.confPath="/var/snap/microk8s/current/args/cni-network" \
       --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
       --set cni.customConf=true \
-      --set containerRuntime.integration="containerd" \
+      --set cni.exclusive=false \
+      --set cni.chainingMode=generic-veth \
+      --set containerRuntime.integration=containerd \
       --set global.containerRuntime.socketPath="/var/snap/microk8s/common/run/containerd.sock" \
       --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
       --set operator.replicas=1 \
       --set keepDeprecatedLabels=true \
-      --set ipam.operator.clusterPoolIPv4PodCIDRList="${IPv4_CLUSTER_CIDR}" \
-      --set nodePort.enabled=true \
-      --set kubeProxyReplacement=true \
+      --set kubeProxyReplacement=false \
+      --set routingMode=native \
+      --set tunnel=disabled \
+      --set autoDirectNodeRoutes=true \
+      --set ipam.mode=kubernetes \
+      --set enableIPv4Masquerade=true \
+      --set bpf.masquerade=true \
+      --set envoy.enabled=false \
+      --set l7Proxy=false \
+      --set meshAuth.enabled=false \
       --set hubble.enabled=true \
       --set hubble.relay.enabled=true \
-      --set hubble.ui.enabled=true \
-      --set cni.exclusive=false \
-      --set envoy.enabled=false \
-      --set ipam.mode=cluster-pool \
-      --set socketLB.hostNamespaceOnly=true
+      --set hubble.ui.enabled=true
 
   )
 
