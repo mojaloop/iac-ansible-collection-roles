@@ -44,4 +44,5 @@
     --set socketLB.enabled=true
     --set socketLB.hostNamespaceOnly=true
     --set operator.replicas=1
+    --set ipv4NativeRoutingCIDR=10.100.0.0/16
   when: inventory_hostname == designated_master_host
