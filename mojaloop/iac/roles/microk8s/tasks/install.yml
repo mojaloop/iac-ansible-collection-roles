@@ -92,7 +92,7 @@
 - name: Create custom cilium addon directory
   become: true
   ansible.builtin.file:
-    path: /var/snap/microk8s/common/addons/core/cilium
+    path: /var/snap/microk8s/common/addons/core/addons/cilium
     state: directory
     mode: '0755'
 
@@ -100,14 +100,14 @@
   become: true
   ansible.builtin.template:
     src: cilium-enable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/cilium/enable
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/enable
     mode: '0755'
 
 - name: Create cilium addon disable script
   become: true
   ansible.builtin.template:
     src: cilium-disable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/cilium/disable
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
     mode: '0755'
 
 - name: Add cilium addon to core addons list
