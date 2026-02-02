@@ -117,10 +117,15 @@
     marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
     insertafter: '^addons:'
     block: |
-          - name: cilium
-            description: "custom cilium install"
-            version: "{{ cilium_version }}"
-            check_status: "pod/cilium"
+      {% filter indent(width=4, first=true) %}
+      - name: cilium
+        description: "custom cilium install"
+        version: "{{ cilium_version }}"
+        check_status: "pod/cilium"
+        supported_architectures:
+          - amd64
+          - arm64
+      {% endfilter %}
     create: true
 
 - name: Wait for microk8s to be ready
