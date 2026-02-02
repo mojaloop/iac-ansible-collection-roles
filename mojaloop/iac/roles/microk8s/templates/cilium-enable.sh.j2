@@ -120,8 +120,8 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set hubble.enabled=true \
     --set hubble.relay.enabled=true \
     --set hubble.ui.enabled=true \
-    --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR
-
+    --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
+    --set nodePort.enabled=true
 )
 
 ${SNAP}/microk8s-status.wrapper --wait-ready >/dev/null
