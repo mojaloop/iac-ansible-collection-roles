@@ -114,13 +114,13 @@
   become: true
   ansible.builtin.blockinfile:
     path: /var/snap/microk8s/common/addons/core/addons.yaml
-    marker: "# {mark} ANSIBLE MANAGED: cilium addon"
+    marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
     insertafter: '^addons:'
     content: |
-        - name: cilium
-          description: "custom cilium install"
-          version: "{{ cilium_version }}"
-          check_status: "pod/cilium"
+          - name: cilium
+            description: "custom cilium install"
+            version: "{{ cilium_version }}"
+            check_status: "pod/cilium"
     create: true
 
 - name: Wait for microk8s to be ready
