@@ -65,69 +65,66 @@ if [ -z "$CILIUM_VERSION" ]; then
 fi
 CILIUM_ERSION=$(echo $CILIUM_VERSION | sed 's/v//g')
 
-if [ -f "${SNAP_COMMON}/plugins/cilium" ]
-then
-  echo "Cilium version $CILIUM_VERSION is already installed."
-else
-  CILIUM_DIR="cilium-$CILIUM_ERSION"
-  SOURCE_URI="https://github.com/cilium/cilium/archive"
-  CILIUM_CNI_CONF="plugins/cilium-cni/05-cilium-cni.conf"
-  CILIUM_LABELS="k8s-app=cilium"
-  NAMESPACE=kube-system
 
-  echo "Fetching cilium version $CILIUM_VERSION."
-  run_with_sudo mkdir -p "${SNAP_DATA}/tmp/cilium"
-  (cd "${SNAP_DATA}/tmp/cilium"
-  fetch_as $SOURCE_URI/$CILIUM_VERSION.tar.gz "$SNAP_DATA/tmp/cilium/cilium.tar.gz"
-  if ! run_with_sudo gzip -f -d "$SNAP_DATA/tmp/cilium/cilium.tar.gz"; then
-    echo "Invalid version \"$CILIUM_VERSION\". Must be a branch on https://github.com/cilium/cilium."
-    exit 1
-  fi
-  run_with_sudo tar -xf "$SNAP_DATA/tmp/cilium/cilium.tar" "$CILIUM_DIR/install" "$CILIUM_DIR/$CILIUM_CNI_CONF")
+CILIUM_DIR="cilium-$CILIUM_ERSION"
+SOURCE_URI="https://github.com/cilium/cilium/archive"
+CILIUM_CNI_CONF="plugins/cilium-cni/05-cilium-cni.conf"
+CILIUM_LABELS="k8s-app=cilium"
+NAMESPACE=kube-system
 
-  run_with_sudo mv "$SNAP_DATA/args/cni-network/cni.conf" "$SNAP_DATA/args/cni-network/10-kubenet.conf" 2>/dev/null || true
-  run_with_sudo mv "$SNAP_DATA/args/cni-network/flannel.conflist" "$SNAP_DATA/args/cni-network/20-flanneld.conflist" 2>/dev/null || true
-  run_with_sudo cp "$SNAP_DATA/tmp/cilium/$CILIUM_DIR/$CILIUM_CNI_CONF" "$SNAP_DATA/args/cni-network/05-cilium-cni.conf"
-  
-  IPv4_CLUSTER_CIDR="10.1.0.0/16"
-  if [ -e "${SNAP_DATA}/args/cni-env" ]; then
-    source "${SNAP_DATA}/args/cni-env"
-  fi
-
-  # Generate the YAMLs for Cilium and apply them
-  (cd "${SNAP_DATA}/tmp/cilium/$CILIUM_DIR/install/kubernetes"
-  # Add cilium repository
-  ${SNAP}/microk8s-helm3.wrapper repo add cilium https://helm.cilium.io/
-  ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_VERSION} \
-      --namespace $NAMESPACE \
-      --set cni.confPath="/var/snap/microk8s/current/args/cni-network" \
-      --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
-      --set cni.customConf=true \
-      --set cni.exclusive=false \
-      --set cni.chainingMode=generic-veth \
-      --set containerRuntime.integration=containerd \
-      --set global.containerRuntime.socketPath="/var/snap/microk8s/common/run/containerd.sock" \
-      --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
-      --set operator.replicas=1 \
-      --set keepDeprecatedLabels=true \
-      --set kubeProxyReplacement=false \
-      --set routingMode=native \
-      --set tunnel=disabled \
-      --set autoDirectNodeRoutes=true \
-      --set ipam.mode=kubernetes \
-      --set enableIPv4Masquerade=true \
-      --set bpf.masquerade=true \
-      --set envoy.enabled=false \
-      --set l7Proxy=false \
-      --set meshAuth.enabled=false \
-      --set hubble.enabled=true \
-      --set hubble.relay.enabled=true \
-      --set hubble.ui.enabled=true
-
-  )
-
-  ${SNAP}/microk8s-status.wrapper --wait-ready >/dev/null
-  echo "Waiting for cilium. This may take several minutes."
-  "$SNAP/microk8s-kubectl.wrapper" -n $NAMESPACE rollout status ds/cilium
-  echo "Cilium is enabled"
+echo "Fetching cilium version $CILIUM_VERSION."
+run_with_sudo mkdir -p "${SNAP_DATA}/tmp/cilium"
+(cd "${SNAP_DATA}/tmp/cilium"
+fetch_as $SOURCE_URI/$CILIUM_VERSION.tar.gz "$SNAP_DATA/tmp/cilium/cilium.tar.gz"
+if ! run_with_sudo gzip -f -d "$SNAP_DATA/tmp/cilium/cilium.tar.gz"; then
+echo "Invalid version \"$CILIUM_VERSION\". Must be a branch on https://github.com/cilium/cilium."
+exit 1
 fi
+run_with_sudo tar -xf "$SNAP_DATA/tmp/cilium/cilium.tar" "$CILIUM_DIR/install" "$CILIUM_DIR/$CILIUM_CNI_CONF")
+
+run_with_sudo mv "$SNAP_DATA/args/cni-network/cni.conf" "$SNAP_DATA/args/cni-network/10-kubenet.conf" 2>/dev/null || true
+run_with_sudo mv "$SNAP_DATA/args/cni-network/flannel.conflist" "$SNAP_DATA/args/cni-network/20-flanneld.conflist" 2>/dev/null || true
+run_with_sudo cp "$SNAP_DATA/tmp/cilium/$CILIUM_DIR/$CILIUM_CNI_CONF" "$SNAP_DATA/args/cni-network/05-cilium-cni.conf"
+
+IPv4_CLUSTER_CIDR="10.1.0.0/16"
+if [ -e "${SNAP_DATA}/args/cni-env" ]; then
+source "${SNAP_DATA}/args/cni-env"
+fi
+
+# Generate the YAMLs for Cilium and apply them
+(cd "${SNAP_DATA}/tmp/cilium/$CILIUM_DIR/install/kubernetes"
+# Add cilium repository
+${SNAP}/microk8s-helm3.wrapper repo add cilium https://helm.cilium.io/
+${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_VERSION} \
+    --namespace $NAMESPACE \
+    --set cni.confPath="/var/snap/microk8s/current/args/cni-network" \
+    --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
+    --set cni.customConf=true \
+    --set cni.exclusive=false \
+    --set cni.chainingMode=generic-veth \
+    --set containerRuntime.integration=containerd \
+    --set global.containerRuntime.socketPath="/var/snap/microk8s/common/run/containerd.sock" \
+    --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
+    --set operator.replicas=1 \
+    --set keepDeprecatedLabels=true \
+    --set kubeProxyReplacement=false \
+    --set routingMode=native \
+    --set tunnel=disabled \
+    --set autoDirectNodeRoutes=true \
+    --set ipam.mode=kubernetes \
+    --set enableIPv4Masquerade=true \
+    --set bpf.masquerade=true \
+    --set envoy.enabled=false \
+    --set l7Proxy=false \
+    --set meshAuth.enabled=false \
+    --set hubble.enabled=true \
+    --set hubble.relay.enabled=true \
+    --set hubble.ui.enabled=true \
+    --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR
+
+)
+
+${SNAP}/microk8s-status.wrapper --wait-ready >/dev/null
+echo "Waiting for cilium. This may take several minutes."
+"$SNAP/microk8s-kubectl.wrapper" -n $NAMESPACE rollout status ds/cilium
+echo "Cilium is enabled"
