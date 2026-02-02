@@ -131,11 +131,11 @@
     path: /var/snap/microk8s/common/addons/core/addons.yaml
     marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
     insertafter: '^addons:'
-    content: |
-          - name: cilium
-            description: "custom cilium install"
-            version: "{{ cilium_version }}"
-            check_status: "pod/cilium"
+    block: |
+      - name: cilium
+        description: "custom cilium install"
+        version: "{{ cilium_version }}"
+        check_status: "pod/cilium"
     create: true
 
 - name: Wait for microk8s to be ready
