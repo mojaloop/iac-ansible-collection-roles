@@ -9,7 +9,7 @@ microk8s_disable_snap_autoupdate: false
 
 # plugin configuration
 addons_to_disable: "dns,rook-ceph,metrics-server,dashboard,cert-manager,metallb,registry,hostpath-storage"
-addons_to_enable: "rbac"
+addons_to_enable: "rbac,cilium"
 
 microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
 helm3_repositories:
