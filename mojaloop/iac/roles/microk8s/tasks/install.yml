@@ -12,6 +12,13 @@
     state: directory
     recurse: no
 
+- name: "create directory for microk8s addons"
+  become: true
+  ansible.builtin.file:
+    path: /var/snap/microk8s/common/addons/core/addons
+    state: directory
+    recurse: yes
+
 - name: Create config file for mk8s
   become: true
   ansible.builtin.template:
@@ -25,6 +32,45 @@
     dest: /var/snap/microk8s/common/.oidc_config.yaml
     force: no
   when: kubernetes_oidc_enabled | bool
+
+- name: Create custom cilium addon directory
+  become: true
+  ansible.builtin.file:
+    path: /var/snap/microk8s/common/addons/core/addons/cilium
+    state: directory
+    mode: '0755'
+
+- name: Create cilium addon enable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-enable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/enable
+    mode: '0755'
+
+- name: Create cilium addon disable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-disable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
+    mode: '0755'
+
+- name: Add cilium addon to core addons list
+  become: true
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/common/addons/core/addons.yaml
+    marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
+    insertafter: '^addons:'
+    block: |
+      {% filter indent(width=4, first=true) %}
+      - name: cilium
+        description: "custom cilium install"
+        version: "{{ cilium_version }}"
+        check_status: "pod/cilium"
+        supported_architectures:
+          - amd64
+          - arm64
+      {% endfilter %}
+    create: true
 
 - name: Check microk8s installed
   become: true
@@ -103,45 +149,6 @@
       --allowed-unsafe-sysctls=net.ipv4.ip_forward
       --max-pods={{ max_pods_per_node }}
       --cgroup-driver=systemd
-
-- name: Create custom cilium addon directory
-  become: true
-  ansible.builtin.file:
-    path: /var/snap/microk8s/common/addons/core/addons/cilium
-    state: directory
-    mode: '0755'
-
-- name: Create cilium addon enable script
-  become: true
-  ansible.builtin.template:
-    src: cilium-enable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/addons/cilium/enable
-    mode: '0755'
-
-- name: Create cilium addon disable script
-  become: true
-  ansible.builtin.template:
-    src: cilium-disable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
-    mode: '0755'
-
-- name: Add cilium addon to core addons list
-  become: true
-  ansible.builtin.blockinfile:
-    path: /var/snap/microk8s/common/addons/core/addons.yaml
-    marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
-    insertafter: '^addons:'
-    block: |
-      {% filter indent(width=4, first=true) %}
-      - name: cilium
-        description: "custom cilium install"
-        version: "{{ cilium_version }}"
-        check_status: "pod/cilium"
-        supported_architectures:
-          - amd64
-          - arm64
-      {% endfilter %}
-    create: true
 
 - name: Wait for microk8s to be ready
   become: true
