@@ -111,7 +111,9 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set routingMode=native \
     --set tunnel=disabled \
     --set autoDirectNodeRoutes=true \
-    --set ipam.mode=kubernetes \
+    --set ipam.mode=cluster-pool \
+    --set ipam.operator.clusterPoolIPv4PodCIDRList=$IPv4_CLUSTER_CIDR \
+    --set ipam.operator.clusterPoolIPv4MaskSize=24 \
     --set enableIPv4Masquerade=true \
     --set bpf.masquerade=true \
     --set envoy.enabled=false \
@@ -120,7 +122,6 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set hubble.enabled=true \
     --set hubble.relay.enabled=true \
     --set hubble.ui.enabled=true \
-    --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
     --set nodePort.enabled=true \
     --set tolerations[0].operator=Exists \
     --set operator.tolerations[0].operator=Exists
