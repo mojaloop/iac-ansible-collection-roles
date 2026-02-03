@@ -103,9 +103,8 @@ argocd_default:
           internal_gateway_name: "istio-internal-ingress-gw"
           external_gateway_name: "istio-external-ingress-gw"
           gw_sync_wave: "'-11'" # hack to start gw after istiod
-          istio_owned_cni_config: "true"
-          cni_bin_dir: "/opt/cni/bin"
-          cni_conf_dir: "/etc/cni/net.d"
+          istio_owned_cni_config: "'true'"
+          cni_platform: ""
         cert_manager:
           app_name: "cert-manager"
           helm_version: "1.17.1" #"1.15.0"
