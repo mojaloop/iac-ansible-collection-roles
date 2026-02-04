@@ -2,47 +2,8 @@
   ansible.builtin.set_fact:
     designated_master_host: "{{ (groups[microk8s_group_ha]|sort)[0] }}"
   
-- name: Add Cilium Helm repo
+- name: Enable cilium addon
   become: true
-  ansible.builtin.command: >
-    helm repo add cilium https://helm.cilium.io
-  register: cilium_repo
-  changed_when: "'already exists' not in cilium_repo.stderr"
-  when: inventory_hostname == designated_master_host
-
-- name: Update Helm repos
-  become: true
-  ansible.builtin.command: helm repo update
+  ansible.builtin.command: microk8s enable cilium
   changed_when: false
-  when: inventory_hostname == designated_master_host
-
-- name: Install Cilium with eBPF kube-proxy replacement
-  become: true
-  ansible.builtin.command: >
-    helm upgrade --install cilium cilium/cilium
-    --namespace {{ cilium_namespace }}
-    --create-namespace
-    --version {{ cilium_version }}
-    --set kubeProxyReplacement=true
-    --set k8sServiceHost=127.0.0.1
-    --set k8sServicePort=16443
-    --set ipam.mode=kubernetes
-    --set tunnel=disabled
-    --set routingMode=native
-    --set autoDirectNodeRoutes=true
-    --set enableIPv4=true
-    --set enableIPv4MasqAgent=false
-    --set enableIPv4Masquerade=true
-    --set hubble.enabled=true
-    --set hubble.relay.enabled=true
-    --set hubble.ui.enabled=true
-    --set cni.exclusive=true
-    --set bpf.masquerade=true
-    --set devices='{eth0}'
-    --set envoy.enabled=false
-    --set l7Proxy=false
-    --set socketLB.enabled=true
-    --set socketLB.hostNamespaceOnly=true
-    --set operator.replicas=1
-    --set ipv4NativeRoutingCIDR=10.100.0.0/16
   when: inventory_hostname == designated_master_host
