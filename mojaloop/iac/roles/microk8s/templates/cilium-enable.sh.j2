@@ -119,9 +119,6 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set envoy.enabled=true \
     --set l7Proxy=true \
     --set meshAuth.enabled=false \
-    --set hubble.enabled=true \
-    --set hubble.relay.enabled=true \
-    --set hubble.ui.enabled=true \
     --set nodePort.enabled=true \
     --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
     --set tolerations[0].operator=Exists \
