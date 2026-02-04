@@ -32,6 +32,8 @@
       ansible.builtin.import_role:
         name: mojaloop.iac.microk8s
         tasks_from: install-cillium
+      vars:
+        microk8s_group_ha: "master"
 
 - hosts: agent
   become: true
