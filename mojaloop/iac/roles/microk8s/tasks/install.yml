@@ -12,13 +12,6 @@
     state: directory
     recurse: no
 
-- name: "create directory for microk8s addons"
-  become: true
-  ansible.builtin.file:
-    path: /var/snap/microk8s/common/addons/core/addons
-    state: directory
-    recurse: yes
-
 - name: Create config file for mk8s
   become: true
   ansible.builtin.template:
