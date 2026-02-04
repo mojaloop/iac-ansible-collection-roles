@@ -26,27 +26,6 @@
     force: no
   when: kubernetes_oidc_enabled | bool
 
-- name: Create custom cilium addon directory
-  become: true
-  ansible.builtin.file:
-    path: /var/snap/microk8s/common/addons/core/addons/cilium
-    state: directory
-    mode: '0755'
-
-- name: Create cilium addon enable script
-  become: true
-  ansible.builtin.template:
-    src: cilium-enable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/addons/cilium/enable
-    mode: '0755'
-
-- name: Create cilium addon disable script
-  become: true
-  ansible.builtin.template:
-    src: cilium-disable.sh.j2
-    dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
-    mode: '0755'
-
 - name: Check microk8s installed
   become: true
   ansible.builtin.command: snap list microk8s
@@ -134,12 +113,27 @@
     - "'This MicroK8s deployment is acting as a node in a cluster.' not in mk8sstatusout.stdout_lines"
     - mk8sstatusout.rc > 0
 
-- name: Wait for addons.yaml file to be created
+- name: Create custom cilium addon directory
   become: true
-  ansible.builtin.wait_for:
-    path: /var/snap/microk8s/common/addons/core/addons.yaml
-    timeout: 60
+  ansible.builtin.file:
+    path: /var/snap/microk8s/common/addons/core/addons/cilium
+    state: directory
+    mode: '0755'
 
+- name: Create cilium addon enable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-enable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/enable
+    mode: '0755'
+
+- name: Create cilium addon disable script
+  become: true
+  ansible.builtin.template:
+    src: cilium-disable.sh.j2
+    dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
+    mode: '0755'
+    
 - name: Add cilium addon to core addons list
   become: true
   ansible.builtin.blockinfile:
