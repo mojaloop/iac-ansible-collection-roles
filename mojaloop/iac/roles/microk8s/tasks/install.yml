@@ -54,24 +54,6 @@
     dest: /var/snap/microk8s/common/addons/core/addons/cilium/disable
     mode: '0755'
 
-- name: Add cilium addon to core addons list
-  become: true
-  ansible.builtin.blockinfile:
-    path: /var/snap/microk8s/common/addons/core/addons.yaml
-    marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
-    insertafter: '^addons:'
-    block: |
-      {% filter indent(width=4, first=true) %}
-      - name: cilium
-        description: "custom cilium install"
-        version: "{{ cilium_version }}"
-        check_status: "pod/cilium"
-        supported_architectures:
-          - amd64
-          - arm64
-      {% endfilter %}
-    create: true
-
 - name: Check microk8s installed
   become: true
   ansible.builtin.command: snap list microk8s
@@ -106,6 +88,24 @@
     classic: yes
     channel: "{{ microk8s_version }}"
   when: fact_microk8s_not_installed
+
+- name: Add cilium addon to core addons list
+  become: true
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/common/addons/core/addons.yaml
+    marker: "    # {mark} ANSIBLE MANAGED: cilium addon"
+    insertafter: '^addons:'
+    block: |
+      {% filter indent(width=4, first=true) %}
+      - name: cilium
+        description: "custom cilium install"
+        version: "{{ cilium_version }}"
+        check_status: "pod/cilium"
+        supported_architectures:
+          - amd64
+          - arm64
+      {% endfilter %}
+    create: true
 
 - name: Update channel
   become: true
@@ -143,6 +143,11 @@
   failed_when:
     - "'This MicroK8s deployment is acting as a node in a cluster.' not in mk8sstatusout.stdout_lines"
     - mk8sstatusout.rc > 0
+
+- name: Enable cilium addon
+  become: true
+  ansible.builtin.command: microk8s enable cilium
+  changed_when: false
 
 - name: Create kubectl alias
   become: true
