@@ -116,8 +116,8 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set ipam.operator.clusterPoolIPv4MaskSize=24 \
     --set enableIPv4Masquerade=true \
     --set bpf.masquerade=true \
-    --set envoy.enabled=false \
-    --set l7Proxy=false \
+    --set envoy.enabled=true \
+    --set l7Proxy=true \
     --set meshAuth.enabled=false \
     --set hubble.enabled=true \
     --set hubble.relay.enabled=true \
