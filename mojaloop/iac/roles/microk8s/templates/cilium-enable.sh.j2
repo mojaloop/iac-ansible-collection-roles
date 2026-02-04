@@ -101,7 +101,8 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
     --set cni.customConf=false \
     --set cni.exclusive=false \
-    --set cni.chainingMode=generic-veth \
+    --set cni.chainingMode=none \
+    --set socketLB.hostNamespaceOnly=true \
     --set containerRuntime.integration=containerd \
     --set global.containerRuntime.socketPath="/var/snap/microk8s/common/run/containerd.sock" \
     --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
@@ -115,12 +116,15 @@ ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_V
     --set ipam.operator.clusterPoolIPv4PodCIDRList=$IPv4_CLUSTER_CIDR \
     --set ipam.operator.clusterPoolIPv4MaskSize=24 \
     --set enableIPv4Masquerade=true \
-    --set bpf.masquerade=true \
+    --set bpf.masquerade=false \
     --set envoy.enabled=true \
     --set l7Proxy=true \
     --set meshAuth.enabled=false \
     --set nodePort.enabled=true \
     --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
+    --set hubble.enabled=true \
+    --set hubble.relay.enabled=true \
+    --set hubble.ui.enabled=true \
     --set tolerations[0].operator=Exists \
     --set operator.tolerations[0].operator=Exists
 )
