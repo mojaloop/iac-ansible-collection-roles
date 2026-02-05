@@ -22,14 +22,32 @@ data:
   resource.customizations: |
     argoproj.io/Application:
       health.lua: |
-        hs = {}
+        local hs = {} -- Use 'local' to prevent cross-script interference
         hs.status = "Progressing"
         hs.message = ""
         if obj.status ~= nil then
-          if obj.status.health ~= nil then
-            hs.status = obj.status.health.status
-            if obj.status.health.message ~= nil then
-              hs.message = obj.status.health.message
+          local status = obj.status
+          if status.conditions ~= nil then
+            for i, condition in ipairs(status.conditions) do
+              -- Ensure condition and type exist before calling string.match
+              if condition ~= nil and condition.type ~= nil then
+                if string.match(tostring(condition.type), '.*Error$') then
+                  hs.status = "Degraded"
+                  hs.message = condition.message or "Error condition detected"
+                  return hs
+                end
+              end
+            end
+          end
+          if status.health ~= nil then
+            local health = status.health
+            hs.status = health.status or "Progressing"
+            if health.message ~= nil then
+              hs.message = health.message
+            end
+            local syncStatus = (status.sync and status.sync.status or nil)
+            if hs.status == "Healthy" and syncStatus ~= "Synced" then
+              hs.status = "Progressing"
             end
           end
         end
