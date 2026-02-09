@@ -16,6 +16,7 @@ netbird_build_server_client_version: "0.51.1"
 install_coredns: true
 coredns_localcache_version: "1.12.1"
 dns_bind_address: "169.254.20.10"
+coredns_stunner_override: true
 #argo
 argocd_override:
 argocd_default:
