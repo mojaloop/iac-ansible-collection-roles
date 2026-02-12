@@ -97,50 +97,39 @@ fi
 ${SNAP}/microk8s-helm3.wrapper repo add cilium https://helm.cilium.io/
 ${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_VERSION} \
     --namespace $NAMESPACE \
+    --set kubeProxyReplacement=false \
     --set cni.confPath="/var/snap/microk8s/current/args/cni-network" \
     --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
-    --set cni.customConf=false \
+    --set cni.confPrefix='{"cniVersion":"1.0.0","name":"cilium"}' \
+    --set cni.customConf=true \
+    --set cni.configMap=cilium-cni-configuration \
     --set cni.exclusive=false \
-    --set cni.chainingMode=none \
-    --set socketLB.enabled=false \
-    --set containerRuntime.integration=containerd \
-    --set global.containerRuntime.socketPath="/var/snap/microk8s/common/run/containerd.sock" \
+    --set cni.chainingMode=portmap \
+    --set socketLB.enabled=true \
+    --set socketLB.hostNamespaceOnly=true \
     --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
     --set operator.replicas=1 \
-    --set keepDeprecatedLabels=true \
-    --set kubeProxyReplacement=false \
     --set routingMode=native \
-    --set tunnel=disabled \
     --set autoDirectNodeRoutes=true \
     --set ipam.mode=cluster-pool \
     --set ipam.operator.clusterPoolIPv4PodCIDRList=$IPv4_CLUSTER_CIDR \
-    --set ipam.operator.clusterPoolIPv4MaskSize=24 \
-    --set enableIPv4Masquerade=true \
-    --set bpf.masquerade=false \
-    --set envoy.enabled=false \
-    --set l7Proxy=false \
-    --set meshAuth.enabled=false \
-    --set nodePort.enabled=true \
     --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
-    --set hubble.enabled=false \
-    --set hubble.relay.enabled=false \
-    --set hubble.ui.enabled=false \
-    --set tolerations[0].operator=Exists \
-    --set operator.tolerations[0].operator=Exists \
+    --set enableIPv4Masquerade=true \
+    --set bpf.masquerade=true \
+    --set bpf.lbAcceleration=optimized \
+    --set nodePort.enabled=true \
     --set loadBalancer.mode=hybrid \
-    --set externalIPs.enabled=true \
-    --set socketLB.enabled=false \
-    --set bandwidthManager.enabled=false \
+    --set hostPort.enabled=true \
+    --set enableHostReachableServices=true \
+    --set hostFirewall.enabled=false \
     --set enablePolicy=false \
     --set enableHealthChecking=false \
     --set enableEndpointHealthChecking=false \
-    --set hostPort.enabled=true \
-    --set hostPort.rangeStart=50000 \
-    --set hostPort.rangeEnd=51000 \
-    --set hostPort.autoRange=true \
-    --set hostPort.autoRangeOffset=1000 \
-    --set enableHostReachableServices=true \
-    --set hostFirewall.enabled=false
+    --set tolerations[0].operator=Exists \
+    --set operator.tolerations[0].operator=Exists \
+    --set enableHostLegacyRouting=false \
+    --set externalIPs.enabled=true \
+    --set bpf.lbExternalClusterIP=true
 )
 
 ${SNAP}/microk8s-status.wrapper --wait-ready >/dev/null
