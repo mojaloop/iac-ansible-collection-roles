@@ -490,7 +490,7 @@ argocd_default:
           cc_network_resource_group: "cc-internal"
           sc_network_resource_group: "sc-internal"
           sync_wave: "'3'"
-          router_port_range: "51820-51830"
+          router_port_range: "51820,51821,51822,51823,51824,51825,51826,51827,51828,51829,51830"
           router_replica_count: "'3'"
         netbird_env_access_control_policies:
           cc_ports: "443,16443"
