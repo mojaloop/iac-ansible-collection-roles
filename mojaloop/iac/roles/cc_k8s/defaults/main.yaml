@@ -243,6 +243,10 @@ argocd_default:
           sync_wave: "'-10'"
           helm_version: "2.11.0"
           public_ingress_access_domain: "false"
+        hostport_allocator:
+          app_name: "hostport-allocator"
+          namespace: "hostport-allocator"
+          helm_version: "0.1.17"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
