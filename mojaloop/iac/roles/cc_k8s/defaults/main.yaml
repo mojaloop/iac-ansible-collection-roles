@@ -246,7 +246,7 @@ argocd_default:
         hostport_allocator:
           app_name: "hostport-allocator"
           namespace: "hostport-allocator"
-          helm_version: "0.1.17"
+          version: "0.1.17"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
