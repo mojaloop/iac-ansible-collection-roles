@@ -219,21 +219,3 @@ spec:
           items:
           - key: Corefile
             path: Corefile
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kube-dns
-  namespace: kube-system
-spec:
-  selector:
-    k8s-app: coredns-nodecache
-  ports:
-  - name: dns
-    port: 53
-    protocol: UDP
-    targetPort: 53
-  - name: dns-tcp
-    port: 53
-    protocol: TCP
-    targetPort: 53
