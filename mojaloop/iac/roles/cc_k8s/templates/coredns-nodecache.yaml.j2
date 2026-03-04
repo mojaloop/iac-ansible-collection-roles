@@ -228,6 +228,7 @@ metadata:
 spec:
   selector:
     k8s-app: coredns-nodecache
+  clusterIP: {{ dns_bind_address }}
   ports:
   - name: dns
     port: 53
