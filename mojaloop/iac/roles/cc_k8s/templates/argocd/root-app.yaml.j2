@@ -44,6 +44,8 @@ spec:
             value: {{ helm_version }}
           - name: helmfile_version
             value: {{ helmfile_version }}
+          - name: dns_bind_address
+            value: {{ dns_bind_address }}
 
 {% for item in fact_argo_merged_config.apps | dict2items %}
 {% for attr in item.value | ansible.utils.remove_keys(target=['sub_apps']) | dict2items %}
