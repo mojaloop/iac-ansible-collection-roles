@@ -44,6 +44,10 @@
   set_fact:
     fact_microk8s_needs_update: "{{ (not fact_microk8s_not_installed) and (fact_microk8s_installed_channel != microk8s_version) }}"
 
+- name: Set fact if microk8s refresh should run
+  set_fact:
+    fact_microk8s_refresh_requested: "{{ (not fact_microk8s_not_installed) and (fact_microk8s_needs_update or (microk8s_allow_patch_updates | bool)) }}"
+
 - name: Debug microk8s snap info and facts
   debug:
     msg:
@@ -52,6 +56,7 @@
       - "fact_microk8s_installed_channel: {{ fact_microk8s_installed_channel }}"
       - "fact_microk8s_not_installed: {{ fact_microk8s_not_installed }}"
       - "fact_microk8s_needs_update: {{ fact_microk8s_needs_update }}"
+      - "fact_microk8s_refresh_requested: {{ fact_microk8s_refresh_requested }}"
 
 - name: Install microk8s
   become: true
@@ -64,7 +69,7 @@
 - name: Update channel
   become: true
   ansible.builtin.command: snap refresh microk8s --channel={{ microk8s_version }}
-  when: fact_microk8s_needs_update
+  when: fact_microk8s_refresh_requested
 
 - name: Hold microk8s snap refresh
   become: true

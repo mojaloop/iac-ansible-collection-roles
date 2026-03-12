@@ -6,6 +6,7 @@
 # version management
 microk8s_version: "1.31/stable"
 microk8s_disable_snap_autoupdate: false
+microk8s_allow_patch_updates: false
 
 # plugin configuration
 addons_to_disable: "dns,rook-ceph,metrics-server,dashboard,cert-manager,metallb,registry,hostpath-storage"
