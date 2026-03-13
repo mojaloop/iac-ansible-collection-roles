@@ -61,10 +61,10 @@
     channel: "{{ microk8s_version }}"
   when: fact_microk8s_not_installed
 
-- name: Update channel
-  become: true
-  ansible.builtin.command: snap refresh microk8s --channel={{ microk8s_version }}
-  when: fact_microk8s_needs_update
+# - name: Update channel
+#   become: true
+#   ansible.builtin.command: snap refresh microk8s --channel={{ microk8s_version }}
+#   when: fact_microk8s_needs_update
 
 - name: Hold microk8s snap refresh
   become: true
