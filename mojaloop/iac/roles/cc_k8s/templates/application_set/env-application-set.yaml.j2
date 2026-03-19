@@ -150,9 +150,9 @@ spec:
             - name: "dbaas_default_management_policy"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
             - name: "env_onboard_config_xplane_management_policies"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].env_onboard_config_xplane_management_policies }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].xplane_management_policies }}"
             - name: "env_onboard_config_tf_workspace_management_policies"
-              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].env_onboard_config_tf_workspace_management_policies }}"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].tf_workspace_management_policies }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
