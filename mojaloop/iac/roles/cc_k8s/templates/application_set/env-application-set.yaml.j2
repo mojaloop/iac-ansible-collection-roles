@@ -59,6 +59,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_tf_provider_version }}"
             - name: "zitadel_post_config_output_secret"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['zitadel'].zitadel_post_config_output_secret }}"
+            - name: "zitadel_post_config_init_output_secret"
+              value: "zitadel-post-config-init-output"
             - name: "vault_admin_rbac_group"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].vault_admin_rbac_group }}"
             - name: "grafana_admin_rbac_group"
@@ -147,6 +149,10 @@ spec:
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].cc_ports }}"
             - name: "dbaas_default_management_policy"
               value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].dbaas_default_management_policy }}"
+            - name: "env_onboard_config_xplane_management_policies"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].env_onboard_config_xplane_management_policies }}"
+            - name: "env_onboard_config_tf_workspace_management_policies"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].env_onboard_config_tf_workspace_management_policies }}"
 
       - repoURL: {{ fact_argo_merged_config.gitrepo_host_fqdn }}/{{ fact_argo_merged_config.gitrepo_owner }}/{{ fact_argo_merged_config.gitrepo_repo }}.git
         targetRevision: {{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].terraform_modules_tag }}
