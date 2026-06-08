@@ -1,0 +1,9 @@
+- name: Find the designated master host
+  ansible.builtin.set_fact:
+    designated_master_host: "{{ (groups[microk8s_group_ha]|sort)[0] }}"
+  
+- name: Enable cilium addon
+  become: true
+  ansible.builtin.command: microk8s enable cilium
+  changed_when: false
+  when: inventory_hostname == designated_master_host

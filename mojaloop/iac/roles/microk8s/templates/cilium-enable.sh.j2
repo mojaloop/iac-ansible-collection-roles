@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+set -e
+
+source $SNAP/actions/common/utils.sh
+
+"$SNAP/microk8s-enable.wrapper" helm3
+
+CILIUM_VERSION=""
+INSTALL_CILIUM_CLI="True"
+
+# Parse command-line arguments
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --version)
+      CILIUM_VERSION="$2"
+      shift 2
+      ;;
+    --skip-cilium-cli)
+      INSTALL_CILIUM_CLI="False"
+      shift
+      ;;
+    *)
+      echo "Invalid option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+echo "Ensure kube-apiserver --allow-privileged=true flag"
+if ! grep -qE -- "--allow-privileged=true" "$SNAP_DATA/args/kube-apiserver"; then
+  echo "Adding kube-apiserver --allow-privileged=true flag"
+  refresh_opt_in_config "allow-privileged" "true" kube-apiserver
+  echo "Restarting kube-apiserver"
+  restart_service apiserver
+fi
+
+set_service_not_expected_to_start flanneld
+run_with_sudo preserve_env snapctl stop "${SNAP_NAME}.daemon-flanneld"
+remove_vxlan_interfaces
+
+echo "Ensure containerd cni bin_dir is OK"
+if grep -qE "bin_dir.*SNAP}\/" $SNAP_DATA/args/containerd-template.toml; then
+  echo "Configure cni bin dir"
+  run_with_sudo "${SNAP}/bin/sed" -i 's;bin_dir = "${SNAP}/opt;bin_dir = "${SNAP_DATA}/opt;g' "$SNAP_DATA/args/containerd-template.toml"
+  echo "Restarting containerd"
+  run_with_sudo preserve_env snapctl restart "${SNAP_NAME}.daemon-containerd"
+fi
+
+# Disable Calico CNI
+if [ -e "$SNAP_DATA/var/lock/ha-cluster" ] && [ -e "$SNAP_DATA/args/cni-network/cni.yaml" ]
+then
+  echo "Disabling Calico CNI"
+  "$SNAP/microk8s-kubectl.wrapper" delete -f "$SNAP_DATA/args/cni-network/cni.yaml"
+  # give a bit slack before moving the file out, sometimes it gives out this error "rpc error: code = Unknown desc = checkpoint in progress".
+  sleep 2s
+  run_with_sudo mv "$SNAP_DATA/args/cni-network/cni.yaml" "$SNAP_DATA/args/cni-network/cni.yaml.disabled"
+fi
+
+echo "Enabling Cilium"
+
+# Cilium Supports Arm beginning v1.11.12 and greater
+if [ -z "$CILIUM_VERSION" ]; then
+  CILIUM_VERSION="v1.17.12"
+fi
+CILIUM_ERSION=$(echo $CILIUM_VERSION | sed 's/v//g')
+
+
+CILIUM_DIR="cilium-$CILIUM_ERSION"
+SOURCE_URI="https://github.com/cilium/cilium/archive"
+CILIUM_CNI_CONF="plugins/cilium-cni/05-cilium-cni.conf"
+CILIUM_LABELS="k8s-app=cilium"
+NAMESPACE=kube-system
+
+echo "Fetching cilium version $CILIUM_VERSION."
+run_with_sudo mkdir -p "${SNAP_DATA}/tmp/cilium"
+(cd "${SNAP_DATA}/tmp/cilium"
+fetch_as $SOURCE_URI/$CILIUM_VERSION.tar.gz "$SNAP_DATA/tmp/cilium/cilium.tar.gz"
+if ! run_with_sudo gzip -f -d "$SNAP_DATA/tmp/cilium/cilium.tar.gz"; then
+echo "Invalid version \"$CILIUM_VERSION\". Must be a branch on https://github.com/cilium/cilium."
+exit 1
+fi
+run_with_sudo tar -xf "$SNAP_DATA/tmp/cilium/cilium.tar" "$CILIUM_DIR/install" "$CILIUM_DIR/$CILIUM_CNI_CONF")
+
+run_with_sudo mv "$SNAP_DATA/args/cni-network/cni.conf" "$SNAP_DATA/args/cni-network/10-kubenet.conf" 2>/dev/null || true
+run_with_sudo mv "$SNAP_DATA/args/cni-network/flannel.conflist" "$SNAP_DATA/args/cni-network/20-flanneld.conflist" 2>/dev/null || true
+run_with_sudo cp "$SNAP_DATA/tmp/cilium/$CILIUM_DIR/$CILIUM_CNI_CONF" "$SNAP_DATA/args/cni-network/05-cilium-cni.conf"
+
+IPv4_CLUSTER_CIDR="10.1.0.0/16"
+if [ -e "${SNAP_DATA}/args/cni-env" ]; then
+source "${SNAP_DATA}/args/cni-env"
+fi
+
+# Generate the YAMLs for Cilium and apply them
+(cd "${SNAP_DATA}/tmp/cilium/$CILIUM_DIR/install/kubernetes"
+# Add cilium repository
+${SNAP}/microk8s-helm3.wrapper repo add cilium https://helm.cilium.io/
+${SNAP}/microk8s-helm3.wrapper install cilium cilium/cilium --version ${CILIUM_VERSION} \
+    --namespace $NAMESPACE \
+    --set kubeProxyReplacement=false \
+    --set cni.confPath="/var/snap/microk8s/current/args/cni-network" \
+    --set cni.binPath="/var/snap/microk8s/current/opt/cni/bin" \
+    --set cni.confPrefix='{"cniVersion":"1.0.0","name":"cilium"}' \
+    --set cni.customConf=true \
+    --set cni.configMap=cilium-cni-configuration \
+    --set cni.exclusive=false \
+    --set cni.chainingMode=portmap \
+    --set socketLB.enabled=true \
+    --set socketLB.hostNamespaceOnly=true \
+    --set daemon.runPath="/var/snap/microk8s/current/var/run/cilium" \
+    --set operator.replicas=1 \
+    --set routingMode=native \
+    --set autoDirectNodeRoutes=true \
+    --set ipam.mode=cluster-pool \
+    --set ipam.operator.clusterPoolIPv4PodCIDRList=$IPv4_CLUSTER_CIDR \
+    --set ipv4NativeRoutingCIDR=$IPv4_CLUSTER_CIDR \
+    --set enableIPv4Masquerade=true \
+    --set bpf.masquerade=true \
+    --set bpf.lbAcceleration=optimized \
+    --set nodePort.enabled=true \
+    --set loadBalancer.mode=hybrid \
+    --set hostPort.enabled=true \
+    --set enableHostReachableServices=true \
+    --set hostFirewall.enabled=false \
+    --set enablePolicy=false \
+    --set enableHealthChecking=false \
+    --set enableEndpointHealthChecking=false \
+    --set tolerations[0].operator=Exists \
+    --set operator.tolerations[0].operator=Exists \
+    --set enableHostLegacyRouting=false \
+    --set externalIPs.enabled=true \
+    --set bpf.lbExternalClusterIP=true
+)
+
+${SNAP}/microk8s-status.wrapper --wait-ready >/dev/null
+echo "Waiting for cilium. This may take several minutes."
+"$SNAP/microk8s-kubectl.wrapper" -n $NAMESPACE rollout status ds/cilium
+echo "Cilium is enabled"

@@ -16,6 +16,7 @@ netbird_build_server_client_version: "0.51.1"
 install_coredns: true
 coredns_localcache_version: "1.12.1"
 dns_bind_address: "169.254.20.10"
+coredns_stunner_override: true
 #argo
 argocd_override:
 argocd_default:
@@ -103,6 +104,8 @@ argocd_default:
           internal_gateway_name: "istio-internal-ingress-gw"
           external_gateway_name: "istio-external-ingress-gw"
           gw_sync_wave: "'-11'" # hack to start gw after istiod
+          istio_owned_cni_config: "'true'"
+          cni_platform: ""
         cert_manager:
           app_name: "cert-manager"
           helm_version: "1.17.1" #"1.15.0"
@@ -240,6 +243,10 @@ argocd_default:
           sync_wave: "'-10'"
           helm_version: "2.11.0"
           public_ingress_access_domain: "false"
+        hostport_allocator:
+          app_name: "hostport-allocator"
+          namespace: "hostport-allocator"
+          version: "0.1.17"
 
     xplane_provider_config:
       app_name: "xplane-db-provider"
@@ -487,6 +494,8 @@ argocd_default:
           cc_network_resource_group: "cc-internal"
           sc_network_resource_group: "sc-internal"
           sync_wave: "'3'"
+          router_port_range: "51820,51821,51822,51823,51824,51825,51826,51827,51828,51829,51830"
+          router_replica_count: "'3'"
         netbird_env_access_control_policies:
           cc_ports: "443,16443"
           sc_ports: "3306,6443,27017,3300,6789,6800-7299,443,80"

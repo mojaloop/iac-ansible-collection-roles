@@ -10,7 +10,7 @@ microk8s_allow_patch_updates: false
 
 # plugin configuration
 addons_to_disable: "dns,rook-ceph,metrics-server,dashboard,cert-manager,metallb,registry,hostpath-storage"
-addons_to_enable: "rbac"
+addons_to_enable: "rbac,cilium"
 
 microk8s_dns_resolvers: 8.8.8.8,8.8.4.4
 helm3_repositories:
@@ -72,3 +72,8 @@ cluster_name: "test-cluster"
 docker_registry_username: "docker-reader"
 docker_registry_password: "ReadOnlyP@ssw0rd123"
 microk8s_startup_taint_enabled: true
+#cillium variables
+cilium_version: "1.15.5"
+cilium_namespace: kube-system
+pod_cidr: "10.1.0.0/16"   # adjust if needed
+service_cidr: "10.152.183.0/24"  # MicroK8s default

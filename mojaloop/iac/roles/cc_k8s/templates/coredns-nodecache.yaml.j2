@@ -70,6 +70,13 @@ data:
           prefer_udp
         }
         {% else %}
+        {% if coredns_stunner_override | default(false) | bool %}
+        template IN A stunner.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }} {
+          match "^stunner\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
+          answer "stunner.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }} 60 IN CNAME stunner-internal-mirror.stunner-impl.svc.cluster.local."
+          fallthrough
+        }
+        {% endif %}
         template IN A {
           match "^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
           answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
@@ -109,6 +116,13 @@ data:
           rcode NOERROR
         }
         {% if coredns_wildcard_domain is defined and not (coredns_aws_dns is defined and coredns_aws_dns) %}
+        {% if coredns_stunner_override | default(false) | bool %}
+        template IN A stunner.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }} {
+          match "^stunner\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
+          answer "stunner.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') }} 60 IN CNAME stunner-internal-mirror.stunner-impl.svc.cluster.local."
+          fallthrough
+        }
+        {% endif %}
         template IN A {
           match "^[^.]+\.{{ coredns_wildcard_domain | regex_replace('^\*\.', '') | regex_replace('\.', '\.') }}\.?$"
           answer "{{ '{{ .Name }}' }} 60 IN A {{ coredns_wildcard_target }}"
