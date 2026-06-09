@@ -1,7 +1,159 @@
+---
 - name: Find the designated master host
   ansible.builtin.set_fact:
     designated_master_host: "{{ (groups[microk8s_group_ha]|sort)[0] }}"
-  
+
+- name: Define Calico cleanup targets
+  ansible.builtin.set_fact:
+    microk8s_calico_cni_file_names:
+      - 10-calico.conflist
+      - calico-kubeconfig
+      - cni.yaml
+      - cni.yaml.backup
+    microk8s_calico_namespaced_resources:
+      - poddisruptionbudgets.policy/calico-kube-controllers
+      - daemonsets.apps/calico-node
+      - deployments.apps/calico-kube-controllers
+      - configmaps/calico-config
+      - serviceaccounts/calico-cni-plugin
+      - serviceaccounts/calico-node
+      - serviceaccounts/calico-kube-controllers
+    microk8s_calico_cluster_resources:
+      - clusterroles.rbac.authorization.k8s.io/calico-cni-plugin
+      - clusterroles.rbac.authorization.k8s.io/calico-node
+      - clusterroles.rbac.authorization.k8s.io/calico-kube-controllers
+      - clusterrolebindings.rbac.authorization.k8s.io/calico-cni-plugin
+      - clusterrolebindings.rbac.authorization.k8s.io/calico-node
+      - clusterrolebindings.rbac.authorization.k8s.io/calico-kube-controllers
+  when: inventory_hostname == designated_master_host
+
+# MicroK8s cilium enable disables Calico from the snap CNI manifest first.
+# During Calico-to-Cilium migration that manifest may be stale, so remove
+# known Calico state explicitly and tolerate resources that are already gone.
+- name: Find stale Calico CNI files
+  become: true
+  ansible.builtin.shell: |
+    cni_dirs=(
+      /var/snap/microk8s/current/args/cni-network
+      /var/snap/microk8s/*/args/cni-network
+    )
+    for cni_dir in "${cni_dirs[@]}"; do
+      [ -d "${cni_dir}" ] || continue
+      for file_name in \
+        {{ microk8s_calico_cni_file_names | map('quote') | join(' ') }}; do
+        file_path="${cni_dir}/${file_name}"
+        [ -e "${file_path}" ] && printf '%s\n' "${file_path}"
+      done
+    done | sort -u
+  args:
+    executable: /bin/bash
+  register: microk8s_calico_cni_files
+  changed_when: false
+  when: inventory_hostname == designated_master_host
+
+- name: Check for Calico namespaced Kubernetes resources
+  become: true
+  ansible.builtin.command: >-
+    microk8s.kubectl -n kube-system get
+    {{ microk8s_calico_namespaced_resources | join(' ') }}
+    --ignore-not-found=true --no-headers
+  register: microk8s_calico_namespaced_resources_get
+  changed_when: false
+  when: inventory_hostname == designated_master_host
+
+- name: Check for Calico cluster Kubernetes resources
+  become: true
+  ansible.builtin.command: >-
+    microk8s.kubectl get
+    {{ microk8s_calico_cluster_resources | join(' ') }}
+    --ignore-not-found=true --no-headers
+  register: microk8s_calico_cluster_resources_get
+  changed_when: false
+  when: inventory_hostname == designated_master_host
+
+- name: Check for Calico projectcalico.org CRDs
+  become: true
+  ansible.builtin.command:
+    argv:
+      - microk8s.kubectl
+      - get
+      - customresourcedefinitions
+      - -o
+      - name
+  register: microk8s_calico_crds_get
+  changed_when: false
+  when: inventory_hostname == designated_master_host
+
+- name: Define discovered Calico CRDs
+  ansible.builtin.set_fact:
+    microk8s_projectcalico_crds: >-
+      {{
+        microk8s_calico_crds_get.stdout_lines | default([])
+        | select('search', 'projectcalico\\.org$')
+        | list
+      }}
+  when: inventory_hostname == designated_master_host
+
+- name: Delete Calico namespaced Kubernetes resources
+  become: true
+  ansible.builtin.command: >-
+    microk8s.kubectl -n kube-system delete
+    {{ microk8s_calico_namespaced_resources | join(' ') }}
+    --ignore-not-found=true
+  register: microk8s_calico_namespaced_resources_delete
+  changed_when: >-
+    'deleted' in (
+      microk8s_calico_namespaced_resources_delete.stdout
+      + microk8s_calico_namespaced_resources_delete.stderr
+    )
+  when:
+    - inventory_hostname == designated_master_host
+    - >
+      microk8s_calico_namespaced_resources_get.stdout_lines
+      | default([]) | length > 0
+
+- name: Delete Calico cluster Kubernetes resources
+  become: true
+  ansible.builtin.command: >-
+    microk8s.kubectl delete {{ microk8s_calico_cluster_resources | join(' ') }}
+    --ignore-not-found=true
+  register: microk8s_calico_cluster_resources_delete
+  changed_when: >-
+    'deleted' in (
+      microk8s_calico_cluster_resources_delete.stdout
+      + microk8s_calico_cluster_resources_delete.stderr
+    )
+  when:
+    - inventory_hostname == designated_master_host
+    - >
+      microk8s_calico_cluster_resources_get.stdout_lines
+      | default([]) | length > 0
+
+- name: Delete Calico projectcalico.org CRDs
+  become: true
+  ansible.builtin.command: >-
+    microk8s.kubectl delete {{ microk8s_projectcalico_crds | join(' ') }}
+    --ignore-not-found=true
+  register: microk8s_calico_crds_delete
+  changed_when: >-
+    'deleted' in (
+      microk8s_calico_crds_delete.stdout
+      + microk8s_calico_crds_delete.stderr
+    )
+  when:
+    - inventory_hostname == designated_master_host
+    - microk8s_projectcalico_crds | default([]) | length > 0
+
+- name: Remove stale Calico CNI files
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ microk8s_calico_cni_files.stdout_lines | default([]) }}"
+  when:
+    - inventory_hostname == designated_master_host
+    - microk8s_calico_cni_files.stdout_lines | default([]) | length > 0
+
 - name: Enable cilium addon
   become: true
   ansible.builtin.command: microk8s enable cilium
