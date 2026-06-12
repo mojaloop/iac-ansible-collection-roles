@@ -25,7 +25,7 @@ The collection is organized into specialized roles:
 | **Infrastructure** | `microk8s`, `k8s_node_common`, `docker`, `bastion_common` |
 | **Platform Services** | `argocd`, `vault`, `harbor`, `nexus_server`, `netbird` |
 | **Management** | `cc_k8s`, `gitlab_server`, `central_observability` |
-| **Storage** | `seaweedfs_server`, `minio` (and integrated Rook/Ceph via `cc_k8s`) |
+| **Storage** | `integrated Rook/Ceph via cc_k8s` |
 | **Testing** | `k6s_test_harness` |
 
 ### Playbooks
