@@ -200,6 +200,8 @@ spec:
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['crossplane'].namespace }}"
             - name: "storage_namespace"
               value: "{{ fact_argo_merged_config.apps['utils'].sub_apps['storage'].namespace }}"
+            - name: "deploy_env_onboard_eso_refresh_interval"
+              value: "{{ fact_argo_merged_config.apps['deploy_env'].sub_apps['onboard'].eso_refresh_interval }}"
             - name: "sc_ports"
               value: "{{ fact_argo_merged_config.apps['security'].sub_apps['netbird_env_access_control_policies'].sc_ports }}"
             - name: "sc_network_resource_group"
